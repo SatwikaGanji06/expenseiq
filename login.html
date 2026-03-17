@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ExpenseIQ — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0D1B2A;
+      --navy2:  #162336;
+      --gold:   #C9A84C;
+      --gold2:  #E2C06A;
+      --cream:  #F5F0E8;
+      --muted:  #8A9BB0;
+      --border: rgba(201,168,76,0.18);
+      --radius: 6px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--cream);
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Left panel ── */
+    .left {
+      background: var(--navy2);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 52px 56px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .left::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: -120px;
+      width: 480px; height: 480px;
+      border: 1px solid rgba(201,168,76,0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .left::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 320px; height: 320px;
+      border: 1px solid rgba(201,168,76,0.06);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+    }
+    .brand-name span { color: var(--gold); }
+
+    .hero { animation: fadeUp 0.7s 0.15s ease both; }
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: var(--cream);
+    }
+    .hero h1 em { font-style: italic; color: var(--gold2); }
+    .hero p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 340px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 40px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--gold2);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Right panel ── */
+    .right {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 52px 48px;
+      background: var(--navy);
+      overflow-y: auto;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 380px;
+      animation: fadeUp 0.7s 0.2s ease both;
+      padding: 8px 0 40px;
+    }
+
+    .tab-row {
+      display: flex;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 12px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+      background: none;
+      border-left: none; border-right: none; border-top: none;
+    }
+    .tab.active { color: var(--gold2); border-bottom-color: var(--gold); }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+    .form-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+    .field select option { background: var(--navy2); color: var(--cream); }
+    .field input::placeholder { color: rgba(138,155,176,0.5); }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+    }
+
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .remember input[type="checkbox"] { accent-color: var(--gold); width: 14px; height: 14px; }
+    .forgot { font-size: 13px; color: var(--gold); text-decoration: none; cursor: pointer; }
+    .forgot:hover { color: var(--gold2); }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--gold2); }
+    .btn-primary:active { transform: scale(0.99); }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0 18px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .msg {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      display: none;
+    }
+    .msg.success { background: rgba(100,200,120,0.1); border: 1px solid rgba(100,200,120,0.2); color: #7ed49a; display: block; }
+    .msg.error   { background: rgba(220,80,80,0.1);  border: 1px solid rgba(220,80,80,0.2);  color: #f08080; display: block; }
+
+    /* ── Forgot password panel ── */
+    .fp-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 24px;
+      background: none;
+      border: none;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .fp-back:hover { color: var(--cream); }
+
+    .steps {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .step-dot {
+      height: 3px;
+      flex: 1;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.35s;
+    }
+    .step-dot.active { background: var(--gold); }
+    .step-dot.done   { background: rgba(201,168,76,0.4); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 720px) {
+      .shell { grid-template-columns: 1fr; }
+      .left  { display: none; }
+      .right { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ══ Left: Branding ══ -->
+  <div class="left">
+    <div class="brand">
+      <div class="brand-icon">₹</div>
+      <div class="brand-name">Expense<span>IQ</span></div>
+    </div>
+    <div class="hero">
+      <div class="hero-tag">Financial Intelligence</div>
+      <h1>Track every rupee with <em>clarity</em></h1>
+      <p>An offline-first expense management platform that learns your habits and keeps your data private — always on your device.</p>
+    </div>
+    <div class="stats">
+      <div>
+        <div class="stat-val">100%</div>
+        <div class="stat-label">Offline capable</div>
+      </div>
+      <div>
+        <div class="stat-val">0</div>
+        <div class="stat-label">Data sent to servers</div>
+      </div>
+      <div>
+        <div class="stat-val">ML</div>
+        <div class="stat-label">Auto-categorization</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Right: Forms ══ -->
+  <div class="right">
+    <div class="form-card">
+
+      <!-- Tab row -->
+      <div class="tab-row" id="tab-row">
+        <button class="tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- ── LOGIN ── -->
+      <div id="login-form">
+        <div class="form-title">Welcome back</div>
+        <div class="form-sub">Sign in to your account to continue</div>
+
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="l-user" placeholder="Enter your username" autocomplete="username"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"/>
+        </div>
+
+        <div class="row-between">
+          <label class="remember">
+            <input type="checkbox" id="remember"/> Remember me
+          </label>
+          <span class="forgot" onclick="showForgot()">Forgot password?</span>
+        </div>
+
+        <button class="btn-primary" onclick="handleLogin()">Sign In →</button>
+        <div id="login-msg" class="msg"></div>
+      </div>
+
+      <!-- ── REGISTER ── -->
+      <div id="register-form" style="display:none">
+        <div class="form-title">Create account</div>
+        <div class="form-sub">Set up your private expense tracker</div>
+
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="r-name" placeholder="Your name"/>
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="r-user" placeholder="Choose a username"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="r-pass" placeholder="Create a strong password"/>
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <input type="password" id="r-pass2" placeholder="Repeat your password"/>
+        </div>
+
+        <hr class="section-divider"/>
+        <div class="section-label">Security Question</div>
+
+        <div class="field">
+          <label>Choose a question</label>
+          <select id="r-sq">
+            <option value="" disabled selected>— Select a question —</option>
+            <option>What is your mother's maiden name?</option>
+            <option>What was the name of your first pet?</option>
+            <option>What city were you born in?</option>
+            <option>What was the name of your primary school?</option>
+            <option>What is your oldest sibling's middle name?</option>
+            <option>What was the make of your first car?</option>
+            <option>What is your favourite childhood movie?</option>
+            <option>What street did you grow up on?</option>
+            <option>What was your childhood nickname?</option>
+            <option>What is the name of your maternal grandmother?</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Your answer</label>
+          <input type="text" id="r-sa" placeholder="Type your answer (case-insensitive)"/>
+        </div>
+
+        <button class="btn-primary" onclick="handleRegister()">Create Account →</button>
+        <div id="register-msg" class="msg"></div>
+      </div>
+
+      <!-- ── FORGOT PASSWORD (3-step) ── -->
+      <div id="fp-panel" style="display:none">
+
+        <button class="fp-back" onclick="hideForgot()">← Back to sign in</button>
+
+        <div class="steps">
+          <div class="step-dot active" id="dot-1"></div>
+          <div class="step-dot" id="dot-2"></div>
+          <div class="step-dot" id="dot-3"></div>
+        </div>
+
+        <!-- Step 1: username -->
+        <div id="fp-step1">
+          <div class="form-title">Reset password</div>
+          <div class="form-sub">Enter your username to get started</div>
+          <div class="field">
+            <label>Username</label>
+            <input type="text" id="fp-user" placeholder="Your username"/>
+          </div>
+          <button class="btn-primary" onclick="fpStep1()">Continue →</button>
+          <div id="fp-msg1" class="msg"></div>
+        </div>
+
+        <!-- Step 2: security question -->
+        <div id="fp-step2" style="display:none">
+          <div class="form-title">Security check</div>
+          <div class="form-sub" id="fp-q-label">Answer your security question</div>
+          <div class="field">
+            <label>Your answer</label>
+            <input type="text" id="fp-answer" placeholder="Type your answer"/>
+          </div>
+          <button class="btn-primary" onclick="fpStep2()">Verify →</button>
+          <div id="fp-msg2" class="msg"></div>
+        </div>
+
+        <!-- Step 3: new password -->
+        <div id="fp-step3" style="display:none">
+          <div class="form-title">New password</div>
+          <div class="form-sub">Choose a strong password for your account</div>
+          <div class="field">
+            <label>New Password</label>
+            <input type="password" id="fp-np" placeholder="At least 6 characters"/>
+          </div>
+          <div class="field">
+            <label>Confirm New Password</label>
+            <input type="password" id="fp-np2" placeholder="Repeat new password"/>
+          </div>
+          <button class="btn-primary" onclick="fpStep3()">Save New Password →</button>
+          <div id="fp-msg3" class="msg"></div>
+        </div>
+
+      </div>
+      <!-- end fp-panel -->
+
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Tab switching ── */
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) =>
+      t.classList.toggle('active', (i === 0) === (tab === 'login'))
+    );
+    show('login-form',    tab === 'login');
+    show('register-form', tab === 'register');
+    show('fp-panel',      false);
+    show('tab-row',       true, 'flex');
+  }
+
+  function show(id, visible, displayVal) {
+    document.getElementById(id).style.display = visible ? (displayVal || 'block') : 'none';
+  }
+
+  /* ── Message helper ── */
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+  function clearMsg(id) {
+    const el = document.getElementById(id);
+    el.textContent = ''; el.className = 'msg';
+  }
+
+  /* ── Login ── */
+  function handleLogin() {
+    const user = document.getElementById('l-user').value.trim();
+    const pass = document.getElementById('l-pass').value;
+    if (!user || !pass) return showMsg('login-msg', 'Please fill in all fields.', 'error');
+
+    const stored = JSON.parse(localStorage.getItem('eq_user_' + user) || 'null');
+    if (!stored)                        return showMsg('login-msg', 'Account not found. Please register first.', 'error');
+    if (stored.password !== btoa(pass)) return showMsg('login-msg', 'Incorrect password.', 'error');
+
+    sessionStorage.setItem('eq_current', JSON.stringify({ username: user, name: stored.name }));
+    showMsg('login-msg', 'Login successful! Redirecting…', 'success');
+setTimeout(() => {
+  window.location.href = 'dashboard.html';
+}, 900);
+  }
+
+  /* ── Register ── */
+  function handleRegister() {
+    const name  = document.getElementById('r-name').value.trim();
+    const user  = document.getElementById('r-user').value.trim();
+    const pass  = document.getElementById('r-pass').value;
+    const pass2 = document.getElementById('r-pass2').value;
+    const sq    = document.getElementById('r-sq').value;
+    const sa    = document.getElementById('r-sa').value.trim();
+
+    if (!name || !user || !pass || !pass2)       return showMsg('register-msg', 'Please fill in all fields.', 'error');
+    if (pass !== pass2)                           return showMsg('register-msg', 'Passwords do not match.', 'error');
+    if (pass.length < 6)                          return showMsg('register-msg', 'Password must be at least 6 characters.', 'error');
+    if (!sq)                                      return showMsg('register-msg', 'Please choose a security question.', 'error');
+    if (!sa)                                      return showMsg('register-msg', 'Please provide an answer to your security question.', 'error');
+    if (localStorage.getItem('eq_user_' + user)) return showMsg('register-msg', 'Username already taken.', 'error');
+
+    localStorage.setItem('eq_user_' + user, JSON.stringify({
+      name,
+      password:         btoa(pass),
+      securityQuestion: sq,
+      securityAnswer:   btoa(sa.toLowerCase())  // lowercase before encoding so answers are case-insensitive
+    }));
+    showMsg('register-msg', 'Account created! You can now sign in.', 'success');
+    setTimeout(() => switchTab('login'), 1400);
+  }
+
+  /* ── Forgot password: show / hide ── */
+  function showForgot() {
+    show('login-form', false);
+    show('tab-row',    false);
+    show('fp-panel',   true);
+    goFpStep(1);
+    ['fp-user','fp-answer','fp-np','fp-np2'].forEach(id => document.getElementById(id).value = '');
+    ['fp-msg1','fp-msg2','fp-msg3'].forEach(clearMsg);
+  }
+  function hideForgot() {
+    show('fp-panel',   false);
+    show('login-form', true);
+    show('tab-row',    true, 'flex');
+  }
+
+  /* ── Step navigation ── */
+  let fpUser = '';
+
+  function goFpStep(n) {
+    [1,2,3].forEach(i => {
+      show('fp-step' + i, i === n);
+      const dot = document.getElementById('dot-' + i);
+      dot.className = 'step-dot' + (i === n ? ' active' : i < n ? ' done' : '');
+    });
+  }
+
+  function fpStep1() {
+    const user = document.getElementById('fp-user').value.trim();
+    if (!user) return showMsg('fp-msg1', 'Please enter your username.', 'error');
+
+    const stored = JSON.parse(localStorage.getItem('eq_user_' + user) || 'null');
+    if (!stored) return showMsg('fp-msg1', 'No account found with that username.', 'error');
+
+    fpUser = user;
+    document.getElementById('fp-q-label').textContent = stored.securityQuestion;
+    goFpStep(2);
+  }
+
+  function fpStep2() {
+    const answer = document.getElementById('fp-answer').value.trim();
+    if (!answer) return showMsg('fp-msg2', 'Please enter your answer.', 'error');
+
+    const stored = JSON.parse(localStorage.getItem('eq_user_' + fpUser));
+    if (btoa(answer.toLowerCase()) !== stored.securityAnswer)
+      return showMsg('fp-msg2', 'Incorrect answer. Please try again.', 'error');
+
+    goFpStep(3);
+  }
+
+  function fpStep3() {
+    const np  = document.getElementById('fp-np').value;
+    const np2 = document.getElementById('fp-np2').value;
+    if (!np || !np2)  return showMsg('fp-msg3', 'Please fill in both fields.', 'error');
+    if (np !== np2)   return showMsg('fp-msg3', 'Passwords do not match.', 'error');
+    if (np.length < 6) return showMsg('fp-msg3', 'Password must be at least 6 characters.', 'error');
+
+    const stored = JSON.parse(localStorage.getItem('eq_user_' + fpUser));
+    stored.password = btoa(np);
+    localStorage.setItem('eq_user_' + fpUser, JSON.stringify(stored));
+
+    showMsg('fp-msg3', 'Password updated! Redirecting to sign in…', 'success');
+    setTimeout(() => { hideForgot(); switchTab('login'); }, 1500);
+  }
+
+  /* ── Enter key support ── */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('fp-panel').style.display === 'block') {
+      if (document.getElementById('fp-step1').style.display !== 'none') return fpStep1();
+      if (document.getElementById('fp-step2').style.display !== 'none') return fpStep2();
+      return fpStep3();
+    }
+    if (document.getElementById('login-form').style.display !== 'none') return handleLogin();
+    handleRegister();
+  });
+</script>
+</body>
+</html>
