@@ -338,12 +338,37 @@
 
     <!-- ══ UPLOAD CSV ══ -->
     <div class="page" id="page-upload">
-      <div class="page-header"><div class="page-title">Upload CSV</div><div class="page-sub">Import expenses from a bank statement or CSV file</div></div>
-      <div class="card">
-        <div class="card-title">File Format</div>
-        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;">Columns: <strong style="color:var(--cream)">Date, Description, Amount, Category (optional)</strong>. First row can be a header.</p>
-        <code style="font-size:12px;color:var(--gold);background:var(--navy3);padding:10px 14px;border-radius:6px;display:block;">Date,Description,Amount,Category<br>2024-01-15,Swiggy order,320,Food &amp; Dining</code>
+      <div class="page-header">
+        <div class="page-title">Upload CSV</div>
+        <div class="page-sub">Upload any bank statement or CSV file — the app auto-detects the format</div>
       </div>
+
+      <!-- Detected bank badge — shown after detection -->
+      <div id="bank-detected-card" style="display:none;margin-bottom:20px">
+        <div class="card" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Detected</div>
+            <div style="font-size:15px;font-weight:500;color:var(--cream)" id="bank-detected-name">—</div>
+          </div>
+          <div style="font-size:22px">🏦</div>
+        </div>
+      </div>
+
+      <!-- Manual column mapper — shown if bank not recognised -->
+      <div id="manual-mapper" style="display:none;margin-bottom:20px">
+        <div class="card">
+          <div class="card-title">Unknown Format — Map Columns</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">We could not recognise this file format. Please tell us which columns contain the date, description and amount.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+            <div class="field"><label>Date column</label><select id="map-date" class="filter-select" style="width:100%"></select></div>
+            <div class="field"><label>Description column</label><select id="map-desc" class="filter-select" style="width:100%"></select></div>
+            <div class="field"><label>Amount column</label><select id="map-amount" class="filter-select" style="width:100%"></select></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px" id="mapper-preview-row"></div>
+          <button class="btn-primary" onclick="applyManualMapping()">Apply Mapping →</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">Upload File</div>
         <div class="drop-zone" id="drop-zone"
@@ -352,15 +377,34 @@
           ondragleave="this.classList.remove('drag-over')"
           ondrop="handleDrop(event)">
           <div class="drop-icon">📂</div>
-          <div class="drop-title">Drop your CSV here</div>
-          <div class="drop-sub">or click to browse files</div>
+          <div class="drop-title">Drop any CSV here</div>
+          <div class="drop-sub">Bank statement or generic CSV — auto-detected</div>
           <button class="btn-primary" onclick="event.stopPropagation();document.getElementById('csv-file-input').click()">Choose File</button>
         </div>
         <input type="file" id="csv-file-input" accept=".csv,.txt" onchange="handleFileSelect(event)"/>
+
+        <!-- Preview table -->
         <div id="csv-preview" style="display:none">
-          <div class="card-title" style="margin-top:4px">Preview <span id="csv-row-count" style="color:var(--muted);font-size:12px"></span></div>
-          <div class="preview-table"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead><tbody id="csv-preview-tbody"></tbody></table></div>
-          <div class="import-actions"><button class="btn-primary" onclick="importCSV()">Import All →</button><button class="btn-ghost" onclick="cancelCSV()">Cancel</button></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="card-title" style="margin-bottom:0">Preview <span id="csv-row-count" style="color:var(--muted);font-size:12px;font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+            <div style="font-size:12px;color:var(--muted)" id="csv-skip-info"></div>
+          </div>
+          <!-- Include credits checkbox -->
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:16px;cursor:pointer">
+            <input type="checkbox" id="include-credits" style="accent-color:var(--gold)"/>
+            Include credit transactions (salary, refunds)
+          </label>
+          <div class="preview-table">
+            <table>
+              <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Type</th><th style="min-width:180px">Category</th></tr></thead>
+              <tbody id="csv-preview-tbody"></tbody>
+            </table>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:10px" id="csv-pending-msg"></div>
+          <div class="import-actions" style="margin-top:16px">
+            <button class="btn-primary" id="csv-import-btn" onclick="importCSV()">Import All →</button>
+            <button class="btn-ghost" onclick="cancelCSV()">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -893,46 +937,233 @@ async function renderCharts() {
 }
 
 /* ══════════════════════════════════════════════════
-   CSV UPLOAD
+   CSV / BANK STATEMENT PARSER
+   Auto-detects bank from header row.
+   Supports 10 Indian + 8 international banks.
+   Falls back to manual column mapper if unknown.
 ══════════════════════════════════════════════════ */
-let csvRows = [];
 
-function handleDrop(e) { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); }
-function handleFileSelect(e) { if (e.target.files[0]) parseCSV(e.target.files[0]); }
+const BANK_PROFILES = [
+  { name:'SBI',                 dateCol:'txn date',          descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['txn date','ref no'] },
+  { name:'HDFC Bank',           dateCol:'date',              descCol:'narration',            debitCol:'debit amount',     creditCol:'credit amount',  matchKeys:['narration','value dt','chq/ref'] },
+  { name:'ICICI Bank',          dateCol:'transaction date',  descCol:'transaction remarks',  debitCol:'amount (inr)',     creditCol:null,             matchKeys:['transaction remarks','dr/cr'], typeCol:'dr/cr', debitKeyword:'dr' },
+  { name:'Axis Bank',           dateCol:'tran date',         descCol:'particulars',          debitCol:'debit',            creditCol:'credit',         matchKeys:['tran date','particulars'] },
+  { name:'Kotak Mahindra Bank', dateCol:'transaction date',  descCol:'description',          debitCol:'withdrawal amt',   creditCol:'deposit amt',    matchKeys:['withdrawal amt','deposit amt'] },
+  { name:'Yes Bank',            dateCol:'date',              descCol:'transaction details',  debitCol:'debit',            creditCol:'credit',         matchKeys:['transaction details','instrument id'] },
+  { name:'IndusInd Bank',       dateCol:'date',              descCol:'narration',            debitCol:'debit',            creditCol:'credit',         matchKeys:['narration','chq. no.','running balance'] },
+  { name:'PNB',                 dateCol:'value date',        descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['transaction id','value date'] },
+  { name:'Canara Bank',         dateCol:'transaction date',  descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['sl no','transaction date'] },
+  { name:'Bank of Baroda',      dateCol:'txn date',          descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['txn date','description'] },
+  { name:'Chase',               dateCol:'transaction date',  descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['transaction date','post date','category','type'], negativeIsDebit:true },
+  { name:'Bank of America',     dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','description','amount','running bal'], negativeIsDebit:true },
+  { name:'Wells Fargo',         dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','amount','description'], negativeIsDebit:true },
+  { name:'Citibank',            dateCol:'date',              descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['date','description','debit','credit'] },
+  { name:'Barclays',            dateCol:'date',              descCol:'memo',                 debitCol:'amount',           creditCol:null,             matchKeys:['date','memo','amount'], negativeIsDebit:true },
+  { name:'HSBC',                dateCol:'date',              descCol:'description',          debitCol:'paid out',         creditCol:'paid in',        matchKeys:['paid out','paid in'] },
+  { name:'Standard Chartered',  dateCol:'date',              descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['date','description','debit','credit','running balance'] },
+  { name:'American Express',    dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','description','amount'], negativeIsDebit:false },
+];
 
-function parseCSV(file) {
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const lines = ev.target.result.trim().split('\n');
-    csvRows = [];
-    let start = (lines[0] && isNaN(lines[0].split(',')[2])) ? 1 : 0;
-    lines.slice(start).forEach(line => {
-      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
-      if (cols.length < 3) return;
-      const [date, description, amountRaw, category] = cols;
-      const amount = parseFloat(amountRaw);
-      if (!date || isNaN(amount)) return;
-      csvRows.push({ date, description, amount, category: category ? category.trim() : (mlCategorize(description) || 'Other') });
-    });
-    document.getElementById('csv-row-count').textContent = `(${csvRows.length} rows)`;
-    const tbody = document.getElementById('csv-preview-tbody');
-    tbody.innerHTML = '';
-    csvRows.slice(0, 10).forEach(r => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${r.date}</td><td>${r.description}</td><td class="amount-cell">${fmt(r.amount)}</td><td>${catPill(r.category)}</td>`; tbody.appendChild(tr); });
-    if (csvRows.length > 10) { const tr = document.createElement('tr'); tr.innerHTML = `<td colspan="4" style="color:var(--muted);text-align:center;font-size:12px">… and ${csvRows.length - 10} more rows</td>`; tbody.appendChild(tr); }
-    document.getElementById('csv-preview').style.display = 'block';
-  };
-  reader.readAsText(file);
+function normaliseDate(raw) {
+  if (!raw) return '';
+  let s = raw.replace(/#/g,'').trim().split(' ')[0].split('T')[0];
+  let m;
+  if ((m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/)))
+    return `${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}-${m[3]}`;
+  if ((m = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})$/)))
+    return `${m[3]}-${m[2]}-${m[1]}`;
+  if ((m = s.match(/^(\d{1,2})[\/\-]([A-Za-z]{3})[\/\-](\d{4})$/))) {
+    const mo = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+    return `${m[1].padStart(2,'0')}-${mo[m[2].toLowerCase()]||'01'}-${m[3]}`;
+  }
+  return s;
 }
+
+function displayToStorage(ddmmyyyy) {
+  const p = ddmmyyyy.split('-');
+  return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ddmmyyyy;
+}
+
+function cleanDesc(raw) {
+  if (!raw) return '';
+  return raw
+    .replace(/^(UPI|NEFT|IMPS|RTGS|ACH|ATM|POS|INB|MOB|INT|DP|CHQ|CLG|ECS|SI|TRF|VPS|VISA|NACH)[\/\-\s]*/i,'')
+    .replace(/\d{8,}/g,'').replace(/[*]+/g,'').replace(/\s{2,}/g,' ').trim();
+}
+
+function parseCSVText(text) {
+  return text.trim().split(/\r?\n/).map(line => {
+    const cols = []; let cur = '', inQ = false;
+    for (const c of line) {
+      if (c==='"') inQ=!inQ;
+      else if (c===',' && !inQ) { cols.push(cur.trim()); cur=''; }
+      else cur+=c;
+    }
+    cols.push(cur.trim());
+    return cols.map(c=>c.replace(/^"|"$/g,'').trim());
+  });
+}
+
+function detectBank(headerRow) {
+  const h = headerRow.map(c=>c.toLowerCase().trim());
+  let best=null, bestScore=0;
+  for (const p of BANK_PROFILES) {
+    const score = p.matchKeys.filter(k=>h.some(hh=>hh.includes(k)||k.includes(hh))).length / p.matchKeys.length;
+    if (score > bestScore && score >= 0.5) { bestScore=score; best=p; }
+  }
+  return best;
+}
+
+function getColVal(row, headers, colName) {
+  if (!colName) return '';
+  const h = headers.map(c=>c.toLowerCase().trim());
+  const idx = h.findIndex(hh=>hh.includes(colName.toLowerCase())||colName.toLowerCase().includes(hh));
+  return idx>=0 ? (row[idx]||'').replace(/,/g,'').trim() : '';
+}
+
+function extractAmount(row, headers, profile) {
+  if (profile.typeCol) {
+    const amt = parseFloat(getColVal(row,headers,profile.debitCol));
+    const h = headers.map(c=>c.toLowerCase().trim());
+    const ti = h.findIndex(hh=>hh.includes(profile.typeCol.toLowerCase()));
+    const type = ti>=0 ? (row[ti]||'').toLowerCase() : '';
+    if (isNaN(amt)) return null;
+    return { amount:Math.abs(amt), isDebit:type.includes(profile.debitKeyword.toLowerCase()) };
+  }
+  if (profile.negativeIsDebit !== undefined) {
+    const amt = parseFloat(getColVal(row,headers,profile.debitCol));
+    if (isNaN(amt)) return null;
+    const isDebit = profile.negativeIsDebit ? amt<0 : amt>0;
+    return { amount:Math.abs(amt), isDebit };
+  }
+  const d = parseFloat(getColVal(row,headers,profile.debitCol))||0;
+  const c = profile.creditCol ? parseFloat(getColVal(row,headers,profile.creditCol))||0 : 0;
+  if (d>0) return {amount:d,isDebit:true};
+  if (c>0) return {amount:c,isDebit:false};
+  return null;
+}
+
+let csvRows=[], rawFileLines=[], rawHeaders=[];
+
+function handleDrop(e) { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); }
+function handleFileSelect(e) { if(e.target.files[0]) processFile(e.target.files[0]); }
+
+function processFile(file) {
+  const r=new FileReader(); r.onload=ev=>parseAndDetect(ev.target.result); r.readAsText(file);
+}
+
+function parseAndDetect(text) {
+  const all = parseCSVText(text);
+  if (all.length<2) { showToast('File appears empty or invalid.','red'); return; }
+  let hi=0;
+  for (let i=0;i<Math.min(5,all.length);i++) { if(all[i].some(c=>c.length>0)){hi=i;break;} }
+  rawHeaders=all[hi]; rawFileLines=all.slice(hi+1).filter(r=>r.some(c=>c.trim()));
+  document.getElementById('bank-detected-card').style.display='none';
+  document.getElementById('manual-mapper').style.display='none';
+  const profile=detectBank(rawHeaders);
+  if (profile) {
+    document.getElementById('bank-detected-name').textContent=profile.name;
+    document.getElementById('bank-detected-card').style.display='block';
+    buildPreview(profile);
+  } else {
+    showManualMapper();
+  }
+}
+
+function showManualMapper() {
+  document.getElementById('manual-mapper').style.display='block';
+  const opts=rawHeaders.map((h,i)=>`<option value="${i}">${h||'Col '+(i+1)}</option>`).join('');
+  ['map-date','map-desc','map-amount'].forEach(id=>{
+    document.getElementById(id).innerHTML='<option value="">— Select —</option>'+opts;
+  });
+  const first=rawFileLines[0]||[];
+  document.getElementById('mapper-preview-row').textContent='First row: '+first.slice(0,6).join(' | ');
+}
+
+function applyManualMapping() {
+  const di=parseInt(document.getElementById('map-date').value);
+  const ni=parseInt(document.getElementById('map-desc').value);
+  const ai=parseInt(document.getElementById('map-amount').value);
+  if(isNaN(di)||isNaN(ni)||isNaN(ai)){showToast('Please select all three columns.','red');return;}
+  document.getElementById('manual-mapper').style.display='none';
+  buildPreview({ name:'Custom', dateCol:rawHeaders[di], descCol:rawHeaders[ni], debitCol:rawHeaders[ai], creditCol:null, negativeIsDebit:false });
+}
+
+function buildPreview(profile) {
+  csvRows=[]; let skipped=0;
+  rawFileLines.forEach(row=>{
+    const rawDate=getColVal(row,rawHeaders,profile.dateCol);
+    const rawDesc=getColVal(row,rawHeaders,profile.descCol);
+    const amtObj=extractAmount(row,rawHeaders,profile);
+    if(!rawDate||!amtObj){skipped++;return;}
+    const date=normaliseDate(rawDate);
+    const desc=cleanDesc(rawDesc)||rawDesc;
+    if(!date||isNaN(amtObj.amount)||amtObj.amount<=0){skipped++;return;}
+    const autocat=mlCategorize(desc);
+    csvRows.push({date,description:desc,amount:amtObj.amount,isDebit:amtObj.isDebit,category:autocat,userCat:!!autocat,wasManual:!autocat});
+  });
+  document.getElementById('csv-skip-info').textContent=skipped>0?` · ${skipped} rows skipped`:'';
+  document.getElementById('csv-preview').style.display='block';
+  renderPreviewTable();
+}
+
+const CAT_OPTS=['Food & Dining','Shopping','Transport','Entertainment','Health & Medical','Utilities & Bills','Education','Travel','Groceries','Other'].map(c=>`<option value="${c}">${c}</option>`).join('');
+
+function renderPreviewTable() {
+  const incCred=document.getElementById('include-credits').checked;
+  const tbody=document.getElementById('csv-preview-tbody');
+  tbody.innerHTML='';
+  const visible=csvRows.filter(r=>r.isDebit||incCred);
+  document.getElementById('csv-row-count').textContent=`(${visible.length} transactions${!incCred?', debits only':''})`; 
+  visible.forEach((r,idx)=>{
+    const tr=document.createElement('tr');
+    const needsCat=!r.userCat;
+    const catCell=needsCat
+      ?`<select onchange="setCsvCat(${csvRows.indexOf(r)},this.value)" style="background:rgba(186,117,23,0.15);border:1px solid rgba(201,168,76,0.4);color:var(--cream);font-size:12px;padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif"><option value="">— Select category —</option>${CAT_OPTS}</select>`
+      :catPill(r.category);
+    tr.innerHTML=`<td style="font-size:13px">${r.date}</td><td style="font-size:13px">${r.description}</td><td class="amount-cell" style="font-size:14px">${fmt(r.amount)}</td><td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${r.isDebit?'rgba(224,85,85,0.1)':'rgba(92,184,92,0.1)'};color:${r.isDebit?'#e08070':'#7ed49a'}">${r.isDebit?'Debit':'Credit'}</span></td><td>${catCell}</td>`;
+    tbody.appendChild(tr);
+  });
+  const pending=visible.filter(r=>!r.userCat).length;
+  const msg=document.getElementById('csv-pending-msg');
+  msg.textContent=pending>0?`⚠ ${pending} transaction${pending>1?'s':''} need${pending===1?'s':''} a category before importing.`:'✓ All categories assigned. Ready to import.';
+  msg.style.color=pending>0?'#E2C06A':'var(--success)';
+  const btn=document.getElementById('csv-import-btn');
+  if(btn){btn.disabled=pending>0;btn.style.opacity=pending>0?'0.5':'1';}
+}
+
+function setCsvCat(idx,val) {
+  if(!val) return;
+  csvRows[idx].category=val; csvRows[idx].userCat=true; csvRows[idx].wasManual=true;
+  csvRows[idx].description.toLowerCase().split(/\s+/).forEach(w=>saveCustomCat(val,w));
+  renderPreviewTable();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const cb=document.getElementById('include-credits');
+  if(cb) cb.addEventListener('change',()=>{if(csvRows.length)renderPreviewTable();});
+});
 
 async function importCSV() {
-  if (!csvRows.length) return;
-  for (const row of csvRows) await dbAdd({ ...row, method:'Import', notes:'Imported from CSV', addedAt:Date.now() });
-  showToast(`${csvRows.length} expenses imported!`, 'green');
-  cancelCSV();
-  chartsBuilt = false;
+  const incCred=document.getElementById('include-credits').checked;
+  const toImport=csvRows.filter(r=>(r.isDebit||incCred)&&r.userCat&&r.category);
+  if(!toImport.length) return;
+  for (const row of toImport) {
+    await dbAdd({date:displayToStorage(row.date),amount:row.amount,description:row.description,category:row.category,method:row.isDebit?'Bank Debit':'Bank Credit',notes:'Imported from bank statement',addedAt:Date.now()});
+  }
+  const autoC=toImport.filter(r=>!r.wasManual).length;
+  const manC=toImport.filter(r=>r.wasManual).length;
+  showToast(`${toImport.length} imported · ${autoC} auto-categorised · ${manC} manually categorised`,'green');
+  cancelCSV(); chartsBuilt=false;
 }
 
-function cancelCSV() { csvRows = []; document.getElementById('csv-preview').style.display = 'none'; document.getElementById('csv-file-input').value = ''; }
+function cancelCSV() {
+  csvRows=[]; rawFileLines=[]; rawHeaders=[];
+  document.getElementById('csv-preview').style.display='none';
+  document.getElementById('bank-detected-card').style.display='none';
+  document.getElementById('manual-mapper').style.display='none';
+  document.getElementById('csv-file-input').value='';
+}
 
 /* ══════════════════════════════════════════════════
    JSON EXPORT
@@ -1034,7 +1265,6 @@ async function confirmImport() {
     }
   }
 
-  const recordsToImport = pendingImportPayload.records;
   closeModal();
   const setMsg = (text, type) => {
     const el = document.getElementById('import-msg');
@@ -1044,7 +1274,7 @@ async function confirmImport() {
   setMsg('Importing…', 'info');
 
   let imported = 0, skipped = 0;
-  for (const rec of recordsToImport) {
+  for (const rec of pendingImportPayload.records) {
     try {
       let blob;
       if (rec.iv && rec.ciphertext) {
