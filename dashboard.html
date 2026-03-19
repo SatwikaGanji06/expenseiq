@@ -141,7 +141,7 @@
     .drop-title { font-size:15px; font-weight:500; margin-bottom:6px; }
     .drop-sub { font-size:13px; color:var(--muted); margin-bottom:16px; }
     #csv-file-input,#json-import-input { display:none; }
-    .preview-table { overflow-x:auto; margin-top:16px; }
+    .preview-table { overflow-x:auto; overflow-y:visible; margin-top:16px; position:relative; z-index:1; }
     .import-actions { display:flex; gap:12px; margin-top:16px; }
 
     /* ══ BACKUP ══ */
@@ -1055,13 +1055,70 @@ function processFile(file) {
 function parseAndDetect(text) {
   const all = parseCSVText(text);
   if (all.length<2) { showToast('File appears empty or invalid.','red'); return; }
-  let hi=0;
-  for (let i=0;i<Math.min(5,all.length);i++) { if(all[i].some(c=>c.length>0)){hi=i;break;} }
-  rawHeaders=all[hi]; rawFileLines=all.slice(hi+1).filter(r=>r.some(c=>c.trim()));
+
+  // Smart header finder — scans up to 30 rows looking for the real header row.
+  // A real header row contains at least 2 cells that match known financial keywords.
+  // This skips account holder name, relationship manager, address etc. at the top.
+  const HEADER_KEYS = ['date','narration','description','particulars','transaction','debit','credit',
+    'amount','balance','remarks','details','withdrawal','deposit','ref','cheque','memo','paid'];
+
+  function isHeaderRow(row) {
+    const lower = row.map(c=>c.toLowerCase().trim());
+    const matches = lower.filter(c => HEADER_KEYS.some(k => c.includes(k)));
+    return matches.length >= 2;
+  }
+
+  function looksLikeDate(val) {
+    return /^\d{1,4}[\-\/]\d{1,2}[\-\/]\d{2,4}/.test(val.trim()) ||
+           /^\d{1,2}[\-\/][A-Za-z]{3}[\-\/]\d{4}/.test(val.trim()) ||
+           /^#\d/.test(val.trim());
+  }
+
+  function looksLikeAmount(val) {
+    return /^[\d,]+(\.\d+)?$/.test(val.replace(/,/g,'').trim()) && !isNaN(parseFloat(val.replace(/,/g,'')));
+  }
+
+  // First pass: find header row by keywords
+  let hi = -1;
+  for (let i=0; i<Math.min(30, all.length); i++) {
+    if (isHeaderRow(all[i])) { hi=i; break; }
+  }
+
+  // Second pass: if no keyword match, find first row where col 0 looks like a date
+  // (i.e. the first data row) and treat the row before it as header
+  if (hi === -1) {
+    for (let i=0; i<Math.min(30, all.length); i++) {
+      if (all[i].length >= 3 && looksLikeDate(all[i][0])) {
+        hi = Math.max(0, i-1);
+        break;
+      }
+    }
+  }
+
+  // Final fallback: just use row 0
+  if (hi === -1) hi = 0;
+
+  rawHeaders   = all[hi];
+  rawFileLines = all.slice(hi+1).filter(r => r.some(c=>c.trim()));
+
+  // Sanity check: if description column would contain only dates or amounts,
+  // the mapping is wrong — try to auto-fix by finding a better desc column
   document.getElementById('bank-detected-card').style.display='none';
   document.getElementById('manual-mapper').style.display='none';
-  const profile=detectBank(rawHeaders);
+
+  const profile = detectBank(rawHeaders);
   if (profile) {
+    // Verify the detected desc column doesn't actually contain dates
+    const h = rawHeaders.map(c=>c.toLowerCase().trim());
+    const descIdx = h.findIndex(hh=>hh.includes(profile.descCol.toLowerCase())||profile.descCol.toLowerCase().includes(hh));
+    const sampleDesc = rawFileLines.slice(0,3).map(r=>r[descIdx]||'');
+    const descLooksBad = sampleDesc.every(v=>looksLikeDate(v)||looksLikeAmount(v));
+    if (descLooksBad) {
+      // Description column is actually showing dates/amounts — show manual mapper
+      showToast('Bank detected but columns need manual mapping.','gold');
+      showManualMapper();
+      return;
+    }
     document.getElementById('bank-detected-name').textContent=profile.name;
     document.getElementById('bank-detected-card').style.display='block';
     buildPreview(profile);
