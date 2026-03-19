@@ -7,266 +7,238 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
-      --navy:    #0D1B2A;
-      --navy2:   #162336;
-      --navy3:   #1a2d45;
-      --gold:    #C9A84C;
-      --gold2:   #E2C06A;
-      --cream:   #F5F0E8;
-      --muted:   #8A9BB0;
-      --border:  rgba(201,168,76,0.15);
-      --border2: rgba(201,168,76,0.25);
-      --radius:  8px;
-      --sidebar: 220px;
-      --danger:  #e05555;
-      --success: #5cb85c;
+      --navy:#0D1B2A; --navy2:#162336; --navy3:#1a2d45;
+      --gold:#C9A84C; --gold2:#E2C06A; --cream:#F5F0E8; --muted:#8A9BB0;
+      --border:rgba(201,168,76,0.15); --border2:rgba(201,168,76,0.25);
+      --radius:8px; --sidebar:220px; --danger:#e05555; --success:#5cb85c;
     }
-
-    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--cream); overflow: hidden; }
-    .app { display: flex; height: 100vh; }
+    html,body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); overflow:hidden; }
+    .app { display:flex; height:100vh; }
 
     /* ══ SIDEBAR ══ */
-    .sidebar {
-      width: var(--sidebar); background: var(--navy2);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 28px 0; flex-shrink: 0;
-    }
-    .sb-brand {
-      display: flex; align-items: center; gap: 10px;
-      padding: 0 20px 28px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
-    }
-    .sb-brand-icon {
-      width: 32px; height: 32px; background: var(--gold); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
-    }
-    .sb-brand-name { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--cream); }
-    .sb-brand-name span { color: var(--gold); }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 11px 20px; font-size: 14px; color: var(--muted);
-      cursor: pointer; border-left: 3px solid transparent;
-      transition: color 0.2s, background 0.2s, border-color 0.2s; user-select: none;
-    }
-    .nav-item:hover { color: var(--cream); background: rgba(201,168,76,0.05); }
-    .nav-item.active { color: var(--gold2); border-left-color: var(--gold); background: rgba(201,168,76,0.08); }
-    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-    .sb-bottom { margin-top: auto; padding: 20px; border-top: 1px solid var(--border); }
-    .user-chip {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      background: var(--navy3); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 10px;
-    }
-    .user-avatar {
-      width: 30px; height: 30px; border-radius: 50%; background: var(--gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 500; color: var(--navy); flex-shrink: 0;
-    }
-    .user-name { font-size: 13px; color: var(--cream); font-weight: 500; }
-    .user-sub  { font-size: 11px; color: var(--muted); }
-    .btn-logout {
-      width: 100%; padding: 9px; font-size: 13px; font-family: 'DM Sans', sans-serif;
-      color: var(--muted); background: transparent; border: 1px solid var(--border);
-      border-radius: var(--radius); cursor: pointer; transition: color 0.2s, border-color 0.2s;
-    }
-    .btn-logout:hover { color: var(--danger); border-color: rgba(224,85,85,0.4); }
+    .sidebar { width:var(--sidebar); background:var(--navy2); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:28px 0; flex-shrink:0; }
+    .sb-brand { display:flex; align-items:center; gap:10px; padding:0 20px 28px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+    .sb-brand-icon { width:32px; height:32px; background:var(--gold); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .sb-brand-name { font-family:'Playfair Display',serif; font-size:17px; color:var(--cream); }
+    .sb-brand-name span { color:var(--gold); }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:11px 20px; font-size:14px; color:var(--muted); cursor:pointer; border-left:3px solid transparent; transition:color 0.2s,background 0.2s,border-color 0.2s; user-select:none; }
+    .nav-item:hover { color:var(--cream); background:rgba(201,168,76,0.05); }
+    .nav-item.active { color:var(--gold2); border-left-color:var(--gold); background:rgba(201,168,76,0.08); }
+    .nav-icon { font-size:16px; width:20px; text-align:center; }
+    .sb-bottom { margin-top:auto; padding:20px; border-top:1px solid var(--border); }
+    .user-chip { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--navy3); border-radius:var(--radius); border:1px solid var(--border); margin-bottom:10px; }
+    .user-avatar { width:30px; height:30px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:var(--navy); flex-shrink:0; }
+    .user-name { font-size:13px; color:var(--cream); font-weight:500; }
+    .user-sub  { font-size:11px; color:var(--muted); }
+    .btn-logout { width:100%; padding:9px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:color 0.2s,border-color 0.2s; }
+    .btn-logout:hover { color:var(--danger); border-color:rgba(224,85,85,0.4); }
+
+    /* ══ IDLE BANNER ══ */
+    .idle-banner { display:none; position:fixed; top:0; left:var(--sidebar); right:0; background:rgba(186,117,23,0.95); color:var(--navy); padding:10px 24px; font-size:13px; font-weight:500; align-items:center; justify-content:space-between; z-index:100; }
+    .idle-banner.show { display:flex; }
+    .idle-stay { background:var(--navy); color:var(--gold2); border:none; padding:6px 16px; border-radius:4px; font-size:13px; font-family:'DM Sans',sans-serif; cursor:pointer; font-weight:500; }
+
+    /* ══ MODAL ══ */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; }
+    .modal-overlay.show { display:flex; }
+    .modal-box { background:var(--navy2); border:1px solid var(--border2); border-radius:var(--radius); padding:32px; width:100%; max-width:380px; }
+    .modal-title { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:6px; color:var(--cream); }
+    .modal-sub { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
+    .modal-field { margin-bottom:16px; }
+    .modal-field label { display:block; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+    .modal-field input { width:100%; background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:11px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s; }
+    .modal-field input:focus { border-color:var(--gold); }
+    .modal-field input::placeholder { color:rgba(138,155,176,0.45); }
+    .modal-err { font-size:13px; color:#f08080; margin-top:10px; min-height:20px; }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .modal-actions button { flex:1; padding:11px; font-family:'DM Sans',sans-serif; font-size:14px; border-radius:var(--radius); cursor:pointer; border:none; transition:background 0.2s; }
+    .modal-btn-primary { background:var(--gold); color:var(--navy); font-weight:500; }
+    .modal-btn-primary:hover { background:var(--gold2); }
+    .modal-btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border) !important; }
+    .modal-btn-ghost:hover { color:var(--cream); }
 
     /* ══ MAIN ══ */
-    .main { flex: 1; overflow-y: auto; padding: 36px 40px; background: var(--navy); }
-    .page { display: none; }
-    .page.active { display: block; animation: fadeIn 0.25s ease; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    .page-header { margin-bottom: 32px; }
-    .page-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: var(--cream); }
-    .page-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .main { flex:1; overflow-y:auto; padding:36px 40px; background:var(--navy); }
+    .page { display:none; }
+    .page.active { display:block; animation:fadeIn 0.25s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+    .page-header { margin-bottom:32px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:600; color:var(--cream); }
+    .page-sub { font-size:14px; color:var(--muted); margin-top:4px; }
 
     /* ══ STAT CARDS ══ */
-    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
-    .stat-card { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-    .stat-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .stat-val   { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--gold2); }
-    .stat-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+    .stat-card { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+    .stat-label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+    .stat-val   { font-family:'Playfair Display',serif; font-size:26px; color:var(--gold2); }
+    .stat-sub   { font-size:12px; color:var(--muted); margin-top:4px; }
 
     /* ══ CARD ══ */
-    .card { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
-    .card-title { font-size: 14px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .card { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px; }
+    .card-title { font-size:14px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
 
     /* ══ FORM ══ */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-grid .full { grid-column: 1 / -1; }
-    .field { display: flex; flex-direction: column; gap: 7px; }
-    .field label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-    .field input, .field select {
-      background: var(--navy3); border: 1px solid var(--border); color: var(--cream);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 11px 14px;
-      border-radius: var(--radius); outline: none; transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
-    }
-    .field select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
-    }
-    .field select option { background: var(--navy2); }
-    .field input::placeholder { color: rgba(138,155,176,0.45); }
-    .field input:focus, .field select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
-
-    /* Custom category input that slides in */
-    .custom-cat-wrap { display: none; margin-top: 8px; }
-    .custom-cat-wrap.show { display: block; }
-    .custom-cat-hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
-
-    .ml-badge {
-      display: inline-block; font-size: 10px; padding: 2px 8px;
-      background: rgba(201,168,76,0.12); color: var(--gold);
-      border: 1px solid var(--border2); border-radius: 20px; margin-left: 6px; letter-spacing: 0.06em;
-    }
-
-    /* Edit mode banner */
-    .edit-banner {
-      display: none; background: rgba(201,168,76,0.08); border: 1px solid var(--border2);
-      border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px;
-      font-size: 13px; color: var(--gold2); align-items: center; gap: 10px;
-    }
-    .edit-banner.show { display: flex; }
-    .edit-banner-close {
-      margin-left: auto; background: none; border: none; color: var(--muted);
-      cursor: pointer; font-size: 16px; line-height: 1; transition: color 0.2s;
-    }
-    .edit-banner-close:hover { color: var(--cream); }
-
-    .btn-primary {
-      padding: 12px 28px; background: var(--gold); color: var(--navy);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-      border: none; border-radius: var(--radius); cursor: pointer;
-      transition: background 0.2s, transform 0.1s; letter-spacing: 0.04em;
-    }
-    .btn-primary:hover { background: var(--gold2); }
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-ghost {
-      padding: 11px 20px; background: transparent; color: var(--muted);
-      font-family: 'DM Sans', sans-serif; font-size: 14px;
-      border: 1px solid var(--border); border-radius: var(--radius);
-      cursor: pointer; transition: color 0.2s, border-color 0.2s;
-    }
-    .btn-ghost:hover { color: var(--cream); border-color: var(--border2); }
-    .form-actions { display: flex; gap: 12px; margin-top: 20px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-grid .full { grid-column:1/-1; }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    .field label { font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+    .field input,.field select { background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:11px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s,box-shadow 0.2s; appearance:none; }
+    .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; }
+    .field select option { background:var(--navy2); }
+    .field input::placeholder { color:rgba(138,155,176,0.45); }
+    .field input:focus,.field select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.08); }
+    .custom-cat-wrap { display:none; margin-top:8px; }
+    .custom-cat-wrap.show { display:block; }
+    .custom-cat-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+    .ml-badge { display:inline-block; font-size:10px; padding:2px 8px; background:rgba(201,168,76,0.12); color:var(--gold); border:1px solid var(--border2); border-radius:20px; margin-left:6px; letter-spacing:0.06em; }
+    .edit-banner { display:none; background:rgba(201,168,76,0.08); border:1px solid var(--border2); border-radius:var(--radius); padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--gold2); align-items:center; gap:10px; }
+    .edit-banner.show { display:flex; }
+    .edit-banner-close { margin-left:auto; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; transition:color 0.2s; }
+    .edit-banner-close:hover { color:var(--cream); }
+    .btn-primary { padding:12px 28px; background:var(--gold); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; border:none; border-radius:var(--radius); cursor:pointer; transition:background 0.2s,transform 0.1s; letter-spacing:0.04em; }
+    .btn-primary:hover { background:var(--gold2); }
+    .btn-primary:active { transform:scale(0.98); }
+    .btn-ghost { padding:11px 20px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:14px; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:color 0.2s,border-color 0.2s; }
+    .btn-ghost:hover { color:var(--cream); border-color:var(--border2); }
+    .btn-danger { padding:11px 24px; background:transparent; color:var(--danger); font-family:'DM Sans',sans-serif; font-size:14px; border:1px solid rgba(224,85,85,0.4); border-radius:var(--radius); cursor:pointer; transition:background 0.2s; }
+    .btn-danger:hover { background:rgba(224,85,85,0.1); }
+    .form-actions { display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
 
     /* ══ TABLE ══ */
-    .table-controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
-    .search-box {
-      flex: 1; background: var(--navy3); border: 1px solid var(--border);
-      color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px;
-      padding: 10px 14px; border-radius: var(--radius); outline: none; transition: border-color 0.2s;
-    }
-    .search-box:focus { border-color: var(--gold); }
-    .search-box::placeholder { color: rgba(138,155,176,0.45); }
-    .filter-select {
-      background: var(--navy3); border: 1px solid var(--border); color: var(--cream);
-      font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 32px 10px 12px;
-      border-radius: var(--radius); outline: none; appearance: none; cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 10px center;
-    }
-    .filter-select option { background: var(--navy2); }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    thead tr { border-bottom: 1px solid var(--border2); }
-    th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-    td { padding: 13px 14px; border-bottom: 1px solid rgba(201,168,76,0.06); color: var(--cream); vertical-align: middle; }
-    tbody tr { transition: background 0.15s; }
-    tbody tr:hover { background: rgba(201,168,76,0.04); }
-    .amount-cell { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--gold2); }
-    .cat-pill { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-    .action-btn {
-      background: none; border: none; cursor: pointer; font-size: 14px;
-      padding: 4px 7px; border-radius: 4px; transition: color 0.2s, background 0.2s;
-    }
-    .edit-btn  { color: var(--muted); }
-    .edit-btn:hover  { color: var(--gold2); background: rgba(201,168,76,0.1); }
-    .del-btn   { color: var(--muted); }
-    .del-btn:hover   { color: var(--danger); background: rgba(224,85,85,0.1); }
-    .action-cell { display: flex; gap: 4px; }
-    .empty-state { text-align: center; padding: 48px 0; color: var(--muted); font-size: 14px; }
-    .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+    .table-controls { display:flex; gap:12px; margin-bottom:16px; align-items:center; }
+    .search-box { flex:1; background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:10px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s; }
+    .search-box:focus { border-color:var(--gold); }
+    .search-box::placeholder { color:rgba(138,155,176,0.45); }
+    .filter-select { background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:13px; padding:10px 32px 10px 12px; border-radius:var(--radius); outline:none; appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+    .filter-select option { background:var(--navy2); }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    thead tr { border-bottom:1px solid var(--border2); }
+    th { text-align:left; padding:10px 14px; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+    td { padding:13px 14px; border-bottom:1px solid rgba(201,168,76,0.06); color:var(--cream); vertical-align:middle; }
+    tbody tr { transition:background 0.15s; }
+    tbody tr:hover { background:rgba(201,168,76,0.04); }
+    .amount-cell { font-family:'Playfair Display',serif; font-size:15px; color:var(--gold2); }
+    .cat-pill { display:inline-block; font-size:11px; padding:3px 10px; border-radius:20px; font-weight:500; }
+    .action-btn { background:none; border:none; cursor:pointer; font-size:14px; padding:4px 7px; border-radius:4px; transition:color 0.2s,background 0.2s; color:var(--muted); }
+    .action-btn:hover.edit-btn { color:var(--gold2); background:rgba(201,168,76,0.1); }
+    .action-btn:hover.del-btn  { color:var(--danger); background:rgba(224,85,85,0.1); }
+    .action-cell { display:flex; gap:4px; }
+    .empty-state { text-align:center; padding:48px 0; color:var(--muted); font-size:14px; }
+    .empty-state .empty-icon { font-size:36px; margin-bottom:12px; }
 
     /* ══ CHARTS ══ */
-    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .chart-box { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
-    .chart-title { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
-    canvas { max-height: 260px; }
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .chart-box { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:24px; }
+    .chart-title { font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
+    canvas { max-height:260px; }
 
     /* ══ CSV ══ */
-    .drop-zone {
-      border: 2px dashed var(--border2); border-radius: var(--radius); padding: 48px;
-      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 20px;
-    }
-    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--gold); background: rgba(201,168,76,0.04); }
-    .drop-icon { font-size: 36px; margin-bottom: 12px; }
-    .drop-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
-    .drop-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    #csv-file-input { display: none; }
-    .preview-table { overflow-x: auto; margin-top: 16px; }
-    .import-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .drop-zone { border:2px dashed var(--border2); border-radius:var(--radius); padding:48px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; margin-bottom:20px; }
+    .drop-zone:hover,.drop-zone.drag-over { border-color:var(--gold); background:rgba(201,168,76,0.04); }
+    .drop-icon { font-size:36px; margin-bottom:12px; }
+    .drop-title { font-size:15px; font-weight:500; margin-bottom:6px; }
+    .drop-sub { font-size:13px; color:var(--muted); margin-bottom:16px; }
+    #csv-file-input,#json-import-input { display:none; }
+    .preview-table { overflow-x:auto; margin-top:16px; }
+    .import-actions { display:flex; gap:12px; margin-top:16px; }
 
-    .toast {
-      position: fixed; bottom: 28px; right: 28px;
-      background: var(--navy2); border: 1px solid var(--border2);
-      color: var(--cream); padding: 14px 20px; border-radius: var(--radius);
-      font-size: 14px; opacity: 0; transform: translateY(10px);
-      transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 999;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .toast.gold  { border-left: 3px solid var(--gold); }
-    .toast.green { border-left: 3px solid var(--success); }
-    .toast.red   { border-left: 3px solid var(--danger); }
+    /* ══ BACKUP ══ */
+    .export-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px; }
+    .export-card { background:var(--navy3); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+    .export-card-title { font-size:13px; font-weight:500; color:var(--cream); margin-bottom:6px; }
+    .export-card-sub { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
+    .danger-zone { background:rgba(224,85,85,0.06); border:1px solid rgba(224,85,85,0.2); border-radius:var(--radius); padding:20px; }
+    .danger-title { font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--danger); margin-bottom:8px; }
+    .danger-sub { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
+    .enc-badge { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--success); background:rgba(92,184,92,0.1); border:1px solid rgba(92,184,92,0.2); border-radius:20px; padding:3px 10px; margin-bottom:20px; }
+    .info-msg { font-size:13px; padding:12px 14px; border-radius:var(--radius); margin-top:12px; display:none; }
+    .info-msg.show { display:block; }
+    .info-msg.success { background:rgba(92,184,92,0.1); border:1px solid rgba(92,184,92,0.2); color:var(--success); }
+    .info-msg.error   { background:rgba(224,85,85,0.1); border:1px solid rgba(224,85,85,0.2); color:#f08080; }
+    .info-msg.info    { background:rgba(201,168,76,0.08); border:1px solid var(--border2); color:var(--muted); }
 
-    .main::-webkit-scrollbar { width: 6px; }
-    .main::-webkit-scrollbar-track { background: transparent; }
-    .main::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 3px; }
+    /* ══ TOAST ══ */
+    .toast { position:fixed; bottom:28px; right:28px; background:var(--navy2); border:1px solid var(--border2); color:var(--cream); padding:14px 20px; border-radius:var(--radius); font-size:14px; opacity:0; transform:translateY(10px); transition:opacity 0.3s,transform 0.3s; pointer-events:none; z-index:999; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast.gold  { border-left:3px solid var(--gold); }
+    .toast.green { border-left:3px solid var(--success); }
+    .toast.red   { border-left:3px solid var(--danger); }
 
-    @media (max-width: 900px) {
-      .stat-row { grid-template-columns: 1fr 1fr; }
-      .chart-grid { grid-template-columns: 1fr; }
-      .form-grid  { grid-template-columns: 1fr; }
+    .main::-webkit-scrollbar { width:6px; }
+    .main::-webkit-scrollbar-track { background:transparent; }
+    .main::-webkit-scrollbar-thumb { background:rgba(201,168,76,0.2); border-radius:3px; }
+
+    @media (max-width:900px) {
+      .stat-row { grid-template-columns:1fr 1fr; }
+      .chart-grid,.export-grid { grid-template-columns:1fr; }
+      .form-grid { grid-template-columns:1fr; }
     }
   </style>
 </head>
 <body>
+
+<!-- ══ PASSWORD MODAL (used for import verification) ══ -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Confirm your password</div>
+    <div class="modal-sub" id="modal-sub">Enter your current password to verify this backup belongs to your account.</div>
+    <div class="modal-field">
+      <label>Password</label>
+      <input type="password" id="modal-pw" placeholder="Your current password"/>
+    </div>
+    <div class="modal-err" id="modal-err"></div>
+    <div class="modal-actions">
+      <button class="modal-btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn-primary" onclick="confirmImport()">Import →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ IDLE BANNER ══ -->
+<div class="idle-banner" id="idle-banner">
+  ⚠ You've been inactive for 9 minutes. You'll be signed out in 60 seconds.
+  <button class="idle-stay" onclick="resetIdleTimer()">Stay signed in</button>
+</div>
+
 <div class="app">
 
-  <!-- ══ SIDEBAR ══ -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-brand">
       <div class="sb-brand-icon">₹</div>
       <div class="sb-brand-name">Expense<span>IQ</span></div>
     </div>
     <nav>
-      <div class="nav-item active" onclick="navigate('overview')" id="nav-overview"><span class="nav-icon">◈</span> Overview</div>
-      <div class="nav-item" onclick="navigate('add')" id="nav-add"><span class="nav-icon">＋</span> Add Expense</div>
-      <div class="nav-item" onclick="navigate('expenses')" id="nav-expenses"><span class="nav-icon">≡</span> All Expenses</div>
-      <div class="nav-item" onclick="navigate('charts')" id="nav-charts"><span class="nav-icon">◎</span> Analytics</div>
-      <div class="nav-item" onclick="navigate('upload')" id="nav-upload"><span class="nav-icon">↑</span> Upload CSV</div>
+      <div class="nav-item active" onclick="navigate('overview')"  id="nav-overview"><span class="nav-icon">◈</span> Overview</div>
+      <div class="nav-item"        onclick="navigate('add')"       id="nav-add"><span class="nav-icon">＋</span> Add Expense</div>
+      <div class="nav-item"        onclick="navigate('expenses')"  id="nav-expenses"><span class="nav-icon">≡</span> All Expenses</div>
+      <div class="nav-item"        onclick="navigate('charts')"    id="nav-charts"><span class="nav-icon">◎</span> Analytics</div>
+      <div class="nav-item"        onclick="navigate('upload')"    id="nav-upload"><span class="nav-icon">↑</span> Upload CSV</div>
+      <div class="nav-item"        onclick="navigate('backup')"    id="nav-backup"><span class="nav-icon">⬡</span> Backup & Restore</div>
     </nav>
     <div class="sb-bottom">
       <div class="user-chip">
         <div class="user-avatar" id="user-avatar">U</div>
         <div>
           <div class="user-name" id="user-name-display">User</div>
-          <div class="user-sub">Personal account</div>
+          <div class="user-sub">Encrypted account</div>
         </div>
       </div>
       <button class="btn-logout" onclick="logout()">Sign out</button>
     </div>
   </aside>
 
-  <!-- ══ MAIN ══ -->
   <main class="main">
 
-    <!-- ── OVERVIEW ── -->
+    <!-- ══ OVERVIEW ══ -->
     <div class="page active" id="page-overview">
       <div class="page-header">
         <div class="page-title">Overview</div>
         <div class="page-sub" id="overview-date"></div>
       </div>
+      <div class="enc-badge">🔒 All data encrypted with AES-256-GCM</div>
       <div class="stat-row">
         <div class="stat-card"><div class="stat-label">Total Spent</div><div class="stat-val" id="stat-total">₹0</div><div class="stat-sub">All time</div></div>
         <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="stat-month">₹0</div><div class="stat-sub" id="stat-month-label">—</div></div>
@@ -275,125 +247,87 @@
       </div>
       <div class="card">
         <div class="card-title">Recent Transactions</div>
-        <table id="recent-table">
-          <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>
-          <tbody id="recent-tbody"></tbody>
-        </table>
-        <div class="empty-state" id="recent-empty" style="display:none">
-          <div class="empty-icon">₹</div>No expenses yet. Add your first one!
-        </div>
+        <table id="recent-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead><tbody id="recent-tbody"></tbody></table>
+        <div class="empty-state" id="recent-empty" style="display:none"><div class="empty-icon">₹</div>No expenses yet. Add your first one!</div>
       </div>
     </div>
 
-    <!-- ── ADD / EDIT EXPENSE ── -->
+    <!-- ══ ADD / EDIT ══ -->
     <div class="page" id="page-add">
       <div class="page-header">
         <div class="page-title" id="add-page-title">Add Expense</div>
-        <div class="page-sub" id="add-page-sub">Fill in the details below. Category is auto-suggested by ML.</div>
+        <div class="page-sub"   id="add-page-sub">Fill in the details. Category is auto-suggested by ML — or choose manually.</div>
       </div>
-
-      <!-- Edit mode banner -->
       <div class="edit-banner" id="edit-banner">
-        ✎ You are editing an existing transaction. Save to apply changes.
-        <button class="edit-banner-close" onclick="cancelEdit()" title="Cancel edit">✕</button>
+        ✎ Editing an existing transaction. Save to apply changes.
+        <button class="edit-banner-close" onclick="cancelEdit()">✕</button>
       </div>
-
       <div class="card">
         <div class="card-title" id="form-card-title">Expense Details</div>
         <div class="form-grid">
-          <div class="field">
-            <label>Date</label>
-            <input type="date" id="e-date"/>
-          </div>
-          <div class="field">
-            <label>Amount (₹)</label>
-            <input type="number" id="e-amount" placeholder="0.00" min="0" step="0.01"/>
-          </div>
-          <div class="field full">
-            <label>Description</label>
-            <input type="text" id="e-desc" placeholder="e.g. Amazon order, Swiggy dinner…" oninput="autoCategory()"/>
-          </div>
+          <div class="field"><label>Date</label><input type="date" id="e-date"/></div>
+          <div class="field"><label>Amount (₹)</label><input type="number" id="e-amount" placeholder="0.00" min="0" step="0.01"/></div>
+          <div class="field full"><label>Description</label><input type="text" id="e-desc" placeholder="e.g. Chef's table, Amazon order…" oninput="onDescInput()"/></div>
           <div class="field">
             <label>Category <span class="ml-badge">ML Auto</span></label>
             <select id="e-cat" onchange="onCatChange()">
               <option value="">— Select or auto-detect —</option>
-              <option>Food & Dining</option>
+              <option>Food &amp; Dining</option>
               <option>Shopping</option>
               <option>Transport</option>
               <option>Entertainment</option>
-              <option>Health & Medical</option>
-              <option>Utilities & Bills</option>
+              <option>Health &amp; Medical</option>
+              <option>Utilities &amp; Bills</option>
               <option>Education</option>
               <option>Travel</option>
               <option>Groceries</option>
               <option>Other</option>
             </select>
-            <!-- Shown only when "Other" is selected -->
+            <!-- shown when Other is selected -->
             <div class="custom-cat-wrap" id="custom-cat-wrap">
-              <input type="text" id="e-custom-cat" placeholder="Name this category e.g. Rent, Gym, Pet care…" oninput="onCustomCatInput()"/>
-              <div class="custom-cat-hint">This name will be saved and recognized automatically next time.</div>
+              <input type="text" id="e-custom-cat" placeholder="Name this category e.g. Rent, Gym…"/>
+              <div class="custom-cat-hint">This name will be saved and recognised automatically next time.</div>
             </div>
           </div>
           <div class="field">
             <label>Payment Method</label>
             <select id="e-method">
-              <option>UPI</option>
-              <option>Credit Card</option>
-              <option>Debit Card</option>
-              <option>Cash</option>
-              <option>Net Banking</option>
+              <option>UPI</option><option>Credit Card</option><option>Debit Card</option>
+              <option>Cash</option><option>Net Banking</option>
             </select>
           </div>
-          <div class="field full">
-            <label>Notes (optional)</label>
-            <input type="text" id="e-notes" placeholder="Any extra details…"/>
-          </div>
+          <div class="field full"><label>Notes (optional)</label><input type="text" id="e-notes" placeholder="Any extra details…"/></div>
         </div>
         <div class="form-actions">
-          <button class="btn-primary" id="save-btn" onclick="saveExpense()">Save Expense</button>
-          <button class="btn-ghost" id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel Edit</button>
-          <button class="btn-ghost" id="clear-btn" onclick="clearForm()">Clear</button>
+          <button class="btn-primary" id="save-btn"   onclick="saveExpense()">Save Expense</button>
+          <button class="btn-ghost"   id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel Edit</button>
+          <button class="btn-ghost"   id="clear-btn"  onclick="clearForm()">Clear</button>
         </div>
       </div>
     </div>
 
-    <!-- ── ALL EXPENSES ── -->
+    <!-- ══ ALL EXPENSES ══ -->
     <div class="page" id="page-expenses">
-      <div class="page-header">
-        <div class="page-title">All Expenses</div>
-        <div class="page-sub">Browse, search, filter, edit or delete your transactions</div>
-      </div>
+      <div class="page-header"><div class="page-title">All Expenses</div><div class="page-sub">Search, filter, edit or delete your transactions</div></div>
       <div class="card">
         <div class="table-controls">
           <input class="search-box" placeholder="Search by description…" id="search-input" oninput="renderExpenses()"/>
           <select class="filter-select" id="filter-cat" onchange="renderExpenses()">
             <option value="">All Categories</option>
-            <option>Food & Dining</option><option>Shopping</option><option>Transport</option>
-            <option>Entertainment</option><option>Health & Medical</option><option>Utilities & Bills</option>
+            <option>Food &amp; Dining</option><option>Shopping</option><option>Transport</option>
+            <option>Entertainment</option><option>Health &amp; Medical</option><option>Utilities &amp; Bills</option>
             <option>Education</option><option>Travel</option><option>Groceries</option><option>Other</option>
           </select>
-          <select class="filter-select" id="filter-month" onchange="renderExpenses()">
-            <option value="">All Months</option>
-          </select>
+          <select class="filter-select" id="filter-month" onchange="renderExpenses()"><option value="">All Months</option></select>
         </div>
-        <table>
-          <thead>
-            <tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th>Amount</th><th></th></tr>
-          </thead>
-          <tbody id="expenses-tbody"></tbody>
-        </table>
-        <div class="empty-state" id="expenses-empty" style="display:none">
-          <div class="empty-icon">🔍</div>No matching expenses found.
-        </div>
+        <table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th>Amount</th><th></th></tr></thead><tbody id="expenses-tbody"></tbody></table>
+        <div class="empty-state" id="expenses-empty" style="display:none"><div class="empty-icon">🔍</div>No matching expenses found.</div>
       </div>
     </div>
 
-    <!-- ── ANALYTICS ── -->
+    <!-- ══ ANALYTICS ══ -->
     <div class="page" id="page-charts">
-      <div class="page-header">
-        <div class="page-title">Analytics</div>
-        <div class="page-sub">Visual breakdown of your spending patterns</div>
-      </div>
+      <div class="page-header"><div class="page-title">Analytics</div><div class="page-sub">Visual breakdown of your spending patterns</div></div>
       <div class="chart-grid">
         <div class="chart-box"><div class="chart-title">Spending by Category</div><canvas id="chart-cat"></canvas></div>
         <div class="chart-box"><div class="chart-title">Monthly Trend</div><canvas id="chart-monthly"></canvas></div>
@@ -402,22 +336,13 @@
       </div>
     </div>
 
-    <!-- ── UPLOAD CSV ── -->
+    <!-- ══ UPLOAD CSV ══ -->
     <div class="page" id="page-upload">
-      <div class="page-header">
-        <div class="page-title">Upload CSV</div>
-        <div class="page-sub">Import expenses from a bank statement or CSV file</div>
-      </div>
+      <div class="page-header"><div class="page-title">Upload CSV</div><div class="page-sub">Import expenses from a bank statement or CSV file</div></div>
       <div class="card">
-        <div class="card-title">File Format Guide</div>
-        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;">
-          Your CSV should have columns: <strong style="color:var(--cream)">Date, Description, Amount, Category (optional)</strong>. First row can be a header.
-        </p>
-        <code style="font-size:12px;color:var(--gold);background:var(--navy3);padding:10px 14px;border-radius:6px;display:block;">
-          Date,Description,Amount,Category<br>
-          2024-01-15,Swiggy order,320,Food &amp; Dining<br>
-          2024-01-16,Amazon purchase,1250,Shopping
-        </code>
+        <div class="card-title">File Format</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;">Columns: <strong style="color:var(--cream)">Date, Description, Amount, Category (optional)</strong>. First row can be a header.</p>
+        <code style="font-size:12px;color:var(--gold);background:var(--navy3);padding:10px 14px;border-radius:6px;display:block;">Date,Description,Amount,Category<br>2024-01-15,Swiggy order,320,Food &amp; Dining</code>
       </div>
       <div class="card">
         <div class="card-title">Upload File</div>
@@ -434,36 +359,129 @@
         <input type="file" id="csv-file-input" accept=".csv,.txt" onchange="handleFileSelect(event)"/>
         <div id="csv-preview" style="display:none">
           <div class="card-title" style="margin-top:4px">Preview <span id="csv-row-count" style="color:var(--muted);font-size:12px"></span></div>
-          <div class="preview-table">
-            <table>
-              <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead>
-              <tbody id="csv-preview-tbody"></tbody>
-            </table>
-          </div>
-          <div class="import-actions">
-            <button class="btn-primary" onclick="importCSV()">Import All →</button>
-            <button class="btn-ghost" onclick="cancelCSV()">Cancel</button>
-          </div>
+          <div class="preview-table"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead><tbody id="csv-preview-tbody"></tbody></table></div>
+          <div class="import-actions"><button class="btn-primary" onclick="importCSV()">Import All →</button><button class="btn-ghost" onclick="cancelCSV()">Cancel</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BACKUP & RESTORE ══ -->
+    <div class="page" id="page-backup">
+      <div class="page-header"><div class="page-title">Backup &amp; Restore</div><div class="page-sub">Export your data or restore from a previous backup</div></div>
+
+      <div class="card">
+        <div class="card-title">How it works</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;">Your exported JSON file is encrypted with AES-256-GCM using your password. Even if someone gets the file, it is completely unreadable without the correct password. To restore on another device, import the file and enter the same password used when the data was created.</p>
+      </div>
+
+      <div class="export-grid">
+        <div class="export-card">
+          <div class="export-card-title">Export Data</div>
+          <div class="export-card-sub">Download all your expenses as an encrypted JSON file. Safe to store anywhere — unreadable without your password.</div>
+          <button class="btn-primary" style="width:100%" onclick="exportJSON()">Download Backup →</button>
+        </div>
+        <div class="export-card">
+          <div class="export-card-title">Import Data</div>
+          <div class="export-card-sub">Restore from a backup file. You will be asked to enter your password before anything is imported. Works with both old and new backup formats.</div>
+          <button class="btn-primary" style="width:100%;background:var(--navy3);color:var(--cream);border:1px solid var(--border2)" onclick="document.getElementById('json-import-input').click()">Choose Backup File →</button>
+          <input type="file" id="json-import-input" accept=".json" onchange="startImport(event)"/>
+          <div class="info-msg" id="import-msg"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:8px">
+        <div class="card-title">Danger Zone</div>
+        <div class="danger-zone">
+          <div class="danger-title">Delete all expense data</div>
+          <div class="danger-sub">Permanently deletes all your transactions from this device. Your account (username, password, recovery codes) is kept intact. This action cannot be undone.</div>
+          <button class="btn-danger" onclick="deleteAllData()">Delete All Expenses</button>
         </div>
       </div>
     </div>
 
   </main>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══ AUTH GUARD ══ */
+/* ══════════════════════════════════════════════════
+   AUTH GUARD
+══════════════════════════════════════════════════ */
 const currentUser = JSON.parse(sessionStorage.getItem('eq_current') || 'null');
-if (!currentUser) window.location.href = 'login.html';
+const sessionKey  = sessionStorage.getItem('eq_key');
+if (!currentUser || !sessionKey) { window.location.href = 'login.html'; }
 
-document.getElementById('user-name-display').textContent = currentUser ? currentUser.name : '';
-document.getElementById('user-avatar').textContent       = currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U';
+document.getElementById('user-name-display').textContent = currentUser.name;
+document.getElementById('user-avatar').textContent       = currentUser.name.charAt(0).toUpperCase();
 document.getElementById('overview-date').textContent     = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-function logout() { sessionStorage.removeItem('eq_current'); window.location.href = 'login.html'; }
+function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
 
-/* ══ INDEXEDDB ══ */
+/* ══════════════════════════════════════════════════
+   IDLE TIMER — auto logout after 10 min inactivity
+══════════════════════════════════════════════════ */
+let idleWarnTimer, idleLogoutTimer;
+function resetIdleTimer() {
+  document.getElementById('idle-banner').classList.remove('show');
+  clearTimeout(idleWarnTimer);
+  clearTimeout(idleLogoutTimer);
+  idleWarnTimer   = setTimeout(() => document.getElementById('idle-banner').classList.add('show'), 9 * 60 * 1000);
+  idleLogoutTimer = setTimeout(() => { sessionStorage.clear(); window.location.href = 'login.html'; }, 10 * 60 * 1000);
+}
+['click','keydown','mousemove','scroll','touchstart'].forEach(e => document.addEventListener(e, resetIdleTimer, { passive:true }));
+resetIdleTimer();
+
+/* ══════════════════════════════════════════════════
+   CRYPTO HELPERS
+══════════════════════════════════════════════════ */
+function bytesToHex(b) { return Array.from(b).map(x => x.toString(16).padStart(2,'0')).join(''); }
+function hexToBytes(h) { return new Uint8Array(h.match(/.{1,2}/g).map(b => parseInt(b, 16))); }
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function deriveKey(password, saltHex) {
+  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt:hexToBytes(saltHex), iterations:100000, hash:'SHA-256' },
+    mat, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+  );
+}
+
+async function encryptObj(plainObj) {
+  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
+  const key    = await deriveKey(sessionKey, stored.salt);
+  const iv     = crypto.getRandomValues(new Uint8Array(12));
+  const enc    = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(plainObj)));
+  return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
+}
+
+async function decryptBlob(blob) {
+  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
+  const key    = await deriveKey(sessionKey, stored.salt);
+  const dec    = await crypto.subtle.decrypt({ name:'AES-GCM', iv: hexToBytes(blob.iv) }, key, hexToBytes(blob.ciphertext));
+  return JSON.parse(new TextDecoder().decode(dec));
+}
+
+async function encryptWithPassword(plainObj, password, saltHex) {
+  const key = await deriveKey(password, saltHex);
+  const iv  = crypto.getRandomValues(new Uint8Array(12));
+  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(plainObj)));
+  return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
+}
+
+async function decryptBlobWithPassword(blob, password, saltHex) {
+  const key = await deriveKey(password, saltHex);
+  const dec = await crypto.subtle.decrypt({ name:'AES-GCM', iv: hexToBytes(blob.iv) }, key, hexToBytes(blob.ciphertext));
+  return JSON.parse(new TextDecoder().decode(dec));
+}
+
+/* ══════════════════════════════════════════════════
+   INDEXEDDB
+══════════════════════════════════════════════════ */
 const DB_NAME = 'ExpenseIQ', DB_VER = 1, STORE = 'expenses';
 let db;
 
@@ -472,40 +490,73 @@ function initDB() {
     const req = indexedDB.open(DB_NAME + '_' + currentUser.username, DB_VER);
     req.onupgradeneeded = e => {
       const d = e.target.result;
-      if (!d.objectStoreNames.contains(STORE)) {
-        const s = d.createObjectStore(STORE, { keyPath:'id', autoIncrement:true });
-        s.createIndex('date',     'date',     { unique:false });
-        s.createIndex('category', 'category', { unique:false });
-      }
+      if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath:'id', autoIncrement:true });
     };
     req.onsuccess = e => { db = e.target.result; res(db); };
     req.onerror   = e => rej(e.target.error);
   });
 }
-function dbAdd(exp)    { return new Promise((res,rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).add(exp); r.onsuccess=()=>res(r.result); r.onerror=e=>rej(e.target.error); }); }
-function dbGetAll()    { return new Promise((res,rej) => { const r = db.transaction(STORE,'readonly').objectStore(STORE).getAll(); r.onsuccess=()=>res(r.result); r.onerror=e=>rej(e.target.error); }); }
-function dbDelete(id)  { return new Promise((res,rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).delete(id); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error); }); }
-function dbPut(exp)    { return new Promise((res,rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).put(exp); r.onsuccess=()=>res(r.result); r.onerror=e=>rej(e.target.error); }); }
 
-/* ══ CUSTOM CATEGORY STORAGE ══
-   Saves user-defined "Other" category names and the keywords they typed.
-   Structure: { "Rent": ["rent","landlord","pg"], "Gym": ["gym","fitness","cult"] }
-══ */
+async function dbAdd(plainObj) {
+  const blob = await encryptObj(plainObj);
+  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).add(blob); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
+}
+
+async function dbGetAll() {
+  const blobs = await new Promise((res, rej) => { const r = db.transaction(STORE,'readonly').objectStore(STORE).getAll(); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
+  const out = [];
+  for (const blob of blobs) {
+    try { out.push({ ...await decryptBlob(blob), id: blob.id }); } catch(e) { console.warn('Skipping unreadable record', blob.id); }
+  }
+  return out;
+}
+
+async function dbPut(plainObj) {
+  const { id, ...rest } = plainObj;
+  const blob = await encryptObj(rest);
+  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).put({ ...blob, id }); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
+}
+
+function dbDelete(id) {
+  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).delete(id); r.onsuccess = () => res(); r.onerror = e => rej(e.target.error); });
+}
+
+function dbClear() {
+  return new Promise((res, rej) => { const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).clear().onsuccess = res; tx.onerror = rej; });
+}
+
+/* ══════════════════════════════════════════════════
+   CUSTOM CATEGORY STORAGE
+   Saves user-defined category names + their keywords
+   so ML can recognise them in future descriptions.
+   Key: eq_custom_cats_username
+   Value: { "Rent": ["rent","landlord"], "Gym": ["gym","cult"] }
+══════════════════════════════════════════════════ */
 function getCustomCats() {
   return JSON.parse(localStorage.getItem('eq_custom_cats_' + currentUser.username) || '{}');
 }
-function saveCustomCat(name, keyword) {
-  if (!name || !keyword) return;
+
+function saveCustomCat(catName, keyword) {
+  if (!catName || !keyword || catName === 'Other') return;
   const cats = getCustomCats();
-  if (!cats[name]) cats[name] = [];
+  if (!cats[catName]) cats[catName] = [];
   const kw = keyword.toLowerCase().trim();
-  if (!cats[name].includes(kw)) cats[name].push(kw);
+  if (kw.length > 2 && !cats[catName].includes(kw)) cats[catName].push(kw);
   localStorage.setItem('eq_custom_cats_' + currentUser.username, JSON.stringify(cats));
 }
 
-/* ══ ML AUTO-CATEGORIZATION ══ */
+/* ══════════════════════════════════════════════════
+   ML AUTO-CATEGORIZATION
+
+   FIX: userSelectedCategory tracks when the user has
+   manually chosen a category. autoCategory() only runs
+   when the user is still typing and hasn't manually
+   picked a category yet. If they manually select
+   Food & Dining for "Chef's table", we remember that
+   binding and never auto-override it.
+══════════════════════════════════════════════════ */
 const ML_RULES = [
-  { cat:'Food & Dining',     keys:['swiggy','zomato','food','restaurant','cafe','pizza','burger','biryani','dine','eat','lunch','dinner','breakfast','hotel','kitchen'] },
+  { cat:'Food & Dining',     keys:['swiggy','zomato','food','restaurant','cafe','pizza','burger','biryani','dine','eat','lunch','dinner','breakfast','kitchen','chef','table','cafe','dhaba','mess','canteen'] },
   { cat:'Shopping',          keys:['amazon','flipkart','myntra','shop','purchase','order','buy','store','mall','market','meesho','ajio','nykaa'] },
   { cat:'Transport',         keys:['uber','ola','rapido','auto','cab','taxi','bus','train','metro','fuel','petrol','diesel','parking','toll','irctc','flight'] },
   { cat:'Entertainment',     keys:['netflix','hotstar','spotify','prime','youtube','movie','cinema','pvr','inox','game','play','concert','ticket'] },
@@ -513,51 +564,59 @@ const ML_RULES = [
   { cat:'Utilities & Bills', keys:['electricity','water','gas','internet','wifi','broadband','airtel','jio','bsnl','vodafone','bill','recharge','topup','dth'] },
   { cat:'Education',         keys:['school','college','university','tuition','course','udemy','coursera','book','stationery','fees'] },
   { cat:'Travel',            keys:['hotel','resort','booking','makemytrip','goibibo','airbnb','trip','holiday','vacation','oyo'] },
-  { cat:'Groceries',         keys:['bigbasket','grofer','blinkit','zepto','dmart','grocery','vegetable','fruit','milk','eggs','supermarket'] },
+  { cat:'Groceries',         keys:['bigbasket','blinkit','zepto','dmart','grocery','vegetable','fruit','milk','eggs','supermarket'] },
 ];
 
-function mlCategorize(description) {
-  const lower = description.toLowerCase();
-  // Check built-in rules first
+// Tracks whether user has manually changed the category dropdown
+let userSelectedCategory = false;
+
+function mlCategorize(desc) {
+  const lower = desc.toLowerCase();
+  // Check built-in rules
   for (const rule of ML_RULES) {
     if (rule.keys.some(k => lower.includes(k))) return rule.cat;
   }
   // Check user-defined custom categories
-  const customCats = getCustomCats();
-  for (const [name, keywords] of Object.entries(customCats)) {
+  for (const [name, keywords] of Object.entries(getCustomCats())) {
     if (keywords.some(k => lower.includes(k))) return name;
   }
-  return 'Other';
+  return '';
 }
 
-function autoCategory() {
+// Called when user types in description field
+function onDescInput() {
+  // Do not auto-suggest if user has manually picked a category this session
+  if (userSelectedCategory) return;
+  // Do not auto-suggest if user is already typing a custom category name
+  if (document.getElementById('e-custom-cat').value.trim()) return;
   const desc = document.getElementById('e-desc').value;
   if (desc.length < 3) return;
   const cat = mlCategorize(desc);
-  // Only set if it's a built-in option; custom cats won't be in the select
+  if (!cat) return;
   const select = document.getElementById('e-cat');
-  const options = [...select.options].map(o => o.value);
-  if (options.includes(cat)) {
+  const opts   = [...select.options].map(o => o.value);
+  if (opts.includes(cat)) {
+    // Built-in category matched
     select.value = cat;
-    onCatChange();
+    document.getElementById('custom-cat-wrap').classList.remove('show');
   } else {
-    // It's a custom category — set to Other and prefill the custom input
-    select.value = 'Other';
-    onCatChange();
-    document.getElementById('e-custom-cat').value = cat;
+    // Learned custom category matched — show Other and prefill the name
+    // But only if the user has not already selected Other and typed their own name
+    if (select.value !== 'Other') {
+      select.value = 'Other';
+      document.getElementById('custom-cat-wrap').classList.add('show');
+      document.getElementById('e-custom-cat').value = cat;
+    }
   }
 }
 
-/* ══ CUSTOM CATEGORY UI ══ */
+// Called when user manually changes the category dropdown
 function onCatChange() {
+  // Mark that user has made a deliberate choice — stop auto-overriding
+  userSelectedCategory = true;
   const val = document.getElementById('e-cat').value;
-  const wrap = document.getElementById('custom-cat-wrap');
-  wrap.classList.toggle('show', val === 'Other');
+  document.getElementById('custom-cat-wrap').classList.toggle('show', val === 'Other');
   if (val !== 'Other') document.getElementById('e-custom-cat').value = '';
-}
-
-function onCustomCatInput() {
-  // Live preview: nothing needed, just save on form submit
 }
 
 function resolvedCategory() {
@@ -566,11 +625,13 @@ function resolvedCategory() {
     const custom = document.getElementById('e-custom-cat').value.trim();
     return custom || 'Other';
   }
-  return cat;
+  return cat || 'Other';
 }
 
-/* ══ NAVIGATION ══ */
-const PAGES = ['overview','add','expenses','charts','upload'];
+/* ══════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════ */
+const PAGES = ['overview','add','expenses','charts','upload','backup'];
 let chartsBuilt = false;
 
 function navigate(page) {
@@ -581,60 +642,61 @@ function navigate(page) {
   if (page === 'overview') refreshOverview();
   if (page === 'expenses') renderExpenses();
   if (page === 'charts')   renderCharts();
-  // If navigating away from add while editing, cancel edit
   if (page !== 'add' && editingId !== null) cancelEdit(false);
 }
 
-/* ══ EDIT STATE ══ */
+/* ══════════════════════════════════════════════════
+   EDIT STATE
+══════════════════════════════════════════════════ */
 let editingId = null;
 
 function startEdit(expense) {
   editingId = expense.id;
-  // Fill form
+  userSelectedCategory = false; // reset so ML works again on desc changes
   document.getElementById('e-date').value   = expense.date;
   document.getElementById('e-amount').value = expense.amount;
   document.getElementById('e-desc').value   = expense.description;
   document.getElementById('e-method').value = expense.method || 'UPI';
   document.getElementById('e-notes').value  = expense.notes || '';
 
-  // Handle category — check if it's a built-in or custom
   const select = document.getElementById('e-cat');
-  const builtins = [...select.options].map(o => o.value);
-  if (builtins.includes(expense.category)) {
+  const opts   = [...select.options].map(o => o.value);
+  if (opts.includes(expense.category)) {
     select.value = expense.category;
-    onCatChange();
+    document.getElementById('custom-cat-wrap').classList.remove('show');
   } else {
     select.value = 'Other';
-    onCatChange();
+    document.getElementById('custom-cat-wrap').classList.add('show');
     document.getElementById('e-custom-cat').value = expense.category;
   }
+  userSelectedCategory = true; // pre-filled = treat as manually selected
 
-  // Update UI to edit mode
   document.getElementById('add-page-title').textContent  = 'Edit Expense';
-  document.getElementById('add-page-sub').textContent    = 'Update the details below and save.';
+  document.getElementById('add-page-sub').textContent    = 'Update the details and save.';
   document.getElementById('form-card-title').textContent = 'Edit Details';
   document.getElementById('save-btn').textContent        = 'Update Expense';
-  document.getElementById('cancel-btn').style.display    = 'inline-block';
-  document.getElementById('clear-btn').style.display     = 'none';
+  document.getElementById('cancel-btn').style.display   = 'inline-block';
+  document.getElementById('clear-btn').style.display    = 'none';
   document.getElementById('edit-banner').classList.add('show');
-
   navigate('add');
 }
 
-function cancelEdit(doNavigate = true) {
+function cancelEdit(doNav = true) {
   editingId = null;
   clearForm();
   document.getElementById('add-page-title').textContent  = 'Add Expense';
-  document.getElementById('add-page-sub').textContent    = 'Fill in the details below. Category is auto-suggested by ML.';
+  document.getElementById('add-page-sub').textContent    = 'Fill in the details. Category is auto-suggested by ML — or choose manually.';
   document.getElementById('form-card-title').textContent = 'Expense Details';
   document.getElementById('save-btn').textContent        = 'Save Expense';
-  document.getElementById('cancel-btn').style.display    = 'none';
-  document.getElementById('clear-btn').style.display     = 'inline-block';
+  document.getElementById('cancel-btn').style.display   = 'none';
+  document.getElementById('clear-btn').style.display    = 'inline-block';
   document.getElementById('edit-banner').classList.remove('show');
-  if (doNavigate) navigate('expenses');
+  if (doNav) navigate('expenses');
 }
 
-/* ══ EXPENSE FORM ══ */
+/* ══════════════════════════════════════════════════
+   EXPENSE FORM
+══════════════════════════════════════════════════ */
 document.getElementById('e-date').value = new Date().toISOString().split('T')[0];
 
 function clearForm() {
@@ -643,26 +705,37 @@ function clearForm() {
   document.getElementById('e-method').value = 'UPI';
   document.getElementById('e-date').value   = new Date().toISOString().split('T')[0];
   document.getElementById('custom-cat-wrap').classList.remove('show');
+  userSelectedCategory = false; // reset flag when form is cleared
 }
 
 async function saveExpense() {
   const date   = document.getElementById('e-date').value;
   const amount = parseFloat(document.getElementById('e-amount').value);
   const desc   = document.getElementById('e-desc').value.trim();
-  const cat    = resolvedCategory() || mlCategorize(desc);
+  const cat    = resolvedCategory();
   const method = document.getElementById('e-method').value;
   const notes  = document.getElementById('e-notes').value.trim();
 
   if (!date || !amount || !desc) return showToast('Please fill in Date, Amount and Description.', 'red');
   if (amount <= 0)               return showToast('Amount must be greater than zero.', 'red');
 
-  // If category came from a custom "Other" name, save that keyword mapping
+  // If user chose a named custom category (Other + text), save keyword mappings
   if (document.getElementById('e-cat').value === 'Other') {
     const customName = document.getElementById('e-custom-cat').value.trim();
-    if (customName && desc) {
-      // Save each word from description as a keyword for this custom category
+    if (customName && customName !== 'Other') {
+      // Save each meaningful word from the description as a keyword for this custom category
+      desc.toLowerCase().split(/\s+/).forEach(word => saveCustomCat(customName, word));
+    }
+  } else if (cat && cat !== 'Other') {
+    // User manually selected a built-in category for this description
+    // Save the description words as keywords for that category in custom cats
+    // so ML matches it next time without auto-suggesting Other
+    // (only do this for non-obvious descriptions that wouldn't match built-in rules)
+    const autoResult = mlCategorize(desc);
+    if (!autoResult || autoResult !== cat) {
+      // Description wouldn't auto-match this category — save the mapping
       desc.toLowerCase().split(/\s+/).forEach(word => {
-        if (word.length > 2) saveCustomCat(customName, word);
+        if (word.length > 2) saveCustomCat(cat, word);
       });
     }
   }
@@ -670,13 +743,11 @@ async function saveExpense() {
   const expense = { date, amount, description: desc, category: cat, method, notes, addedAt: Date.now() };
 
   if (editingId !== null) {
-    // UPDATE existing
     expense.id = editingId;
     await dbPut(expense);
     showToast('Expense updated!', 'green');
     cancelEdit(true);
   } else {
-    // ADD new
     await dbAdd(expense);
     showToast('Expense saved!', 'green');
     clearForm();
@@ -684,24 +755,27 @@ async function saveExpense() {
   chartsBuilt = false;
 }
 
-/* ══ OVERVIEW ══ */
+/* ══════════════════════════════════════════════════
+   OVERVIEW
+══════════════════════════════════════════════════ */
 async function refreshOverview() {
   const all = await dbGetAll();
   const now = new Date();
-  const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const tm  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
   const total      = all.reduce((s,e) => s + e.amount, 0);
-  const monthTotal = all.filter(e => e.date.startsWith(thisMonth)).reduce((s,e) => s + e.amount, 0);
-  const catTotals  = {};
-  all.forEach(e => catTotals[e.category] = (catTotals[e.category]||0) + e.amount);
-  const topCat = Object.entries(catTotals).sort((a,b) => b[1]-a[1])[0];
+  const monthTotal = all.filter(e => e.date.startsWith(tm)).reduce((s,e) => s + e.amount, 0);
+  const catT = {};
+  all.forEach(e => catT[e.category] = (catT[e.category] || 0) + e.amount);
+  const top = Object.entries(catT).sort((a,b) => b[1]-a[1])[0];
 
   document.getElementById('stat-total').textContent      = fmt(total);
   document.getElementById('stat-month').textContent      = fmt(monthTotal);
-  document.getElementById('stat-month-label').textContent= now.toLocaleString('default',{month:'long'}) + ' ' + now.getFullYear();
+  document.getElementById('stat-month-label').textContent = now.toLocaleString('default',{month:'long'}) + ' ' + now.getFullYear();
   document.getElementById('stat-count').textContent      = all.length;
-  document.getElementById('stat-top-cat').textContent    = topCat ? topCat[0] : '—';
+  document.getElementById('stat-top-cat').textContent    = top ? top[0] : '—';
 
-  const recent = [...all].sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5);
+  const recent = [...all].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
   const tbody  = document.getElementById('recent-tbody');
   tbody.innerHTML = '';
   document.getElementById('recent-empty').style.display = recent.length === 0 ? 'block' : 'none';
@@ -713,29 +787,31 @@ async function refreshOverview() {
   });
 }
 
-/* ══ ALL EXPENSES ══ */
+/* ══════════════════════════════════════════════════
+   ALL EXPENSES
+══════════════════════════════════════════════════ */
 async function renderExpenses() {
   const all    = await dbGetAll();
   const search = document.getElementById('search-input').value.toLowerCase();
   const cat    = document.getElementById('filter-cat').value;
   const month  = document.getElementById('filter-month').value;
 
-  // Rebuild month filter
+  // Rebuild month dropdown
   const months = [...new Set(all.map(e => e.date.slice(0,7)))].sort().reverse();
-  const mSel = document.getElementById('filter-month');
-  const mVal = mSel.value;
+  const mSel   = document.getElementById('filter-month');
+  const mVal   = mSel.value;
   mSel.innerHTML = '<option value="">All Months</option>';
   months.forEach(m => {
-    const d = new Date(m+'-01');
+    const d = new Date(m + '-01');
     mSel.innerHTML += `<option value="${m}" ${m===mVal?'selected':''}>${d.toLocaleString('default',{month:'long',year:'numeric'})}</option>`;
   });
 
   const filtered = all.filter(e => {
     if (search && !e.description.toLowerCase().includes(search)) return false;
-    if (cat   && e.category !== cat)         return false;
-    if (month && !e.date.startsWith(month))  return false;
+    if (cat   && e.category !== cat)        return false;
+    if (month && !e.date.startsWith(month)) return false;
     return true;
-  }).sort((a,b) => new Date(b.date)-new Date(a.date));
+  }).sort((a,b) => new Date(b.date) - new Date(a.date));
 
   const tbody = document.getElementById('expenses-tbody');
   tbody.innerHTML = '';
@@ -749,20 +825,18 @@ async function renderExpenses() {
       <td>${catPill(e.category)}</td>
       <td style="color:var(--muted);font-size:13px">${e.method}</td>
       <td class="amount-cell">${fmt(e.amount)}</td>
-      <td>
-        <div class="action-cell">
-          <button class="action-btn edit-btn" onclick="editExpense(${e.id})" title="Edit">✎</button>
-          <button class="action-btn del-btn"  onclick="deleteExpense(${e.id})" title="Delete">✕</button>
-        </div>
-      </td>`;
+      <td><div class="action-cell">
+        <button class="action-btn edit-btn" onclick="editExpense(${e.id})" title="Edit">✎</button>
+        <button class="action-btn del-btn"  onclick="deleteExpense(${e.id})" title="Delete">✕</button>
+      </div></td>`;
     tbody.appendChild(tr);
   });
 }
 
 async function editExpense(id) {
   const all = await dbGetAll();
-  const expense = all.find(e => e.id === id);
-  if (expense) startEdit(expense);
+  const exp = all.find(e => e.id === id);
+  if (exp) startEdit(exp);
 }
 
 async function deleteExpense(id) {
@@ -773,7 +847,262 @@ async function deleteExpense(id) {
   showToast('Expense deleted.', 'gold');
 }
 
-/* ══ HELPERS ══ */
+/* ══════════════════════════════════════════════════
+   CHARTS
+══════════════════════════════════════════════════ */
+let chartInstances = {};
+
+async function renderCharts() {
+  const all = await dbGetAll();
+  const C = ['#C9A84C','#6fa8dc','#6ab187','#c878b8','#e08070','#78a8c8','#a88ad0','#50b8a0','#96c850','#8A9BB0'];
+
+  function mkChart(id, type, labels, data) {
+    if (chartInstances[id]) chartInstances[id].destroy();
+    chartInstances[id] = new Chart(document.getElementById(id).getContext('2d'), {
+      type,
+      data: { labels, datasets: [{ data, backgroundColor:type==='line'?'rgba(201,168,76,0.1)':C, borderColor:type==='line'?'#C9A84C':C, borderWidth:type==='line'?2:1, fill:type==='line', tension:0.4, pointBackgroundColor:'#C9A84C' }] },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: type !== 'bar', labels: { color:'#8A9BB0', font:{ family:'DM Sans', size:12 }, padding:12 } },
+          tooltip: { callbacks: { label: c => ' ₹' + c.parsed.toLocaleString('en-IN') } }
+        },
+        scales: ['bar','line'].includes(type) ? {
+          x: { ticks:{ color:'#8A9BB0', font:{size:11} }, grid:{ color:'rgba(201,168,76,0.06)' } },
+          y: { ticks:{ color:'#8A9BB0', font:{size:11}, callback: v => '₹'+v.toLocaleString('en-IN') }, grid:{ color:'rgba(201,168,76,0.06)' } }
+        } : {}
+      }
+    });
+  }
+
+  const catM = {}, monthM = {}, methodM = {}, dayM = {};
+  all.forEach(e => {
+    catM[e.category]            = (catM[e.category]||0)            + e.amount;
+    monthM[e.date.slice(0,7)]   = (monthM[e.date.slice(0,7)]||0)   + e.amount;
+    methodM[e.method]           = (methodM[e.method]||0)           + e.amount;
+    dayM[e.date]                = (dayM[e.date]||0)                + e.amount;
+  });
+
+  mkChart('chart-cat',     'doughnut', Object.keys(catM), Object.values(catM));
+  const sm = Object.keys(monthM).sort();
+  mkChart('chart-monthly', 'line', sm.map(m => { const d = new Date(m+'-01'); return d.toLocaleString('default',{month:'short',year:'2-digit'}); }), sm.map(m => monthM[m]));
+  mkChart('chart-method',  'pie',  Object.keys(methodM), Object.values(methodM));
+  const top5 = Object.entries(dayM).sort((a,b) => b[1]-a[1]).slice(0,5);
+  mkChart('chart-days',    'bar',  top5.map(d=>d[0]), top5.map(d=>d[1]));
+  chartsBuilt = true;
+}
+
+/* ══════════════════════════════════════════════════
+   CSV UPLOAD
+══════════════════════════════════════════════════ */
+let csvRows = [];
+
+function handleDrop(e) { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); }
+function handleFileSelect(e) { if (e.target.files[0]) parseCSV(e.target.files[0]); }
+
+function parseCSV(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const lines = ev.target.result.trim().split('\n');
+    csvRows = [];
+    let start = (lines[0] && isNaN(lines[0].split(',')[2])) ? 1 : 0;
+    lines.slice(start).forEach(line => {
+      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
+      if (cols.length < 3) return;
+      const [date, description, amountRaw, category] = cols;
+      const amount = parseFloat(amountRaw);
+      if (!date || isNaN(amount)) return;
+      csvRows.push({ date, description, amount, category: category ? category.trim() : (mlCategorize(description) || 'Other') });
+    });
+    document.getElementById('csv-row-count').textContent = `(${csvRows.length} rows)`;
+    const tbody = document.getElementById('csv-preview-tbody');
+    tbody.innerHTML = '';
+    csvRows.slice(0, 10).forEach(r => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${r.date}</td><td>${r.description}</td><td class="amount-cell">${fmt(r.amount)}</td><td>${catPill(r.category)}</td>`; tbody.appendChild(tr); });
+    if (csvRows.length > 10) { const tr = document.createElement('tr'); tr.innerHTML = `<td colspan="4" style="color:var(--muted);text-align:center;font-size:12px">… and ${csvRows.length - 10} more rows</td>`; tbody.appendChild(tr); }
+    document.getElementById('csv-preview').style.display = 'block';
+  };
+  reader.readAsText(file);
+}
+
+async function importCSV() {
+  if (!csvRows.length) return;
+  for (const row of csvRows) await dbAdd({ ...row, method:'Import', notes:'Imported from CSV', addedAt:Date.now() });
+  showToast(`${csvRows.length} expenses imported!`, 'green');
+  cancelCSV();
+  chartsBuilt = false;
+}
+
+function cancelCSV() { csvRows = []; document.getElementById('csv-preview').style.display = 'none'; document.getElementById('csv-file-input').value = ''; }
+
+/* ══════════════════════════════════════════════════
+   JSON EXPORT
+══════════════════════════════════════════════════ */
+async function exportJSON() {
+  // Export raw encrypted blobs — safe to store anywhere
+  const blobs = await new Promise((res, rej) => {
+    const r = db.transaction(STORE,'readonly').objectStore(STORE).getAll();
+    r.onsuccess = () => res(r.result);
+    r.onerror   = e => rej(e.target.error);
+  });
+  const payload = {
+    version:    2,
+    exportedAt: new Date().toISOString(),
+    username:   currentUser.username,
+    note:       'Encrypted with AES-256-GCM. Password required to restore.',
+    records:    blobs
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `expenseiq_backup_${currentUser.username}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded!', 'green');
+}
+
+/* ══════════════════════════════════════════════════
+   JSON IMPORT — with password modal
+   Handles 3 record formats:
+   1. New: { iv, ciphertext } — encrypted blobs
+   2. Old: plain objects { date, amount, description… }
+   3. Mixed backup (both in same file)
+══════════════════════════════════════════════════ */
+let pendingImportPayload = null;
+
+function startImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  document.getElementById('json-import-input').value = '';
+
+  const setMsg = (text, type) => {
+    const el = document.getElementById('import-msg');
+    el.textContent = text;
+    el.className   = `info-msg show ${type}`;
+  };
+
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    try {
+      const payload = JSON.parse(ev.target.result);
+      if (!payload.records || !Array.isArray(payload.records)) throw new Error('Invalid backup file format.');
+      pendingImportPayload = payload;
+      const enc   = payload.records.filter(r => r.iv && r.ciphertext).length;
+      const plain = payload.records.length - enc;
+      setMsg(`File loaded — ${payload.records.length} records (${enc} encrypted, ${plain} plain). Enter your password to continue.`, 'info');
+      document.getElementById('modal-pw').value = '';
+      document.getElementById('modal-err').textContent = '';
+      document.getElementById('pw-modal').classList.add('show');
+    } catch(e) {
+      setMsg('Error reading file: ' + e.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function closeModal() {
+  document.getElementById('pw-modal').classList.remove('show');
+  pendingImportPayload = null;
+}
+
+async function confirmImport() {
+  const pw    = document.getElementById('modal-pw').value;
+  const errEl = document.getElementById('modal-err');
+  errEl.textContent = '';
+
+  if (!pw) { errEl.textContent = 'Please enter your password.'; return; }
+
+  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
+  const hashed = await sha256(pw);
+  if (hashed !== stored.password) { errEl.textContent = 'Incorrect password.'; return; }
+
+  // Derive the AES key ONCE — reused for all records to avoid freezing
+  const importKey = await deriveKey(pw, stored.salt);
+
+  // Verify password can decrypt encrypted records (if any)
+  const encRecs = pendingImportPayload.records.filter(r => r.iv && r.ciphertext);
+  if (encRecs.length > 0) {
+    try {
+      await crypto.subtle.decrypt(
+        { name:'AES-GCM', iv: hexToBytes(encRecs[0].iv) },
+        importKey,
+        hexToBytes(encRecs[0].ciphertext)
+      );
+    } catch(e) {
+      errEl.textContent = 'Password does not match this backup. It may have been created with a different password.';
+      return;
+    }
+  }
+
+  const recordsToImport = pendingImportPayload.records;
+  closeModal();
+  const setMsg = (text, type) => {
+    const el = document.getElementById('import-msg');
+    el.textContent = text;
+    el.className   = `info-msg show ${type}`;
+  };
+  setMsg('Importing…', 'info');
+
+  let imported = 0, skipped = 0;
+  for (const rec of recordsToImport) {
+    try {
+      let blob;
+      if (rec.iv && rec.ciphertext) {
+        // Already encrypted blob — store directly, no re-encryption needed
+        blob = { iv: rec.iv, ciphertext: rec.ciphertext };
+      } else {
+        // Plain record from old backup — encrypt with the pre-derived key
+        const { id, ...plainData } = rec;
+        const iv  = crypto.getRandomValues(new Uint8Array(12));
+        const enc = await crypto.subtle.encrypt(
+          { name:'AES-GCM', iv },
+          importKey,
+          new TextEncoder().encode(JSON.stringify(plainData))
+        );
+        blob = { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
+      }
+      await new Promise(res => {
+        const r = db.transaction(STORE,'readwrite').objectStore(STORE).add(blob);
+        r.onsuccess = () => res();
+        r.onerror   = () => res();
+      });
+      imported++;
+    } catch(e) { skipped++; }
+  }
+
+  const note = skipped > 0 ? ` (${skipped} skipped)` : '';
+  setMsg(`${imported} record${imported !== 1 ? 's' : ''} imported successfully!${note}`, 'success');
+  chartsBuilt = false;
+  showToast(`${imported} expenses restored!`, 'green');
+  pendingImportPayload = null;
+}
+
+/* ══════════════════════════════════════════════════
+   DELETE ALL DATA
+   Requires password confirmation before wiping
+══════════════════════════════════════════════════ */
+async function deleteAllData() {
+  if (!confirm('This will permanently delete ALL your expense records from this device.\n\nYour account (username, password, recovery codes) will be kept.\n\nThis cannot be undone. Continue?')) return;
+
+  const pw = prompt('Enter your password to confirm deletion:');
+  if (!pw) return;
+
+  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
+  const hashed = await sha256(pw);
+  if (hashed !== stored.password) {
+    showToast('Incorrect password — nothing was deleted.', 'red');
+    return;
+  }
+
+  await dbClear();
+  chartsBuilt = false;
+  showToast('All expense data deleted.', 'gold');
+  refreshOverview();
+}
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
 const CAT_COLORS = {
   'Food & Dining':    { bg:'rgba(201,168,76,0.15)',  text:'#C9A84C' },
   'Shopping':         { bg:'rgba(90,150,220,0.15)',  text:'#6fa8dc' },
@@ -792,130 +1121,22 @@ function catPill(cat) {
   return `<span class="cat-pill" style="background:${c.bg};color:${c.text}">${cat}</span>`;
 }
 
-function fmt(amount) {
-  return '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits:2, maximumFractionDigits:2 });
+function fmt(n) {
+  return '₹' + n.toLocaleString('en-IN', { minimumFractionDigits:2, maximumFractionDigits:2 });
 }
 
-/* ══ CHARTS ══ */
-let chartInstances = {};
-
-async function renderCharts() {
-  const all = await dbGetAll();
-  const COLORS = ['#C9A84C','#6fa8dc','#6ab187','#c878b8','#e08070','#78a8c8','#a88ad0','#50b8a0','#96c850','#8A9BB0'];
-
-  function mkChart(id, type, labels, data) {
-    if (chartInstances[id]) chartInstances[id].destroy();
-    const ctx = document.getElementById(id).getContext('2d');
-    chartInstances[id] = new Chart(ctx, {
-      type,
-      data: {
-        labels,
-        datasets: [{
-          data,
-          backgroundColor: type==='line' ? 'rgba(201,168,76,0.1)' : COLORS,
-          borderColor:     type==='line' ? '#C9A84C' : COLORS,
-          borderWidth: type==='line' ? 2 : 1,
-          fill: type==='line', tension: 0.4, pointBackgroundColor:'#C9A84C',
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: type!=='bar', labels:{ color:'#8A9BB0', font:{family:'DM Sans',size:12}, padding:12 } },
-          tooltip: { callbacks: { label: c => ' ₹'+c.parsed.toLocaleString('en-IN') } }
-        },
-        scales: ['bar','line'].includes(type) ? {
-          x: { ticks:{color:'#8A9BB0',font:{size:11}}, grid:{color:'rgba(201,168,76,0.06)'} },
-          y: { ticks:{color:'#8A9BB0',font:{size:11},callback:v=>'₹'+v.toLocaleString('en-IN')}, grid:{color:'rgba(201,168,76,0.06)'} }
-        } : {}
-      }
-    });
-  }
-
-  const catMap = {}, monthMap = {}, methodMap = {}, dayMap = {};
-  all.forEach(e => {
-    catMap[e.category]       = (catMap[e.category]||0) + e.amount;
-    monthMap[e.date.slice(0,7)] = (monthMap[e.date.slice(0,7)]||0) + e.amount;
-    methodMap[e.method]      = (methodMap[e.method]||0) + e.amount;
-    dayMap[e.date]           = (dayMap[e.date]||0) + e.amount;
-  });
-
-  mkChart('chart-cat',     'doughnut', Object.keys(catMap),    Object.values(catMap));
-  const sm = Object.keys(monthMap).sort();
-  mkChart('chart-monthly', 'line', sm.map(m => { const d=new Date(m+'-01'); return d.toLocaleString('default',{month:'short',year:'2-digit'}); }), sm.map(m=>monthMap[m]));
-  mkChart('chart-method',  'pie',  Object.keys(methodMap),  Object.values(methodMap));
-  const top5 = Object.entries(dayMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  mkChart('chart-days',    'bar',  top5.map(d=>d[0]), top5.map(d=>d[1]));
-  chartsBuilt = true;
-}
-
-/* ══ CSV UPLOAD ══ */
-let csvRows = [];
-
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('drop-zone').classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]);
-}
-function handleFileSelect(e) { if (e.target.files[0]) parseCSV(e.target.files[0]); }
-
-function parseCSV(file) {
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const lines = ev.target.result.trim().split('\n');
-    csvRows = [];
-    let start = lines[0] && isNaN(lines[0].split(',')[2]) ? 1 : 0;
-    lines.slice(start).forEach(line => {
-      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
-      if (cols.length < 3) return;
-      const [date, description, amountRaw, category] = cols;
-      const amount = parseFloat(amountRaw);
-      if (!date || isNaN(amount)) return;
-      csvRows.push({ date, description, amount, category: category ? category.trim() : mlCategorize(description) });
-    });
-
-    document.getElementById('csv-row-count').textContent = `(${csvRows.length} rows)`;
-    const tbody = document.getElementById('csv-preview-tbody');
-    tbody.innerHTML = '';
-    csvRows.slice(0,10).forEach(r => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${r.date}</td><td>${r.description}</td><td class="amount-cell">${fmt(r.amount)}</td><td>${catPill(r.category)}</td>`;
-      tbody.appendChild(tr);
-    });
-    if (csvRows.length > 10) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="4" style="color:var(--muted);text-align:center;font-size:12px">… and ${csvRows.length-10} more rows</td>`;
-      tbody.appendChild(tr);
-    }
-    document.getElementById('csv-preview').style.display = 'block';
-  };
-  reader.readAsText(file);
-}
-
-async function importCSV() {
-  if (!csvRows.length) return;
-  for (const row of csvRows) await dbAdd({ ...row, method:'Import', notes:'Imported from CSV', addedAt:Date.now() });
-  showToast(`${csvRows.length} expenses imported!`, 'green');
-  cancelCSV();
-  chartsBuilt = false;
-}
-
-function cancelCSV() {
-  csvRows = [];
-  document.getElementById('csv-preview').style.display  = 'none';
-  document.getElementById('csv-file-input').value = '';
-}
-
-/* ══ TOAST ══ */
 let toastTimer;
-function showToast(msg, type='gold') {
+function showToast(msg, type = 'gold') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
+  t.textContent = msg;
+  t.className   = `toast ${type} show`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* ══ INIT ══ */
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
 initDB().then(refreshOverview);
 </script>
 </body>
