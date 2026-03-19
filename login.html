@@ -1,329 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ExpenseIQ — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --navy:   #0D1B2A;
-      --navy2:  #162336;
-      --gold:   #C9A84C;
-      --gold2:  #E2C06A;
-      --cream:  #F5F0E8;
-      --muted:  #8A9BB0;
-      --border: rgba(201,168,76,0.18);
-      --radius: 6px;
+      --navy:#0D1B2A; --navy2:#162336; --gold:#C9A84C; --gold2:#E2C06A;
+      --cream:#F5F0E8; --muted:#8A9BB0; --border:rgba(201,168,76,0.18); --radius:6px;
     }
+    html, body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); }
+    .shell { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
 
-    html, body {
-      height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--navy);
-      color: var(--cream);
-    }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 100vh;
-    }
-
-    /* ── Left panel ── */
     .left {
-      background: var(--navy2);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 52px 56px;
-      border-right: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+      background:var(--navy2); display:flex; flex-direction:column;
+      justify-content:space-between; padding:52px 56px;
+      border-right:1px solid var(--border); position:relative; overflow:hidden;
     }
-    .left::before {
-      content: '';
-      position: absolute;
-      top: -120px; left: -120px;
-      width: 480px; height: 480px;
-      border: 1px solid rgba(201,168,76,0.08);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .left::after {
-      content: '';
-      position: absolute;
-      bottom: -80px; right: -80px;
-      width: 320px; height: 320px;
-      border: 1px solid rgba(201,168,76,0.06);
-      border-radius: 50%;
-      pointer-events: none;
-    }
+    .left::before { content:''; position:absolute; top:-120px; left:-120px; width:480px; height:480px; border:1px solid rgba(201,168,76,0.08); border-radius:50%; pointer-events:none; }
+    .left::after  { content:''; position:absolute; bottom:-80px; right:-80px; width:320px; height:320px; border:1px solid rgba(201,168,76,0.06); border-radius:50%; pointer-events:none; }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: fadeUp 0.6s ease both;
-    }
-    .brand-icon {
-      width: 36px; height: 36px;
-      background: var(--gold);
-      border-radius: var(--radius);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .brand-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      letter-spacing: 0.02em;
-      color: var(--cream);
-    }
-    .brand-name span { color: var(--gold); }
+    .brand { display:flex; align-items:center; gap:12px; animation:fadeUp 0.6s ease both; }
+    .brand-icon { width:36px; height:36px; background:var(--gold); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .brand-name { font-family:'Playfair Display',serif; font-size:22px; letter-spacing:0.02em; color:var(--cream); }
+    .brand-name span { color:var(--gold); }
 
-    .hero { animation: fadeUp 0.7s 0.15s ease both; }
-    .hero-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: 2px;
-      margin-bottom: 28px;
-    }
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      font-weight: 600;
-      line-height: 1.2;
-      margin-bottom: 20px;
-      color: var(--cream);
-    }
-    .hero h1 em { font-style: italic; color: var(--gold2); }
-    .hero p {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 340px;
-    }
+    .hero { animation:fadeUp 0.7s 0.15s ease both; }
+    .hero-tag { display:inline-block; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); border:1px solid var(--border); padding:4px 12px; border-radius:2px; margin-bottom:28px; }
+    .hero h1 { font-family:'Playfair Display',serif; font-size:42px; font-weight:600; line-height:1.2; margin-bottom:20px; color:var(--cream); }
+    .hero h1 em { font-style:italic; color:var(--gold2); }
+    .hero p { font-size:15px; color:var(--muted); line-height:1.7; max-width:340px; }
 
-    .stats {
-      display: flex;
-      gap: 40px;
-      animation: fadeUp 0.7s 0.3s ease both;
-    }
-    .stat-val {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      color: var(--gold2);
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-      letter-spacing: 0.04em;
-    }
+    .stats { display:flex; gap:40px; animation:fadeUp 0.7s 0.3s ease both; }
+    .stat-val { font-family:'Playfair Display',serif; font-size:28px; color:var(--gold2); }
+    .stat-label { font-size:12px; color:var(--muted); margin-top:2px; letter-spacing:0.04em; }
 
-    /* ── Right panel ── */
-    .right {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 52px 48px;
-      background: var(--navy);
-      overflow-y: auto;
-    }
+    .right { display:flex; align-items:flex-start; justify-content:center; padding:52px 48px; background:var(--navy); overflow-y:auto; }
+    .form-card { width:100%; max-width:400px; animation:fadeUp 0.7s 0.2s ease both; padding:8px 0 40px; }
 
-    .form-card {
-      width: 100%;
-      max-width: 380px;
-      animation: fadeUp 0.7s 0.2s ease both;
-      padding: 8px 0 40px;
-    }
+    .tab-row { display:flex; margin-bottom:36px; border-bottom:1px solid var(--border); }
+    .tab { flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color 0.2s,border-color 0.2s; background:none; border-left:none; border-right:none; border-top:none; }
+    .tab.active { color:var(--gold2); border-bottom-color:var(--gold); }
 
-    .tab-row {
-      display: flex;
-      margin-bottom: 36px;
-      border-bottom: 1px solid var(--border);
-    }
-    .tab {
-      flex: 1;
-      padding: 12px 0;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.2s, border-color 0.2s;
-      background: none;
-      border-left: none; border-right: none; border-top: none;
-    }
-    .tab.active { color: var(--gold2); border-bottom-color: var(--gold); }
+    .form-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
+    .form-sub { font-size:13px; color:var(--muted); margin-bottom:28px; line-height:1.6; }
 
-    .form-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      margin-bottom: 6px;
-    }
-    .form-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 28px;
-      line-height: 1.5;
-    }
+    .field { margin-bottom:18px; }
+    .field label { display:block; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+    .field input { width:100%; background:#162336; border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; padding:12px 16px; border-radius:var(--radius); outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+    .field input::placeholder { color:rgba(138,155,176,0.5); }
+    .field input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.08); }
 
-    .field { margin-bottom: 18px; }
-    .field label {
-      display: block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 7px;
-    }
-    .field input,
-    .field select {
-      width: 100%;
-      background: var(--navy2);
-      border: 1px solid var(--border);
-      color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      padding: 12px 16px;
-      border-radius: var(--radius);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      appearance: none;
-    }
-    .field select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 40px;
-      cursor: pointer;
-    }
-    .field select option { background: var(--navy2); color: var(--cream); }
-    .field input::placeholder { color: rgba(138,155,176,0.5); }
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
-    }
+    .row-between { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .remember { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); cursor:pointer; }
+    .remember input[type="checkbox"] { accent-color:var(--gold); width:14px; height:14px; }
+    .forgot { font-size:13px; color:var(--gold); cursor:pointer; }
+    .forgot:hover { color:var(--gold2); }
 
-    .row-between {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-    .remember {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--muted);
-      cursor: pointer;
-    }
-    .remember input[type="checkbox"] { accent-color: var(--gold); width: 14px; height: 14px; }
-    .forgot { font-size: 13px; color: var(--gold); text-decoration: none; cursor: pointer; }
-    .forgot:hover { color: var(--gold2); }
+    .btn-primary { width:100%; background:var(--gold); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; padding:14px; border:none; border-radius:var(--radius); cursor:pointer; letter-spacing:0.04em; transition:background 0.2s,transform 0.1s; }
+    .btn-primary:hover { background:var(--gold2); }
+    .btn-primary:active { transform:scale(0.99); }
+    .btn-primary:disabled { opacity:0.7; cursor:not-allowed; }
 
-    .btn-primary {
-      width: 100%;
-      background: var(--gold);
-      color: var(--navy);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 14px;
-      border: none;
-      border-radius: var(--radius);
-      cursor: pointer;
-      letter-spacing: 0.04em;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-primary:hover { background: var(--gold2); }
-    .btn-primary:active { transform: scale(0.99); }
+    .section-divider { border:none; border-top:1px solid var(--border); margin:8px 0 18px; }
+    .section-label { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
 
-    .section-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 8px 0 18px;
+    /* Recovery codes display box */
+    .codes-box {
+      background:#0a1520; border:1px solid var(--border); border-radius:var(--radius);
+      padding:16px; margin-bottom:16px;
     }
-    .section-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 14px;
+    .codes-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+    .code-chip {
+      font-family:monospace; font-size:14px; font-weight:600;
+      color:var(--gold2); background:rgba(201,168,76,0.08);
+      border:1px solid var(--border); border-radius:4px;
+      padding:8px 12px; text-align:center; letter-spacing:0.1em;
     }
+    .codes-warning { font-size:12px; color:#e08070; line-height:1.5; }
+    .btn-copy { width:100%; padding:10px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; margin-bottom:12px; transition:color 0.2s,border-color 0.2s; }
+    .btn-copy:hover { color:var(--cream); border-color:rgba(201,168,76,0.4); }
 
-    .msg {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      display: none;
-    }
-    .msg.success { background: rgba(100,200,120,0.1); border: 1px solid rgba(100,200,120,0.2); color: #7ed49a; display: block; }
-    .msg.error   { background: rgba(220,80,80,0.1);  border: 1px solid rgba(220,80,80,0.2);  color: #f08080; display: block; }
+    .msg { margin-top:14px; padding:12px 14px; border-radius:var(--radius); font-size:13px; display:none; }
+    .msg.success { background:rgba(100,200,120,0.1); border:1px solid rgba(100,200,120,0.2); color:#7ed49a; display:block; }
+    .msg.error   { background:rgba(220,80,80,0.1);  border:1px solid rgba(220,80,80,0.2);  color:#f08080; display:block; }
 
-    /* ── Forgot password panel ── */
-    .fp-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--muted);
-      cursor: pointer;
-      margin-bottom: 24px;
-      background: none;
-      border: none;
-      padding: 0;
-      transition: color 0.2s;
-    }
-    .fp-back:hover { color: var(--cream); }
+    .fp-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer; margin-bottom:24px; background:none; border:none; padding:0; transition:color 0.2s; }
+    .fp-back:hover { color:var(--cream); }
+    .steps { display:flex; gap:6px; margin-bottom:28px; }
+    .step-dot { height:3px; flex:1; border-radius:2px; background:var(--border); transition:background 0.35s; }
+    .step-dot.active { background:var(--gold); }
+    .step-dot.done   { background:rgba(201,168,76,0.4); }
 
-    .steps {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 28px;
-    }
-    .step-dot {
-      height: 3px;
-      flex: 1;
-      border-radius: 2px;
-      background: var(--border);
-      transition: background 0.35s;
-    }
-    .step-dot.active { background: var(--gold); }
-    .step-dot.done   { background: rgba(201,168,76,0.4); }
+    /* Used code styling */
+    .code-chip.used { opacity:0.35; text-decoration:line-through; }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 720px) {
-      .shell { grid-template-columns: 1fr; }
-      .left  { display: none; }
-      .right { padding: 40px 24px; }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+    @media (max-width:720px) { .shell{grid-template-columns:1fr;} .left{display:none;} .right{padding:40px 24px;} }
   </style>
 </head>
 <body>
 <div class="shell">
-
-  <!-- ══ Left: Branding ══ -->
   <div class="left">
     <div class="brand">
       <div class="brand-icon">₹</div>
@@ -335,111 +114,63 @@
       <p>An offline-first expense management platform that learns your habits and keeps your data private — always on your device.</p>
     </div>
     <div class="stats">
-      <div>
-        <div class="stat-val">100%</div>
-        <div class="stat-label">Offline capable</div>
-      </div>
-      <div>
-        <div class="stat-val">0</div>
-        <div class="stat-label">Data sent to servers</div>
-      </div>
-      <div>
-        <div class="stat-val">ML</div>
-        <div class="stat-label">Auto-categorization</div>
-      </div>
+      <div><div class="stat-val">100%</div><div class="stat-label">Offline capable</div></div>
+      <div><div class="stat-val">0</div><div class="stat-label">Data sent to servers</div></div>
+      <div><div class="stat-val">AES</div><div class="stat-label">Encrypted storage</div></div>
     </div>
   </div>
 
-  <!-- ══ Right: Forms ══ -->
   <div class="right">
     <div class="form-card">
-
-      <!-- Tab row -->
       <div class="tab-row" id="tab-row">
         <button class="tab active" onclick="switchTab('login')">Sign In</button>
         <button class="tab" onclick="switchTab('register')">Register</button>
       </div>
 
-      <!-- ── LOGIN ── -->
+      <!-- LOGIN -->
       <div id="login-form">
         <div class="form-title">Welcome back</div>
-        <div class="form-sub">Sign in to your account to continue</div>
-
-        <div class="field">
-          <label>Username</label>
-          <input type="text" id="l-user" placeholder="Enter your username" autocomplete="username"/>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"/>
-        </div>
-
+        <div class="form-sub">Sign in to access your encrypted expenses</div>
+        <div class="field"><label>Username</label><input type="text" id="l-user" placeholder="Enter your username" autocomplete="username"/></div>
+        <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"/></div>
         <div class="row-between">
-          <label class="remember">
-            <input type="checkbox" id="remember"/> Remember me
-          </label>
+          <label class="remember"><input type="checkbox" id="remember"/> Remember me</label>
           <span class="forgot" onclick="showForgot()">Forgot password?</span>
         </div>
-
-        <button class="btn-primary" onclick="handleLogin()">Sign In →</button>
+        <button class="btn-primary" id="login-btn" onclick="handleLogin()">Sign In →</button>
         <div id="login-msg" class="msg"></div>
       </div>
 
-      <!-- ── REGISTER ── -->
+      <!-- REGISTER -->
       <div id="register-form" style="display:none">
-        <div class="form-title">Create account</div>
-        <div class="form-sub">Set up your private expense tracker</div>
-
-        <div class="field">
-          <label>Full Name</label>
-          <input type="text" id="r-name" placeholder="Your name"/>
-        </div>
-        <div class="field">
-          <label>Username</label>
-          <input type="text" id="r-user" placeholder="Choose a username"/>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="r-pass" placeholder="Create a strong password"/>
-        </div>
-        <div class="field">
-          <label>Confirm Password</label>
-          <input type="password" id="r-pass2" placeholder="Repeat your password"/>
+        <!-- Step A: fill details -->
+        <div id="reg-step-a">
+          <div class="form-title">Create account</div>
+          <div class="form-sub">Set up your private encrypted expense tracker</div>
+          <div class="field"><label>Full Name</label><input type="text" id="r-name" placeholder="Your name"/></div>
+          <div class="field"><label>Username</label><input type="text" id="r-user" placeholder="Choose a username"/></div>
+          <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="Create a strong password"/></div>
+          <div class="field"><label>Confirm Password</label><input type="password" id="r-pass2" placeholder="Repeat your password"/></div>
+          <button class="btn-primary" id="register-btn" onclick="handleRegister()">Generate Recovery Codes →</button>
+          <div id="register-msg" class="msg"></div>
         </div>
 
-        <hr class="section-divider"/>
-        <div class="section-label">Security Question</div>
-
-        <div class="field">
-          <label>Choose a question</label>
-          <select id="r-sq">
-            <option value="" disabled selected>— Select a question —</option>
-            <option>What is your mother's maiden name?</option>
-            <option>What was the name of your first pet?</option>
-            <option>What city were you born in?</option>
-            <option>What was the name of your primary school?</option>
-            <option>What is your oldest sibling's middle name?</option>
-            <option>What was the make of your first car?</option>
-            <option>What is your favourite childhood movie?</option>
-            <option>What street did you grow up on?</option>
-            <option>What was your childhood nickname?</option>
-            <option>What is the name of your maternal grandmother?</option>
-          </select>
+        <!-- Step B: show recovery codes -->
+        <div id="reg-step-b" style="display:none">
+          <div class="form-title">Save your recovery codes</div>
+          <div class="form-sub">These 8 codes are the <strong style="color:var(--cream)">only way</strong> to reset your password if you forget it. Each code works once. Save them now — they will never be shown again.</div>
+          <div class="codes-box">
+            <div class="codes-grid" id="codes-grid"></div>
+            <div class="codes-warning">⚠ Screenshot or write these down before continuing. Once you click "I've saved my codes" they are gone from this screen forever.</div>
+          </div>
+          <button class="btn-copy" onclick="copyCodes()">Copy all codes to clipboard</button>
+          <button class="btn-primary" onclick="confirmCodes()">I've saved my codes →</button>
         </div>
-        <div class="field">
-          <label>Your answer</label>
-          <input type="text" id="r-sa" placeholder="Type your answer (case-insensitive)"/>
-        </div>
-
-        <button class="btn-primary" onclick="handleRegister()">Create Account →</button>
-        <div id="register-msg" class="msg"></div>
       </div>
 
-      <!-- ── FORGOT PASSWORD (3-step) ── -->
+      <!-- FORGOT PASSWORD -->
       <div id="fp-panel" style="display:none">
-
         <button class="fp-back" onclick="hideForgot()">← Back to sign in</button>
-
         <div class="steps">
           <div class="step-dot active" id="dot-1"></div>
           <div class="step-dot" id="dot-2"></div>
@@ -450,194 +181,313 @@
         <div id="fp-step1">
           <div class="form-title">Reset password</div>
           <div class="form-sub">Enter your username to get started</div>
-          <div class="field">
-            <label>Username</label>
-            <input type="text" id="fp-user" placeholder="Your username"/>
-          </div>
+          <div class="field"><label>Username</label><input type="text" id="fp-user" placeholder="Your username"/></div>
           <button class="btn-primary" onclick="fpStep1()">Continue →</button>
           <div id="fp-msg1" class="msg"></div>
         </div>
 
-        <!-- Step 2: security question -->
+        <!-- Step 2: recovery code -->
         <div id="fp-step2" style="display:none">
-          <div class="form-title">Security check</div>
-          <div class="form-sub" id="fp-q-label">Answer your security question</div>
-          <div class="field">
-            <label>Your answer</label>
-            <input type="text" id="fp-answer" placeholder="Type your answer"/>
-          </div>
-          <button class="btn-primary" onclick="fpStep2()">Verify →</button>
+          <div class="form-title">Enter recovery code</div>
+          <div class="form-sub">Enter one of your 8 recovery codes. It will be used up after this.</div>
+          <div class="field"><label>Recovery Code</label><input type="text" id="fp-code" placeholder="e.g. X7K2-MNPQ" style="font-family:monospace;letter-spacing:0.08em"/></div>
+          <!-- Shows remaining codes count -->
+          <div id="fp-codes-left" style="font-size:12px;color:var(--muted);margin-bottom:16px"></div>
+          <button class="btn-primary" onclick="fpStep2()">Verify Code →</button>
           <div id="fp-msg2" class="msg"></div>
         </div>
 
         <!-- Step 3: new password -->
         <div id="fp-step3" style="display:none">
           <div class="form-title">New password</div>
-          <div class="form-sub">Choose a strong password for your account</div>
-          <div class="field">
-            <label>New Password</label>
-            <input type="password" id="fp-np" placeholder="At least 6 characters"/>
-          </div>
-          <div class="field">
-            <label>Confirm New Password</label>
-            <input type="password" id="fp-np2" placeholder="Repeat new password"/>
-          </div>
-          <button class="btn-primary" onclick="fpStep3()">Save New Password →</button>
+          <div class="form-sub">Choose a strong new password. Your data will be re-encrypted automatically.</div>
+          <div class="field"><label>Current Password</label><input type="password" id="fp-oldpass" placeholder="Needed to re-encrypt your data"/></div>
+          <div class="field"><label>New Password</label><input type="password" id="fp-np" placeholder="At least 6 characters"/></div>
+          <div class="field"><label>Confirm New Password</label><input type="password" id="fp-np2" placeholder="Repeat new password"/></div>
+          <button class="btn-primary" id="fp-save-btn" onclick="fpStep3()">Save New Password →</button>
           <div id="fp-msg3" class="msg"></div>
         </div>
 
+        <!-- Step 4: all codes used — master reset -->
+        <div id="fp-step4" style="display:none">
+          <div class="form-title">All codes used</div>
+          <div class="form-sub" style="color:#e08070">You have used all 8 recovery codes. The only remaining option is a master reset — this will permanently delete your account and all expense data.</div>
+          <div class="field"><label>Type DELETE to confirm</label><input type="text" id="fp-confirm-delete" placeholder='Type "DELETE"'/></div>
+          <button class="btn-primary" style="background:#e05555" onclick="masterReset()">Delete Account & Reset</button>
+          <div id="fp-msg4" class="msg"></div>
+        </div>
       </div>
-      <!-- end fp-panel -->
 
     </div>
   </div>
 </div>
 
 <script>
-  /* ── Tab switching ── */
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t, i) =>
-      t.classList.toggle('active', (i === 0) === (tab === 'login'))
-    );
-    show('login-form',    tab === 'login');
-    show('register-form', tab === 'register');
-    show('fp-panel',      false);
-    show('tab-row',       true, 'flex');
-  }
+/* ══ CRYPTO HELPERS ══ */
 
-  function show(id, visible, displayVal) {
-    document.getElementById(id).style.display = visible ? (displayVal || 'block') : 'none';
-  }
+// SHA-256 → hex string (for password storage, irreversible)
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 
-  /* ── Message helper ── */
-  function showMsg(id, text, type) {
-    const el = document.getElementById(id);
-    el.textContent = text;
-    el.className = 'msg ' + type;
-  }
-  function clearMsg(id) {
-    const el = document.getElementById(id);
-    el.textContent = ''; el.className = 'msg';
-  }
+// Derive an AES-GCM key from password using PBKDF2
+async function deriveKey(password, saltHex) {
+  const salt    = hexToBytes(saltHex);
+  const keyMat  = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:100000, hash:'SHA-256' },
+    keyMat,
+    { name:'AES-GCM', length:256 },
+    false,
+    ['encrypt','decrypt']
+  );
+}
 
-  /* ── Login ── */
-  function handleLogin() {
-    const user = document.getElementById('l-user').value.trim();
-    const pass = document.getElementById('l-pass').value;
-    if (!user || !pass) return showMsg('login-msg', 'Please fill in all fields.', 'error');
+// AES-GCM encrypt → returns { iv, ciphertext } as hex strings
+async function encryptData(password, saltHex, plaintext) {
+  const key = await deriveKey(password, saltHex);
+  const iv  = crypto.getRandomValues(new Uint8Array(12));
+  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(plaintext));
+  return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
+}
 
-    const stored = JSON.parse(localStorage.getItem('eq_user_' + user) || 'null');
-    if (!stored)                        return showMsg('login-msg', 'Account not found. Please register first.', 'error');
-    if (stored.password !== btoa(pass)) return showMsg('login-msg', 'Incorrect password.', 'error');
+// AES-GCM decrypt → returns plaintext string
+async function decryptData(password, saltHex, ivHex, ciphertextHex) {
+  const key = await deriveKey(password, saltHex);
+  const dec = await crypto.subtle.decrypt(
+    { name:'AES-GCM', iv: hexToBytes(ivHex) },
+    key,
+    hexToBytes(ciphertextHex)
+  );
+  return new TextDecoder().decode(dec);
+}
 
-    sessionStorage.setItem('eq_current', JSON.stringify({ username: user, name: stored.name }));
-    showMsg('login-msg', 'Login successful! Redirecting…', 'success');
-setTimeout(() => {
-  window.location.href = 'dashboard.html';
-}, 900);
-  }
+function bytesToHex(bytes) { return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+function hexToBytes(hex)   { return new Uint8Array(hex.match(/.{1,2}/g).map(b=>parseInt(b,16))); }
+function randomHex(n)      { return bytesToHex(crypto.getRandomValues(new Uint8Array(n))); }
 
-  /* ── Register ── */
-  function handleRegister() {
-    const name  = document.getElementById('r-name').value.trim();
-    const user  = document.getElementById('r-user').value.trim();
-    const pass  = document.getElementById('r-pass').value;
-    const pass2 = document.getElementById('r-pass2').value;
-    const sq    = document.getElementById('r-sq').value;
-    const sa    = document.getElementById('r-sa').value.trim();
+// Generate a recovery code like "X7K2-MNPQ"
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const part  = n => Array.from({length:n}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  return `${part(4)}-${part(4)}`;
+}
 
-    if (!name || !user || !pass || !pass2)       return showMsg('register-msg', 'Please fill in all fields.', 'error');
-    if (pass !== pass2)                           return showMsg('register-msg', 'Passwords do not match.', 'error');
-    if (pass.length < 6)                          return showMsg('register-msg', 'Password must be at least 6 characters.', 'error');
-    if (!sq)                                      return showMsg('register-msg', 'Please choose a security question.', 'error');
-    if (!sa)                                      return showMsg('register-msg', 'Please provide an answer to your security question.', 'error');
-    if (localStorage.getItem('eq_user_' + user)) return showMsg('register-msg', 'Username already taken.', 'error');
+/* ══ UI HELPERS ══ */
+function show(id, visible, d) { document.getElementById(id).style.display = visible ? (d||'block') : 'none'; }
+function showMsg(id, text, type) { const el=document.getElementById(id); el.textContent=text; el.className='msg '+type; }
+function clearMsg(id) { const el=document.getElementById(id); el.textContent=''; el.className='msg'; }
+function setLoading(id, on, label) { const b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait…':label; }
 
-    localStorage.setItem('eq_user_' + user, JSON.stringify({
-      name,
-      password:         btoa(pass),
-      securityQuestion: sq,
-      securityAnswer:   btoa(sa.toLowerCase())  // lowercase before encoding so answers are case-insensitive
-    }));
-    showMsg('register-msg', 'Account created! You can now sign in.', 'success');
-    setTimeout(() => switchTab('login'), 1400);
-  }
+/* ══ TAB SWITCHING ══ */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0)===(tab==='login')));
+  show('login-form',    tab==='login');
+  show('register-form', tab==='register');
+  show('fp-panel',      false);
+  show('tab-row',       true, 'flex');
+  if (tab==='register') { show('reg-step-a',true); show('reg-step-b',false); }
+}
 
-  /* ── Forgot password: show / hide ── */
-  function showForgot() {
-    show('login-form', false);
-    show('tab-row',    false);
-    show('fp-panel',   true);
-    goFpStep(1);
-    ['fp-user','fp-answer','fp-np','fp-np2'].forEach(id => document.getElementById(id).value = '');
-    ['fp-msg1','fp-msg2','fp-msg3'].forEach(clearMsg);
-  }
-  function hideForgot() {
-    show('fp-panel',   false);
-    show('login-form', true);
-    show('tab-row',    true, 'flex');
-  }
+/* ══ LOGIN ══ */
+async function handleLogin() {
+  const user = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!user || !pass) return showMsg('login-msg','Please fill in all fields.','error');
+  setLoading('login-btn', true, 'Sign In →');
+  const stored = JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
+  if (!stored) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Account not found. Please register first.','error'); }
+  const hashed = await sha256(pass);
+  if (hashed !== stored.password) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Incorrect password.','error'); }
+  // Store password temporarily in session for encryption/decryption
+  sessionStorage.setItem('eq_current', JSON.stringify({ username:user, name:stored.name }));
+  sessionStorage.setItem('eq_key', pass); // raw password kept in session memory only — never stored to localStorage
+  showMsg('login-msg','Login successful! Redirecting…','success');
+  setTimeout(()=>{ window.location.href='dashboard.html'; }, 900);
+}
 
-  /* ── Step navigation ── */
-  let fpUser = '';
+/* ══ REGISTER ══ */
+let pendingUser = null; // holds reg data while showing recovery codes
 
-  function goFpStep(n) {
-    [1,2,3].forEach(i => {
-      show('fp-step' + i, i === n);
-      const dot = document.getElementById('dot-' + i);
-      dot.className = 'step-dot' + (i === n ? ' active' : i < n ? ' done' : '');
-    });
-  }
+async function handleRegister() {
+  const name  = document.getElementById('r-name').value.trim();
+  const user  = document.getElementById('r-user').value.trim();
+  const pass  = document.getElementById('r-pass').value;
+  const pass2 = document.getElementById('r-pass2').value;
+  if (!name||!user||!pass||!pass2)          return showMsg('register-msg','Please fill in all fields.','error');
+  if (pass !== pass2)                        return showMsg('register-msg','Passwords do not match.','error');
+  if (pass.length < 6)                       return showMsg('register-msg','Password must be at least 6 characters.','error');
+  if (localStorage.getItem('eq_user_'+user)) return showMsg('register-msg','Username already taken.','error');
+  setLoading('register-btn', true, 'Generate Recovery Codes →');
 
-  function fpStep1() {
-    const user = document.getElementById('fp-user').value.trim();
-    if (!user) return showMsg('fp-msg1', 'Please enter your username.', 'error');
+  // Generate 8 recovery codes + SHA-256 hash each for storage
+  const codes       = Array.from({length:8}, genCode);
+  const hashedCodes = await Promise.all(codes.map(c=>sha256(c)));
+  const hashedPass  = await sha256(pass);
+  const salt        = randomHex(16); // random salt for AES-GCM key derivation
 
-    const stored = JSON.parse(localStorage.getItem('eq_user_' + user) || 'null');
-    if (!stored) return showMsg('fp-msg1', 'No account found with that username.', 'error');
+  pendingUser = { name, user, hashedPass, salt, hashedCodes };
 
-    fpUser = user;
-    document.getElementById('fp-q-label').textContent = stored.securityQuestion;
-    goFpStep(2);
-  }
+  // Show codes to user
+  const grid = document.getElementById('codes-grid');
+  grid.innerHTML = '';
+  codes.forEach(c => { const d=document.createElement('div'); d.className='code-chip'; d.textContent=c; grid.appendChild(d); });
 
-  function fpStep2() {
-    const answer = document.getElementById('fp-answer').value.trim();
-    if (!answer) return showMsg('fp-msg2', 'Please enter your answer.', 'error');
+  // Store codes temporarily so copyCodes() can access them
+  pendingUser._plainCodes = codes;
 
-    const stored = JSON.parse(localStorage.getItem('eq_user_' + fpUser));
-    if (btoa(answer.toLowerCase()) !== stored.securityAnswer)
-      return showMsg('fp-msg2', 'Incorrect answer. Please try again.', 'error');
+  setLoading('register-btn', false, 'Generate Recovery Codes →');
+  show('reg-step-a', false);
+  show('reg-step-b', true);
+}
 
-    goFpStep(3);
-  }
+function copyCodes() {
+  if (!pendingUser?._plainCodes) return;
+  navigator.clipboard.writeText(pendingUser._plainCodes.join('\n'))
+    .then(()=>{ document.querySelector('.btn-copy').textContent='✓ Copied!'; })
+    .catch(()=>{ alert(pendingUser._plainCodes.join('\n')); });
+}
 
-  function fpStep3() {
-    const np  = document.getElementById('fp-np').value;
-    const np2 = document.getElementById('fp-np2').value;
-    if (!np || !np2)  return showMsg('fp-msg3', 'Please fill in both fields.', 'error');
-    if (np !== np2)   return showMsg('fp-msg3', 'Passwords do not match.', 'error');
-    if (np.length < 6) return showMsg('fp-msg3', 'Password must be at least 6 characters.', 'error');
+function confirmCodes() {
+  if (!pendingUser) return;
+  // Save to localStorage — codes stored as hashes, never plain text
+  localStorage.setItem('eq_user_'+pendingUser.user, JSON.stringify({
+    name:         pendingUser.name,
+    password:     pendingUser.hashedPass,
+    salt:         pendingUser.salt,
+    recoveryCodes: pendingUser.hashedCodes.map(h=>({ hash:h, used:false }))
+  }));
+  pendingUser = null;
+  show('reg-step-b', false);
+  show('reg-step-a', true);
+  switchTab('login');
+  setTimeout(()=>showMsg('login-msg','Account created! You can now sign in.','success'), 100);
+}
 
-    const stored = JSON.parse(localStorage.getItem('eq_user_' + fpUser));
-    stored.password = btoa(np);
-    localStorage.setItem('eq_user_' + fpUser, JSON.stringify(stored));
+/* ══ FORGOT PASSWORD ══ */
+function showForgot() {
+  show('login-form',false); show('tab-row',false); show('fp-panel',true);
+  goFpStep(1);
+  ['fp-user','fp-code','fp-oldpass','fp-np','fp-np2','fp-confirm-delete'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['fp-msg1','fp-msg2','fp-msg3','fp-msg4'].forEach(clearMsg);
+}
+function hideForgot() { show('fp-panel',false); show('login-form',true); show('tab-row',true,'flex'); }
 
-    showMsg('fp-msg3', 'Password updated! Redirecting to sign in…', 'success');
-    setTimeout(() => { hideForgot(); switchTab('login'); }, 1500);
-  }
+let fpUser='';
 
-  /* ── Enter key support ── */
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    if (document.getElementById('fp-panel').style.display === 'block') {
-      if (document.getElementById('fp-step1').style.display !== 'none') return fpStep1();
-      if (document.getElementById('fp-step2').style.display !== 'none') return fpStep2();
-      return fpStep3();
-    }
-    if (document.getElementById('login-form').style.display !== 'none') return handleLogin();
-    handleRegister();
+function goFpStep(n) {
+  [1,2,3,4].forEach(i=>{
+    const el=document.getElementById('fp-step'+i); if(el) el.style.display=i===n?'block':'none';
+    const dot=document.getElementById('dot-'+i); if(dot) dot.className='step-dot'+(i===n?' active':i<n?' done':'');
   });
+}
+
+function fpStep1() {
+  const user=document.getElementById('fp-user').value.trim();
+  if (!user) return showMsg('fp-msg1','Please enter your username.','error');
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
+  if (!stored) return showMsg('fp-msg1','No account found with that username.','error');
+  fpUser=user;
+  // Check if any codes remain
+  const remaining = stored.recoveryCodes.filter(c=>!c.used).length;
+  if (remaining===0) { goFpStep(4); return; }
+  document.getElementById('fp-codes-left').textContent=`${remaining} of 8 recovery codes remaining.`;
+  goFpStep(2);
+}
+
+async function fpStep2() {
+  const code=document.getElementById('fp-code').value.trim().toUpperCase();
+  if (!code) return showMsg('fp-msg2','Please enter a recovery code.','error');
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
+  const hashedInput=await sha256(code);
+  const idx=stored.recoveryCodes.findIndex(c=>!c.used && c.hash===hashedInput);
+  if (idx===-1) return showMsg('fp-msg2','Invalid or already used code. Try another.','error');
+  // Mark code as used immediately
+  stored.recoveryCodes[idx].used=true;
+  localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
+  const left=stored.recoveryCodes.filter(c=>!c.used).length;
+  if (left<=2) showMsg('fp-msg2',`Code accepted. Only ${left} recovery code(s) left — generate new ones after logging in.`,'success');
+  goFpStep(3);
+}
+
+async function fpStep3() {
+  const oldPass=document.getElementById('fp-oldpass').value;
+  const np =document.getElementById('fp-np').value;
+  const np2=document.getElementById('fp-np2').value;
+  if (!oldPass||!np||!np2) return showMsg('fp-msg3','Please fill in all fields.','error');
+  if (np!==np2)             return showMsg('fp-msg3','Passwords do not match.','error');
+  if (np.length<6)          return showMsg('fp-msg3','Password must be at least 6 characters.','error');
+
+  setLoading('fp-save-btn',true,'Save New Password →');
+
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
+  // Verify old password
+  const oldHash=await sha256(oldPass);
+  if (oldHash!==stored.password) { setLoading('fp-save-btn',false,'Save New Password →'); return showMsg('fp-msg3','Current password is incorrect.','error'); }
+
+  // Re-encrypt all IndexedDB data with new password
+  // We do this by reading raw encrypted blobs and re-encrypting
+  await reEncryptUserData(fpUser, oldPass, np, stored.salt);
+
+  // Save new hashed password
+  stored.password=await sha256(np);
+  localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
+
+  setLoading('fp-save-btn',false,'Save New Password →');
+  showMsg('fp-msg3','Password updated! Your data has been re-encrypted.','success');
+  setTimeout(()=>{ hideForgot(); switchTab('login'); }, 1800);
+}
+
+// Re-encrypt all stored expense data when password changes
+async function reEncryptUserData(username, oldPass, newPass, salt) {
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open('ExpenseIQ_'+username, 1);
+    req.onsuccess=async e=>{
+      const db=e.target.result;
+      if (!db.objectStoreNames.contains('expenses')) { resolve(); return; }
+      const tx=db.transaction('expenses','readwrite');
+      const store=tx.objectStore('expenses');
+      const all=await new Promise((r,j)=>{ const q=store.getAll(); q.onsuccess=()=>r(q.result); q.onerror=j; });
+      for (const record of all) {
+        try {
+          // Decrypt with old password
+          const plain=await decryptData(oldPass, salt, record.iv, record.ciphertext);
+          // Re-encrypt with new password
+          const {iv,ciphertext}=await encryptData(newPass, salt, plain);
+          store.put({...record, iv, ciphertext});
+        } catch(err) { console.warn('Could not re-encrypt record',record.id); }
+      }
+      tx.oncomplete=resolve;
+      tx.onerror=reject;
+    };
+    req.onerror=reject;
+  });
+}
+
+function masterReset() {
+  const confirm=document.getElementById('fp-confirm-delete').value.trim();
+  if (confirm!=='DELETE') return showMsg('fp-msg4','Please type DELETE to confirm.','error');
+  // Remove user record
+  localStorage.removeItem('eq_user_'+fpUser);
+  // Delete IndexedDB
+  indexedDB.deleteDatabase('ExpenseIQ_'+fpUser);
+  showMsg('fp-msg4','Account deleted. You can now register a new account.','success');
+  setTimeout(()=>{ hideForgot(); switchTab('register'); }, 2000);
+}
+
+/* ══ ENTER KEY ══ */
+document.addEventListener('keydown', e=>{
+  if (e.key!=='Enter') return;
+  if (document.getElementById('fp-panel').style.display==='block') {
+    if (document.getElementById('fp-step1').style.display!=='none') return fpStep1();
+    if (document.getElementById('fp-step2').style.display!=='none') return fpStep2();
+    if (document.getElementById('fp-step3').style.display!=='none') return fpStep3();
+    return;
+  }
+  if (document.getElementById('login-form').style.display!=='none') return handleLogin();
+  if (document.getElementById('reg-step-a').style.display!=='none') handleRegister();
+});
 </script>
 </body>
 </html>
