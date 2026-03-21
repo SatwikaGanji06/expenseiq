@@ -3,1428 +3,508 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ExpenseIQ — Dashboard</title>
+  <title>ExpenseIQ — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
-      --navy:#0D1B2A; --navy2:#162336; --navy3:#1a2d45;
-      --gold:#C9A84C; --gold2:#E2C06A; --cream:#F5F0E8; --muted:#8A9BB0;
-      --border:rgba(201,168,76,0.15); --border2:rgba(201,168,76,0.25);
-      --radius:8px; --sidebar:220px; --danger:#e05555; --success:#5cb85c;
+      --navy:#0D1B2A; --navy2:#162336; --gold:#C9A84C; --gold2:#E2C06A;
+      --cream:#F5F0E8; --muted:#8A9BB0; --border:rgba(201,168,76,0.18); --radius:6px;
     }
-    html,body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); overflow:hidden; }
-    .app { display:flex; height:100vh; }
+    html,body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); }
+    .shell { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
 
-    /* ══ SIDEBAR ══ */
-    .sidebar { width:var(--sidebar); background:var(--navy2); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:28px 0; flex-shrink:0; }
-    .sb-brand { display:flex; align-items:center; gap:10px; padding:0 20px 28px; border-bottom:1px solid var(--border); margin-bottom:20px; }
-    .sb-brand-icon { width:32px; height:32px; background:var(--gold); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
-    .sb-brand-name { font-family:'Playfair Display',serif; font-size:17px; color:var(--cream); }
-    .sb-brand-name span { color:var(--gold); }
-    .nav-item { display:flex; align-items:center; gap:10px; padding:11px 20px; font-size:14px; color:var(--muted); cursor:pointer; border-left:3px solid transparent; transition:color 0.2s,background 0.2s,border-color 0.2s; user-select:none; }
-    .nav-item:hover { color:var(--cream); background:rgba(201,168,76,0.05); }
-    .nav-item.active { color:var(--gold2); border-left-color:var(--gold); background:rgba(201,168,76,0.08); }
-    .nav-icon { font-size:16px; width:20px; text-align:center; }
-    .sb-bottom { margin-top:auto; padding:20px; border-top:1px solid var(--border); }
-    .user-chip { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--navy3); border-radius:var(--radius); border:1px solid var(--border); margin-bottom:10px; }
-    .user-avatar { width:30px; height:30px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:var(--navy); flex-shrink:0; }
-    .user-name { font-size:13px; color:var(--cream); font-weight:500; }
-    .user-sub  { font-size:11px; color:var(--muted); }
-    .btn-logout { width:100%; padding:9px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:color 0.2s,border-color 0.2s; }
-    .btn-logout:hover { color:var(--danger); border-color:rgba(224,85,85,0.4); }
+    .left {
+      background:var(--navy2); display:flex; flex-direction:column;
+      justify-content:space-between; padding:52px 56px;
+      border-right:1px solid var(--border); position:relative; overflow:hidden;
+    }
+    .left::before { content:''; position:absolute; top:-120px; left:-120px; width:480px; height:480px; border:1px solid rgba(201,168,76,0.08); border-radius:50%; pointer-events:none; }
+    .left::after  { content:''; position:absolute; bottom:-80px; right:-80px; width:320px; height:320px; border:1px solid rgba(201,168,76,0.06); border-radius:50%; pointer-events:none; }
 
-    /* ══ IDLE BANNER ══ */
-    .idle-banner { display:none; position:fixed; top:0; left:var(--sidebar); right:0; background:rgba(186,117,23,0.95); color:var(--navy); padding:10px 24px; font-size:13px; font-weight:500; align-items:center; justify-content:space-between; z-index:100; }
-    .idle-banner.show { display:flex; }
-    .idle-stay { background:var(--navy); color:var(--gold2); border:none; padding:6px 16px; border-radius:4px; font-size:13px; font-family:'DM Sans',sans-serif; cursor:pointer; font-weight:500; }
+    .brand { display:flex; align-items:center; gap:12px; animation:fadeUp 0.6s ease both; }
+    .brand-icon { width:36px; height:36px; background:var(--gold); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .brand-name { font-family:'Playfair Display',serif; font-size:22px; letter-spacing:0.02em; color:var(--cream); }
+    .brand-name span { color:var(--gold); }
+    .hero { animation:fadeUp 0.7s 0.15s ease both; }
+    .hero-tag { display:inline-block; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); border:1px solid var(--border); padding:4px 12px; border-radius:2px; margin-bottom:28px; }
+    .hero h1 { font-family:'Playfair Display',serif; font-size:42px; font-weight:600; line-height:1.2; margin-bottom:20px; color:var(--cream); }
+    .hero h1 em { font-style:italic; color:var(--gold2); }
+    .hero p { font-size:15px; color:var(--muted); line-height:1.7; max-width:340px; }
+    .stats { display:flex; gap:40px; animation:fadeUp 0.7s 0.3s ease both; }
+    .stat-val { font-family:'Playfair Display',serif; font-size:28px; color:var(--gold2); }
+    .stat-label { font-size:12px; color:var(--muted); margin-top:2px; letter-spacing:0.04em; }
 
-    /* ══ MODAL ══ */
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; }
-    .modal-overlay.show { display:flex; }
-    .modal-box { background:var(--navy2); border:1px solid var(--border2); border-radius:var(--radius); padding:32px; width:100%; max-width:380px; }
-    .modal-title { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:6px; color:var(--cream); }
-    .modal-sub { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
-    .modal-field { margin-bottom:16px; }
-    .modal-field label { display:block; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
-    .modal-field input { width:100%; background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:11px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s; }
-    .modal-field input:focus { border-color:var(--gold); }
-    .modal-field input::placeholder { color:rgba(138,155,176,0.45); }
-    .modal-err { font-size:13px; color:#f08080; margin-top:10px; min-height:20px; }
-    .modal-actions { display:flex; gap:10px; margin-top:20px; }
-    .modal-actions button { flex:1; padding:11px; font-family:'DM Sans',sans-serif; font-size:14px; border-radius:var(--radius); cursor:pointer; border:none; transition:background 0.2s; }
-    .modal-btn-primary { background:var(--gold); color:var(--navy); font-weight:500; }
-    .modal-btn-primary:hover { background:var(--gold2); }
-    .modal-btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border) !important; }
-    .modal-btn-ghost:hover { color:var(--cream); }
+    .right { display:flex; align-items:flex-start; justify-content:center; padding:52px 48px; background:var(--navy); overflow-y:auto; }
+    .form-card { width:100%; max-width:400px; animation:fadeUp 0.7s 0.2s ease both; padding:8px 0 40px; }
 
-    /* ══ MAIN ══ */
-    .main { flex:1; overflow-y:auto; padding:36px 40px; background:var(--navy); }
-    .page { display:none; }
-    .page.active { display:block; animation:fadeIn 0.25s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
-    .page-header { margin-bottom:32px; }
-    .page-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:600; color:var(--cream); }
-    .page-sub { font-size:14px; color:var(--muted); margin-top:4px; }
+    .tab-row { display:flex; margin-bottom:36px; border-bottom:1px solid var(--border); }
+    .tab { flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color 0.2s,border-color 0.2s; background:none; border-left:none; border-right:none; border-top:none; }
+    .tab.active { color:var(--gold2); border-bottom-color:var(--gold); }
 
-    /* ══ STAT CARDS ══ */
-    .stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
-    .stat-card { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
-    .stat-label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
-    .stat-val   { font-family:'Playfair Display',serif; font-size:26px; color:var(--gold2); }
-    .stat-sub   { font-size:12px; color:var(--muted); margin-top:4px; }
+    .form-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
+    .form-sub { font-size:13px; color:var(--muted); margin-bottom:28px; line-height:1.6; }
 
-    /* ══ CARD ══ */
-    .card { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px; }
-    .card-title { font-size:14px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
+    .field { margin-bottom:18px; }
+    .field label { display:block; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+    .field input { width:100%; background:#162336; border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; padding:12px 16px; border-radius:var(--radius); outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+    .field input::placeholder { color:rgba(138,155,176,0.5); }
+    .field input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.08); }
 
-    /* ══ FORM ══ */
-    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .form-grid .full { grid-column:1/-1; }
-    .field { display:flex; flex-direction:column; gap:7px; }
-    .field label { font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
-    .field input,.field select { background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:11px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s,box-shadow 0.2s; appearance:none; }
-    .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; }
-    .field select option { background:var(--navy2); }
-    .field input::placeholder { color:rgba(138,155,176,0.45); }
-    .field input:focus,.field select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.08); }
-    .custom-cat-wrap { display:none; margin-top:8px; }
-    .custom-cat-wrap.show { display:block; }
-    .custom-cat-hint { font-size:11px; color:var(--muted); margin-top:5px; }
-    .ml-badge { display:inline-block; font-size:10px; padding:2px 8px; background:rgba(201,168,76,0.12); color:var(--gold); border:1px solid var(--border2); border-radius:20px; margin-left:6px; letter-spacing:0.06em; }
-    .edit-banner { display:none; background:rgba(201,168,76,0.08); border:1px solid var(--border2); border-radius:var(--radius); padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--gold2); align-items:center; gap:10px; }
-    .edit-banner.show { display:flex; }
-    .edit-banner-close { margin-left:auto; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; transition:color 0.2s; }
-    .edit-banner-close:hover { color:var(--cream); }
-    .btn-primary { padding:12px 28px; background:var(--gold); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; border:none; border-radius:var(--radius); cursor:pointer; transition:background 0.2s,transform 0.1s; letter-spacing:0.04em; }
+    .row-between { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .remember { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); cursor:pointer; }
+    .remember input[type="checkbox"] { accent-color:var(--gold); width:14px; height:14px; }
+    .forgot { font-size:13px; color:var(--gold); cursor:pointer; }
+    .forgot:hover { color:var(--gold2); }
+
+    .btn-primary { width:100%; background:var(--gold); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; padding:14px; border:none; border-radius:var(--radius); cursor:pointer; letter-spacing:0.04em; transition:background 0.2s,transform 0.1s; }
     .btn-primary:hover { background:var(--gold2); }
-    .btn-primary:active { transform:scale(0.98); }
-    .btn-ghost { padding:11px 20px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:14px; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:color 0.2s,border-color 0.2s; }
-    .btn-ghost:hover { color:var(--cream); border-color:var(--border2); }
-    .btn-danger { padding:11px 24px; background:transparent; color:var(--danger); font-family:'DM Sans',sans-serif; font-size:14px; border:1px solid rgba(224,85,85,0.4); border-radius:var(--radius); cursor:pointer; transition:background 0.2s; }
-    .btn-danger:hover { background:rgba(224,85,85,0.1); }
-    .form-actions { display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
+    .btn-primary:active { transform:scale(0.99); }
+    .btn-primary:disabled { opacity:0.7; cursor:not-allowed; }
 
-    /* ══ TABLE ══ */
-    .table-controls { display:flex; gap:12px; margin-bottom:16px; align-items:center; }
-    .search-box { flex:1; background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; padding:10px 14px; border-radius:var(--radius); outline:none; transition:border-color 0.2s; }
-    .search-box:focus { border-color:var(--gold); }
-    .search-box::placeholder { color:rgba(138,155,176,0.45); }
-    .filter-select { background:var(--navy3); border:1px solid var(--border); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:13px; padding:10px 32px 10px 12px; border-radius:var(--radius); outline:none; appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A9BB0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
-    .filter-select option { background:var(--navy2); }
-    table { width:100%; border-collapse:collapse; font-size:14px; }
-    thead tr { border-bottom:1px solid var(--border2); }
-    th { text-align:left; padding:10px 14px; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
-    td { padding:13px 14px; border-bottom:1px solid rgba(201,168,76,0.06); color:var(--cream); vertical-align:middle; }
-    tbody tr { transition:background 0.15s; }
-    tbody tr:hover { background:rgba(201,168,76,0.04); }
-    .amount-cell { font-family:'Playfair Display',serif; font-size:15px; color:var(--gold2); }
-    .cat-pill { display:inline-block; font-size:11px; padding:3px 10px; border-radius:20px; font-weight:500; }
-    .action-btn { background:none; border:none; cursor:pointer; font-size:14px; padding:4px 7px; border-radius:4px; transition:color 0.2s,background 0.2s; color:var(--muted); }
-    .action-btn:hover.edit-btn { color:var(--gold2); background:rgba(201,168,76,0.1); }
-    .action-btn:hover.del-btn  { color:var(--danger); background:rgba(224,85,85,0.1); }
-    .action-cell { display:flex; gap:4px; }
-    .empty-state { text-align:center; padding:48px 0; color:var(--muted); font-size:14px; }
-    .empty-state .empty-icon { font-size:36px; margin-bottom:12px; }
+    .section-divider { border:none; border-top:1px solid var(--border); margin:8px 0 18px; }
+    .section-label { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
 
-    /* ══ CHARTS ══ */
-    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-    .chart-box { background:var(--navy2); border:1px solid var(--border); border-radius:var(--radius); padding:24px; }
-    .chart-title { font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
-    canvas { max-height:260px; }
+    .codes-box { background:#0a1520; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
+    .codes-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+    .code-chip { font-family:monospace; font-size:14px; font-weight:600; color:var(--gold2); background:rgba(201,168,76,0.08); border:1px solid var(--border); border-radius:4px; padding:8px 12px; text-align:center; letter-spacing:0.1em; }
+    .codes-warning { font-size:12px; color:#e08070; line-height:1.5; }
+    .btn-copy { width:100%; padding:10px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; margin-bottom:12px; transition:color 0.2s,border-color 0.2s; }
+    .btn-copy:hover { color:var(--cream); border-color:rgba(201,168,76,0.4); }
 
-    /* ══ CSV ══ */
-    .drop-zone { border:2px dashed var(--border2); border-radius:var(--radius); padding:48px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; margin-bottom:20px; }
-    .drop-zone:hover,.drop-zone.drag-over { border-color:var(--gold); background:rgba(201,168,76,0.04); }
-    .drop-icon { font-size:36px; margin-bottom:12px; }
-    .drop-title { font-size:15px; font-weight:500; margin-bottom:6px; }
-    .drop-sub { font-size:13px; color:var(--muted); margin-bottom:16px; }
-    #csv-file-input,#json-import-input { display:none; }
-    .preview-table { overflow-x:auto; overflow-y:visible; margin-top:16px; position:relative; z-index:1; }
-    .import-actions { display:flex; gap:12px; margin-top:16px; }
+    .msg { margin-top:14px; padding:12px 14px; border-radius:var(--radius); font-size:13px; display:none; }
+    .msg.success { background:rgba(100,200,120,0.1); border:1px solid rgba(100,200,120,0.2); color:#7ed49a; display:block; }
+    .msg.error   { background:rgba(220,80,80,0.1); border:1px solid rgba(220,80,80,0.2); color:#f08080; display:block; }
 
-    /* ══ BACKUP ══ */
-    .export-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px; }
-    .export-card { background:var(--navy3); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
-    .export-card-title { font-size:13px; font-weight:500; color:var(--cream); margin-bottom:6px; }
-    .export-card-sub { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
-    .danger-zone { background:rgba(224,85,85,0.06); border:1px solid rgba(224,85,85,0.2); border-radius:var(--radius); padding:20px; }
-    .danger-title { font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--danger); margin-bottom:8px; }
-    .danger-sub { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
-    .enc-badge { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--success); background:rgba(92,184,92,0.1); border:1px solid rgba(92,184,92,0.2); border-radius:20px; padding:3px 10px; margin-bottom:20px; }
-    .info-msg { font-size:13px; padding:12px 14px; border-radius:var(--radius); margin-top:12px; display:none; }
-    .info-msg.show { display:block; }
-    .info-msg.success { background:rgba(92,184,92,0.1); border:1px solid rgba(92,184,92,0.2); color:var(--success); }
-    .info-msg.error   { background:rgba(224,85,85,0.1); border:1px solid rgba(224,85,85,0.2); color:#f08080; }
-    .info-msg.info    { background:rgba(201,168,76,0.08); border:1px solid var(--border2); color:var(--muted); }
+    .fp-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer; margin-bottom:24px; background:none; border:none; padding:0; transition:color 0.2s; }
+    .fp-back:hover { color:var(--cream); }
+    .steps { display:flex; gap:6px; margin-bottom:28px; }
+    .step-dot { height:3px; flex:1; border-radius:2px; background:var(--border); transition:background 0.35s; }
+    .step-dot.active { background:var(--gold); }
+    .step-dot.done   { background:rgba(201,168,76,0.4); }
 
-    /* ══ TOAST ══ */
-    .toast { position:fixed; bottom:28px; right:28px; background:var(--navy2); border:1px solid var(--border2); color:var(--cream); padding:14px 20px; border-radius:var(--radius); font-size:14px; opacity:0; transform:translateY(10px); transition:opacity 0.3s,transform 0.3s; pointer-events:none; z-index:999; }
-    .toast.show { opacity:1; transform:translateY(0); }
-    .toast.gold  { border-left:3px solid var(--gold); }
-    .toast.green { border-left:3px solid var(--success); }
-    .toast.red   { border-left:3px solid var(--danger); }
+    .warning-box { background:rgba(224,85,85,0.08); border:1px solid rgba(224,85,85,0.2); border-radius:var(--radius); padding:14px 16px; font-size:13px; color:#f08070; line-height:1.6; margin-bottom:20px; }
 
-    .main::-webkit-scrollbar { width:6px; }
-    .main::-webkit-scrollbar-track { background:transparent; }
-    .main::-webkit-scrollbar-thumb { background:rgba(201,168,76,0.2); border-radius:3px; }
-
-    @media (max-width:900px) {
-      .stat-row { grid-template-columns:1fr 1fr; }
-      .chart-grid,.export-grid { grid-template-columns:1fr; }
-      .form-grid { grid-template-columns:1fr; }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+    @media (max-width:720px) { .shell{grid-template-columns:1fr;} .left{display:none;} .right{padding:40px 24px;} }
   </style>
 </head>
 <body>
-
-<!-- ══ PASSWORD MODAL (used for import verification) ══ -->
-<div class="modal-overlay" id="pw-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modal-title">Confirm your password</div>
-    <div class="modal-sub" id="modal-sub">Enter your current password to verify this backup belongs to your account.</div>
-    <div class="modal-field">
-      <label>Password</label>
-      <input type="password" id="modal-pw" placeholder="Your current password"/>
+<div class="shell">
+  <div class="left">
+    <div class="brand">
+      <div class="brand-icon">₹</div>
+      <div class="brand-name">Expense<span>IQ</span></div>
     </div>
-    <div class="modal-err" id="modal-err"></div>
-    <div class="modal-actions">
-      <button class="modal-btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn-primary" onclick="confirmImport()">Import →</button>
+    <div class="hero">
+      <div class="hero-tag">Financial Intelligence</div>
+      <h1>Track every rupee with <em>clarity</em></h1>
+      <p>An offline-first expense management platform that learns your habits and keeps your data private — always on your device.</p>
+    </div>
+    <div class="stats">
+      <div><div class="stat-val">100%</div><div class="stat-label">Offline capable</div></div>
+      <div><div class="stat-val">0</div><div class="stat-label">Data sent to servers</div></div>
+      <div><div class="stat-val">AES</div><div class="stat-label">Encrypted storage</div></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="form-card">
+      <div class="tab-row" id="tab-row">
+        <button class="tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="login-form">
+        <div class="form-title">Welcome back</div>
+        <div class="form-sub">Sign in to access your encrypted expenses</div>
+        <div class="field"><label>Username</label><input type="text" id="l-user" placeholder="Enter your username" autocomplete="username"/></div>
+        <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"/></div>
+        <div class="row-between">
+          <label class="remember"><input type="checkbox" id="remember"/> Remember me</label>
+          <span class="forgot" onclick="showForgot()">Forgot password?</span>
+        </div>
+        <button class="btn-primary" id="login-btn" onclick="handleLogin()">Sign In →</button>
+        <div id="login-msg" class="msg"></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="register-form" style="display:none">
+        <div id="reg-step-a">
+          <div class="form-title">Create account</div>
+          <div class="form-sub">Set up your private encrypted expense tracker</div>
+          <div class="field"><label>Full Name</label><input type="text" id="r-name" placeholder="Your name"/></div>
+          <div class="field"><label>Username</label><input type="text" id="r-user" placeholder="Choose a username"/></div>
+          <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="Create a strong password"/></div>
+          <div class="field"><label>Confirm Password</label><input type="password" id="r-pass2" placeholder="Repeat your password"/></div>
+          <button class="btn-primary" id="register-btn" onclick="handleRegister()">Generate Recovery Codes →</button>
+          <div id="register-msg" class="msg"></div>
+        </div>
+        <div id="reg-step-b" style="display:none">
+          <div class="form-title">Save your recovery codes</div>
+          <div class="form-sub">These 8 codes are the <strong style="color:var(--cream)">only way</strong> to reset your password while keeping your data. Each works once. Save them now — they will never be shown again.</div>
+          <div class="codes-box">
+            <div class="codes-grid" id="codes-grid"></div>
+            <div class="codes-warning">⚠ Screenshot or write these down before continuing.</div>
+          </div>
+          <button class="btn-copy" onclick="copyCodes()">Copy all codes to clipboard</button>
+          <button class="btn-primary" onclick="confirmCodes()">I've saved my codes →</button>
+        </div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="fp-panel" style="display:none">
+        <button class="fp-back" onclick="hideForgot()">← Back to sign in</button>
+        <div class="steps">
+          <div class="step-dot active" id="dot-1"></div>
+          <div class="step-dot" id="dot-2"></div>
+          <div class="step-dot" id="dot-3"></div>
+        </div>
+
+        <!-- Step 1: username -->
+        <div id="fp-step1">
+          <div class="form-title">Reset password</div>
+          <div class="form-sub">Enter your username to get started</div>
+          <div class="field"><label>Username</label><input type="text" id="fp-user" placeholder="Your username"/></div>
+          <button class="btn-primary" onclick="fpStep1()">Continue →</button>
+          <div id="fp-msg1" class="msg"></div>
+        </div>
+
+        <!-- Step 2: recovery code -->
+        <div id="fp-step2" style="display:none">
+          <div class="form-title">Enter recovery code</div>
+          <div class="form-sub">Enter one of your 8 recovery codes. It will be marked as used after this.</div>
+          <div class="field">
+            <label>Recovery Code</label>
+            <input type="text" id="fp-code" placeholder="e.g. X7K2-MNPQ" style="font-family:monospace;letter-spacing:0.08em" oninput="this.value=this.value.toUpperCase()"/>
+          </div>
+          <div id="fp-codes-left" style="font-size:12px;color:var(--muted);margin-bottom:16px"></div>
+          <button class="btn-primary" onclick="fpStep2()">Verify Code →</button>
+          <div id="fp-msg2" class="msg"></div>
+        </div>
+
+        <!-- Step 3: new password — NO old password needed -->
+        <div id="fp-step3" style="display:none">
+          <div class="form-title">New password</div>
+          <div class="form-sub">Your recovery code was verified. Choose a new password — your existing expense data will be fully preserved.</div>
+          <div class="field"><label>New Password</label><input type="password" id="fp-np" placeholder="At least 6 characters"/></div>
+          <div class="field"><label>Confirm New Password</label><input type="password" id="fp-np2" placeholder="Repeat new password"/></div>
+          <button class="btn-primary" id="fp-save-btn" onclick="fpStep3()">Save New Password →</button>
+          <div id="fp-msg3" class="msg"></div>
+        </div>
+
+        <!-- Step 4: all codes used -->
+        <div id="fp-step4" style="display:none">
+          <div class="form-title">All codes used</div>
+          <div class="warning-box">You have used all 8 recovery codes. The only remaining option is a master reset — this will permanently delete your account and all expense data.</div>
+          <div class="field"><label>Type DELETE to confirm</label><input type="text" id="fp-confirm-delete" placeholder='Type "DELETE"'/></div>
+          <button class="btn-primary" style="background:#e05555" onclick="masterReset()">Delete Account & Reset</button>
+          <div id="fp-msg4" class="msg"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- ══ IDLE BANNER ══ -->
-<div class="idle-banner" id="idle-banner">
-  ⚠ You've been inactive for 9 minutes. You'll be signed out in 60 seconds.
-  <button class="idle-stay" onclick="resetIdleTimer()">Stay signed in</button>
-</div>
-
-<div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="sb-brand-icon">₹</div>
-      <div class="sb-brand-name">Expense<span>IQ</span></div>
-    </div>
-    <nav>
-      <div class="nav-item active" onclick="navigate('overview')"  id="nav-overview"><span class="nav-icon">◈</span> Overview</div>
-      <div class="nav-item"        onclick="navigate('add')"       id="nav-add"><span class="nav-icon">＋</span> Add Expense</div>
-      <div class="nav-item"        onclick="navigate('expenses')"  id="nav-expenses"><span class="nav-icon">≡</span> All Expenses</div>
-      <div class="nav-item"        onclick="navigate('charts')"    id="nav-charts"><span class="nav-icon">◎</span> Analytics</div>
-      <div class="nav-item"        onclick="navigate('upload')"    id="nav-upload"><span class="nav-icon">↑</span> Upload CSV</div>
-      <div class="nav-item"        onclick="navigate('backup')"    id="nav-backup"><span class="nav-icon">⬡</span> Backup & Restore</div>
-    </nav>
-    <div class="sb-bottom">
-      <div class="user-chip">
-        <div class="user-avatar" id="user-avatar">U</div>
-        <div>
-          <div class="user-name" id="user-name-display">User</div>
-          <div class="user-sub">Encrypted account</div>
-        </div>
-      </div>
-      <button class="btn-logout" onclick="logout()">Sign out</button>
-    </div>
-  </aside>
-
-  <main class="main">
-
-    <!-- ══ OVERVIEW ══ -->
-    <div class="page active" id="page-overview">
-      <div class="page-header">
-        <div class="page-title">Overview</div>
-        <div class="page-sub" id="overview-date"></div>
-      </div>
-      <div class="enc-badge">🔒 All data encrypted with AES-256-GCM</div>
-      <div class="stat-row">
-        <div class="stat-card"><div class="stat-label">Total Spent</div><div class="stat-val" id="stat-total">₹0</div><div class="stat-sub">All time</div></div>
-        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="stat-month">₹0</div><div class="stat-sub" id="stat-month-label">—</div></div>
-        <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-val" id="stat-count">0</div><div class="stat-sub">Total entries</div></div>
-        <div class="stat-card"><div class="stat-label">Top Category</div><div class="stat-val" id="stat-top-cat" style="font-size:18px">—</div><div class="stat-sub">Highest spend</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Recent Transactions</div>
-        <table id="recent-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead><tbody id="recent-tbody"></tbody></table>
-        <div class="empty-state" id="recent-empty" style="display:none"><div class="empty-icon">₹</div>No expenses yet. Add your first one!</div>
-      </div>
-    </div>
-
-    <!-- ══ ADD / EDIT ══ -->
-    <div class="page" id="page-add">
-      <div class="page-header">
-        <div class="page-title" id="add-page-title">Add Expense</div>
-        <div class="page-sub"   id="add-page-sub">Fill in the details. Category is auto-suggested by ML — or choose manually.</div>
-      </div>
-      <div class="edit-banner" id="edit-banner">
-        ✎ Editing an existing transaction. Save to apply changes.
-        <button class="edit-banner-close" onclick="cancelEdit()">✕</button>
-      </div>
-      <div class="card">
-        <div class="card-title" id="form-card-title">Expense Details</div>
-        <div class="form-grid">
-          <div class="field"><label>Date</label><input type="date" id="e-date"/></div>
-          <div class="field"><label>Amount (₹)</label><input type="number" id="e-amount" placeholder="0.00" min="0" step="0.01"/></div>
-          <div class="field full"><label>Description</label><input type="text" id="e-desc" placeholder="e.g. Chef's table, Amazon order…" oninput="onDescInput()"/></div>
-          <div class="field">
-            <label>Category <span class="ml-badge">ML Auto</span></label>
-            <select id="e-cat" onchange="onCatChange()">
-              <option value="">— Select or auto-detect —</option>
-              <option>Food &amp; Dining</option>
-              <option>Shopping</option>
-              <option>Transport</option>
-              <option>Entertainment</option>
-              <option>Health &amp; Medical</option>
-              <option>Utilities &amp; Bills</option>
-              <option>Education</option>
-              <option>Travel</option>
-              <option>Groceries</option>
-              <option>Other</option>
-            </select>
-            <!-- shown when Other is selected -->
-            <div class="custom-cat-wrap" id="custom-cat-wrap">
-              <input type="text" id="e-custom-cat" placeholder="Name this category e.g. Rent, Gym…"/>
-              <div class="custom-cat-hint">This name will be saved and recognised automatically next time.</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Payment Method</label>
-            <select id="e-method">
-              <option>UPI</option><option>Credit Card</option><option>Debit Card</option>
-              <option>Cash</option><option>Net Banking</option>
-            </select>
-          </div>
-          <div class="field full"><label>Notes (optional)</label><input type="text" id="e-notes" placeholder="Any extra details…"/></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-primary" id="save-btn"   onclick="saveExpense()">Save Expense</button>
-          <button class="btn-ghost"   id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel Edit</button>
-          <button class="btn-ghost"   id="clear-btn"  onclick="clearForm()">Clear</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ ALL EXPENSES ══ -->
-    <div class="page" id="page-expenses">
-      <div class="page-header"><div class="page-title">All Expenses</div><div class="page-sub">Search, filter, edit or delete your transactions</div></div>
-      <div class="card">
-        <div class="table-controls">
-          <input class="search-box" placeholder="Search by description…" id="search-input" oninput="renderExpenses()"/>
-          <select class="filter-select" id="filter-cat" onchange="renderExpenses()">
-            <option value="">All Categories</option>
-            <option>Food &amp; Dining</option><option>Shopping</option><option>Transport</option>
-            <option>Entertainment</option><option>Health &amp; Medical</option><option>Utilities &amp; Bills</option>
-            <option>Education</option><option>Travel</option><option>Groceries</option><option>Other</option>
-          </select>
-          <select class="filter-select" id="filter-month" onchange="renderExpenses()"><option value="">All Months</option></select>
-        </div>
-        <table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th>Amount</th><th></th></tr></thead><tbody id="expenses-tbody"></tbody></table>
-        <div class="empty-state" id="expenses-empty" style="display:none"><div class="empty-icon">🔍</div>No matching expenses found.</div>
-      </div>
-    </div>
-
-    <!-- ══ ANALYTICS ══ -->
-    <div class="page" id="page-charts">
-      <div class="page-header"><div class="page-title">Analytics</div><div class="page-sub">Visual breakdown of your spending patterns</div></div>
-      <div class="chart-grid">
-        <div class="chart-box"><div class="chart-title">Spending by Category</div><canvas id="chart-cat"></canvas></div>
-        <div class="chart-box"><div class="chart-title">Monthly Trend</div><canvas id="chart-monthly"></canvas></div>
-        <div class="chart-box"><div class="chart-title">Payment Methods</div><canvas id="chart-method"></canvas></div>
-        <div class="chart-box"><div class="chart-title">Top 5 Spending Days</div><canvas id="chart-days"></canvas></div>
-      </div>
-    </div>
-
-    <!-- ══ UPLOAD CSV ══ -->
-    <div class="page" id="page-upload">
-      <div class="page-header">
-        <div class="page-title">Upload CSV</div>
-        <div class="page-sub">Upload any bank statement or CSV file — the app auto-detects the format</div>
-      </div>
-
-      <!-- Detected bank badge — shown after detection -->
-      <div id="bank-detected-card" style="display:none;margin-bottom:20px">
-        <div class="card" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Detected</div>
-            <div style="font-size:15px;font-weight:500;color:var(--cream)" id="bank-detected-name">—</div>
-          </div>
-          <div style="font-size:22px">🏦</div>
-        </div>
-      </div>
-
-      <!-- Manual column mapper — shown if bank not recognised -->
-      <div id="manual-mapper" style="display:none;margin-bottom:20px">
-        <div class="card">
-          <div class="card-title">Unknown Format — Map Columns</div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">We could not recognise this file format. Please tell us which columns contain the date, description and amount.</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-            <div class="field"><label>Date column</label><select id="map-date" class="filter-select" style="width:100%"></select></div>
-            <div class="field"><label>Description column</label><select id="map-desc" class="filter-select" style="width:100%"></select></div>
-            <div class="field"><label>Amount column</label><select id="map-amount" class="filter-select" style="width:100%"></select></div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:12px" id="mapper-preview-row"></div>
-          <button class="btn-primary" onclick="applyManualMapping()">Apply Mapping →</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Upload File</div>
-        <div class="drop-zone" id="drop-zone"
-          onclick="document.getElementById('csv-file-input').click()"
-          ondragover="event.preventDefault();this.classList.add('drag-over')"
-          ondragleave="this.classList.remove('drag-over')"
-          ondrop="handleDrop(event)">
-          <div class="drop-icon">📂</div>
-          <div class="drop-title">Drop any CSV here</div>
-          <div class="drop-sub">Bank statement or generic CSV — auto-detected</div>
-          <button class="btn-primary" onclick="event.stopPropagation();document.getElementById('csv-file-input').click()">Choose File</button>
-        </div>
-        <input type="file" id="csv-file-input" accept=".csv,.txt" onchange="handleFileSelect(event)"/>
-
-        <!-- Preview table -->
-        <div id="csv-preview" style="display:none">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <div class="card-title" style="margin-bottom:0">Preview <span id="csv-row-count" style="color:var(--muted);font-size:12px;font-weight:400;text-transform:none;letter-spacing:0"></span></div>
-            <div style="font-size:12px;color:var(--muted)" id="csv-skip-info"></div>
-          </div>
-          <!-- Include credits checkbox -->
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:16px;cursor:pointer">
-            <input type="checkbox" id="include-credits" style="accent-color:var(--gold)"/>
-            Include credit transactions (salary, refunds)
-          </label>
-          <div class="preview-table">
-            <table>
-              <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Type</th><th style="min-width:180px">Category</th></tr></thead>
-              <tbody id="csv-preview-tbody"></tbody>
-            </table>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-top:10px" id="csv-pending-msg"></div>
-          <div class="import-actions" style="margin-top:16px">
-            <button class="btn-primary" id="csv-import-btn" onclick="importCSV()">Import All →</button>
-            <button class="btn-ghost" onclick="cancelCSV()">Cancel</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ BACKUP & RESTORE ══ -->
-    <div class="page" id="page-backup">
-      <div class="page-header"><div class="page-title">Backup &amp; Restore</div><div class="page-sub">Export your data or restore from a previous backup</div></div>
-
-      <div class="card">
-        <div class="card-title">How it works</div>
-        <p style="font-size:13px;color:var(--muted);line-height:1.7;">Your exported JSON file is encrypted with AES-256-GCM using your password. Even if someone gets the file, it is completely unreadable without the correct password. To restore on another device, import the file and enter the same password used when the data was created.</p>
-      </div>
-
-      <div class="export-grid">
-        <div class="export-card">
-          <div class="export-card-title">Export Data</div>
-          <div class="export-card-sub">Download all your expenses as an encrypted JSON file. Safe to store anywhere — unreadable without your password.</div>
-          <button class="btn-primary" style="width:100%" onclick="exportJSON()">Download Backup →</button>
-        </div>
-        <div class="export-card">
-          <div class="export-card-title">Import Data</div>
-          <div class="export-card-sub">Restore from a backup file. You will be asked to enter your password before anything is imported. Works with both old and new backup formats.</div>
-          <button class="btn-primary" style="width:100%;background:var(--navy3);color:var(--cream);border:1px solid var(--border2)" onclick="document.getElementById('json-import-input').click()">Choose Backup File →</button>
-          <input type="file" id="json-import-input" accept=".json" onchange="startImport(event)"/>
-          <div class="info-msg" id="import-msg"></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:8px">
-        <div class="card-title">Danger Zone</div>
-        <div class="danger-zone">
-          <div class="danger-title">Delete all expense data</div>
-          <div class="danger-sub">Permanently deletes all your transactions from this device. Your account (username, password, recovery codes) is kept intact. This action cannot be undone.</div>
-          <button class="btn-danger" onclick="deleteAllData()">Delete All Expenses</button>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<div class="toast" id="toast"></div>
-
 <script>
-/* ══════════════════════════════════════════════════
-   AUTH GUARD
-══════════════════════════════════════════════════ */
-const currentUser = JSON.parse(sessionStorage.getItem('eq_current') || 'null');
-const sessionKey  = sessionStorage.getItem('eq_key');
-if (!currentUser || !sessionKey) { window.location.href = 'login.html'; }
-
-document.getElementById('user-name-display').textContent = currentUser.name;
-document.getElementById('user-avatar').textContent       = currentUser.name.charAt(0).toUpperCase();
-document.getElementById('overview-date').textContent     = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
-function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
-
-/* ══════════════════════════════════════════════════
-   IDLE TIMER — auto logout after 10 min inactivity
-══════════════════════════════════════════════════ */
-let idleWarnTimer, idleLogoutTimer;
-function resetIdleTimer() {
-  document.getElementById('idle-banner').classList.remove('show');
-  clearTimeout(idleWarnTimer);
-  clearTimeout(idleLogoutTimer);
-  idleWarnTimer   = setTimeout(() => document.getElementById('idle-banner').classList.add('show'), 9 * 60 * 1000);
-  idleLogoutTimer = setTimeout(() => { sessionStorage.clear(); window.location.href = 'login.html'; }, 10 * 60 * 1000);
-}
-['click','keydown','mousemove','scroll','touchstart'].forEach(e => document.addEventListener(e, resetIdleTimer, { passive:true }));
-resetIdleTimer();
-
 /* ══════════════════════════════════════════════════
    CRYPTO HELPERS
 ══════════════════════════════════════════════════ */
-function bytesToHex(b) { return Array.from(b).map(x => x.toString(16).padStart(2,'0')).join(''); }
-function hexToBytes(h) { return new Uint8Array(h.match(/.{1,2}/g).map(b => parseInt(b, 16))); }
+function bytesToHex(b) { return Array.from(b).map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function hexToBytes(h) { return new Uint8Array(h.match(/.{1,2}/g).map(b=>parseInt(b,16))); }
 
 async function sha256(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  return bytesToHex(new Uint8Array(buf));
 }
 
-async function deriveKey(password, saltHex) {
-  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+// Derive an AES-GCM wrapping key from a password/code + salt using PBKDF2
+async function deriveWrappingKey(secret, saltHex) {
+  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
     { name:'PBKDF2', salt:hexToBytes(saltHex), iterations:100000, hash:'SHA-256' },
     mat, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
   );
 }
 
-async function encryptObj(plainObj) {
-  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
-  const key    = await deriveKey(sessionKey, stored.salt);
-  const iv     = crypto.getRandomValues(new Uint8Array(12));
-  const enc    = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(plainObj)));
-  return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
-}
-
-async function decryptBlob(blob) {
-  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
-  const key    = await deriveKey(sessionKey, stored.salt);
-  const dec    = await crypto.subtle.decrypt({ name:'AES-GCM', iv: hexToBytes(blob.iv) }, key, hexToBytes(blob.ciphertext));
-  return JSON.parse(new TextDecoder().decode(dec));
-}
-
-async function encryptWithPassword(plainObj, password, saltHex) {
-  const key = await deriveKey(password, saltHex);
+// Encrypt arbitrary bytes with a CryptoKey → { iv, ciphertext } hex strings
+async function aesEncrypt(key, plainBytes) {
   const iv  = crypto.getRandomValues(new Uint8Array(12));
-  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(plainObj)));
+  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, plainBytes);
   return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
 }
 
-async function decryptBlobWithPassword(blob, password, saltHex) {
-  const key = await deriveKey(password, saltHex);
-  const dec = await crypto.subtle.decrypt({ name:'AES-GCM', iv: hexToBytes(blob.iv) }, key, hexToBytes(blob.ciphertext));
-  return JSON.parse(new TextDecoder().decode(dec));
+// Decrypt { iv, ciphertext } hex strings with a CryptoKey → Uint8Array
+async function aesDecrypt(key, ivHex, ciphertextHex) {
+  return new Uint8Array(await crypto.subtle.decrypt(
+    { name:'AES-GCM', iv: hexToBytes(ivHex) }, key, hexToBytes(ciphertextHex)
+  ));
+}
+
+// Generate a random 32-byte master key as hex
+function genMasterKeyHex() { return bytesToHex(crypto.getRandomValues(new Uint8Array(32))); }
+
+// Import raw hex bytes as an AES-GCM CryptoKey
+async function importMasterKey(hexKey) {
+  return crypto.subtle.importKey('raw', hexToBytes(hexKey), { name:'AES-GCM' }, false, ['encrypt','decrypt']);
+}
+
+// Wrap (encrypt) master key hex with a secret+salt → { iv, ciphertext }
+async function wrapMasterKey(masterKeyHex, secret, saltHex) {
+  const wk = await deriveWrappingKey(secret, saltHex);
+  return aesEncrypt(wk, new TextEncoder().encode(masterKeyHex));
+}
+
+// Unwrap (decrypt) master key → hex string
+async function unwrapMasterKey(wrapped, secret, saltHex) {
+  const wk    = await deriveWrappingKey(secret, saltHex);
+  const plain = await aesDecrypt(wk, wrapped.iv, wrapped.ciphertext);
+  return new TextDecoder().decode(plain);
+}
+
+// Recovery code generator
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const part  = n => Array.from({length:n}, ()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  return `${part(4)}-${part(4)}`;
+}
+
+/* ══ UI HELPERS ══ */
+function show(id, v, d) { document.getElementById(id).style.display = v?(d||'block'):'none'; }
+function showMsg(id, text, type) { const e=document.getElementById(id); e.textContent=text; e.className='msg '+type; }
+function clearMsg(id) { const e=document.getElementById(id); e.textContent=''; e.className='msg'; }
+function setLoading(id, on, label) { const b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait…':label; }
+
+/* ══ TAB SWITCHING ══ */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0)===(tab==='login')));
+  show('login-form',    tab==='login');
+  show('register-form', tab==='register');
+  show('fp-panel',      false);
+  show('tab-row',       true,'flex');
+  if (tab==='register') { show('reg-step-a',true); show('reg-step-b',false); }
 }
 
 /* ══════════════════════════════════════════════════
-   INDEXEDDB
+   LOGIN
+   Derives master key using stored wrapped key + password
 ══════════════════════════════════════════════════ */
-const DB_NAME = 'ExpenseIQ', DB_VER = 1, STORE = 'expenses';
-let db;
+async function handleLogin() {
+  const user = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!user||!pass) return showMsg('login-msg','Please fill in all fields.','error');
+  setLoading('login-btn',true,'Sign In →');
 
-function initDB() {
-  return new Promise((res, rej) => {
-    const req = indexedDB.open(DB_NAME + '_' + currentUser.username, DB_VER);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath:'id', autoIncrement:true });
-    };
-    req.onsuccess = e => { db = e.target.result; res(db); };
-    req.onerror   = e => rej(e.target.error);
+  const stored = JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
+  if (!stored) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Account not found. Please register first.','error'); }
+
+  // Verify password hash
+  const hashed = await sha256(pass);
+  if (hashed !== stored.passwordHash) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Incorrect password.','error'); }
+
+  // Unwrap master key using password
+  let masterKeyHex;
+  try {
+    masterKeyHex = await unwrapMasterKey(stored.masterKeyWrappedByPassword, pass, stored.salt);
+  } catch(e) {
+    setLoading('login-btn',false,'Sign In →');
+    return showMsg('login-msg','Failed to decrypt master key. Try again.','error');
+  }
+
+  // Store master key hex in sessionStorage (not password — master key is what encrypts data)
+  sessionStorage.setItem('eq_current', JSON.stringify({ username:user, name:stored.name }));
+  sessionStorage.setItem('eq_mk', masterKeyHex);
+
+  showMsg('login-msg','Login successful! Redirecting…','success');
+  setTimeout(()=>{ window.location.href='dashboard.html'; }, 900);
+}
+
+/* ══════════════════════════════════════════════════
+   REGISTER
+   1. Generate random master key
+   2. Wrap master key with password
+   3. Wrap master key with each recovery code
+   4. Store everything — master key itself is NEVER stored plain
+══════════════════════════════════════════════════ */
+let pendingReg = null;
+
+async function handleRegister() {
+  const name  = document.getElementById('r-name').value.trim();
+  const user  = document.getElementById('r-user').value.trim();
+  const pass  = document.getElementById('r-pass').value;
+  const pass2 = document.getElementById('r-pass2').value;
+
+  if (!name||!user||!pass||!pass2)          return showMsg('register-msg','Please fill in all fields.','error');
+  if (pass!==pass2)                          return showMsg('register-msg','Passwords do not match.','error');
+  if (pass.length<6)                         return showMsg('register-msg','Password must be at least 6 characters.','error');
+  if (localStorage.getItem('eq_user_'+user)) return showMsg('register-msg','Username already taken.','error');
+
+  setLoading('register-btn',true,'Generate Recovery Codes →');
+
+  const salt         = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
+  const masterKeyHex = genMasterKeyHex();
+  const passwordHash = await sha256(pass);
+
+  // Wrap master key with password
+  const mkWrappedByPassword = await wrapMasterKey(masterKeyHex, pass, salt);
+
+  // Generate 8 recovery codes
+  const codes = Array.from({length:8}, genCode);
+
+  // Wrap master key with each recovery code (each code gets its own salt)
+  const codeEntries = await Promise.all(codes.map(async code => {
+    const codeSalt    = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
+    const codeHash    = await sha256(code);
+    const mkWrapped   = await wrapMasterKey(masterKeyHex, code, codeSalt);
+    return { codeHash, codeSalt, mkWrapped, used:false };
+  }));
+
+  pendingReg = { name, user, passwordHash, salt, mkWrappedByPassword, codeEntries, masterKeyHex, _codes:codes };
+
+  // Show recovery codes
+  const grid = document.getElementById('codes-grid');
+  grid.innerHTML = '';
+  codes.forEach(c => { const d=document.createElement('div'); d.className='code-chip'; d.textContent=c; grid.appendChild(d); });
+
+  setLoading('register-btn',false,'Generate Recovery Codes →');
+  show('reg-step-a',false);
+  show('reg-step-b',true);
+}
+
+function copyCodes() {
+  if (!pendingReg?._codes) return;
+  navigator.clipboard.writeText(pendingReg._codes.join('\n'))
+    .then(()=>{ document.querySelector('.btn-copy').textContent='✓ Copied!'; })
+    .catch(()=>{ alert(pendingReg._codes.join('\n')); });
+}
+
+function confirmCodes() {
+  if (!pendingReg) return;
+  localStorage.setItem('eq_user_'+pendingReg.user, JSON.stringify({
+    name:                    pendingReg.name,
+    passwordHash:            pendingReg.passwordHash,
+    salt:                    pendingReg.salt,
+    masterKeyWrappedByPassword: pendingReg.mkWrappedByPassword,
+    recoveryCodes:           pendingReg.codeEntries,
+  }));
+  // Store master key in session so dashboard works immediately after register
+  sessionStorage.setItem('eq_current', JSON.stringify({ username:pendingReg.user, name:pendingReg.name }));
+  sessionStorage.setItem('eq_mk', pendingReg.masterKeyHex);
+  pendingReg = null;
+  show('reg-step-b',false);
+  show('reg-step-a',true);
+  switchTab('login');
+  setTimeout(()=>showMsg('login-msg','Account created! You can now sign in.','success'),100);
+}
+
+/* ══════════════════════════════════════════════════
+   FORGOT PASSWORD
+   Step 1: username
+   Step 2: recovery code → unwraps master key
+   Step 3: new password → re-wraps master key with new password
+            Data is NEVER touched. Only the wrapped key changes.
+══════════════════════════════════════════════════ */
+function showForgot() {
+  show('login-form',false); show('tab-row',false); show('fp-panel',true);
+  goFpStep(1);
+  ['fp-user','fp-code','fp-np','fp-np2','fp-confirm-delete'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
+  [1,2,3,4].forEach(i=>clearMsg('fp-msg'+i));
+}
+function hideForgot() { show('fp-panel',false); show('login-form',true); show('tab-row',true,'flex'); }
+
+let fpUser='', fpMasterKeyHex=''; // master key recovered in step 2, used in step 3
+
+function goFpStep(n) {
+  [1,2,3,4].forEach(i=>{
+    const el=document.getElementById('fp-step'+i); if(el)el.style.display=i===n?'block':'none';
+    const dot=document.getElementById('dot-'+i); if(dot)dot.className='step-dot'+(i===n?' active':i<n?' done':'');
   });
 }
 
-async function dbAdd(plainObj) {
-  const blob = await encryptObj(plainObj);
-  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).add(blob); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
+function fpStep1() {
+  const user=document.getElementById('fp-user').value.trim();
+  if(!user) return showMsg('fp-msg1','Please enter your username.','error');
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
+  if(!stored) return showMsg('fp-msg1','No account found with that username.','error');
+  fpUser=user;
+  const remaining=stored.recoveryCodes.filter(c=>!c.used).length;
+  if(remaining===0){goFpStep(4);return;}
+  document.getElementById('fp-codes-left').textContent=`${remaining} of 8 recovery codes remaining.`;
+  goFpStep(2);
 }
 
-async function dbGetAll() {
-  const blobs = await new Promise((res, rej) => { const r = db.transaction(STORE,'readonly').objectStore(STORE).getAll(); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
-  const out = [];
-  for (const blob of blobs) {
-    try { out.push({ ...await decryptBlob(blob), id: blob.id }); } catch(e) { console.warn('Skipping unreadable record', blob.id); }
-  }
-  return out;
-}
+async function fpStep2() {
+  const code=document.getElementById('fp-code').value.trim().toUpperCase();
+  if(!code) return showMsg('fp-msg2','Please enter a recovery code.','error');
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
+  const codeHash=await sha256(code);
+  const idx=stored.recoveryCodes.findIndex(c=>!c.used&&c.codeHash===codeHash);
+  if(idx===-1) return showMsg('fp-msg2','Invalid or already used code. Try another.','error');
 
-async function dbPut(plainObj) {
-  const { id, ...rest } = plainObj;
-  const blob = await encryptObj(rest);
-  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).put({ ...blob, id }); r.onsuccess = () => res(r.result); r.onerror = e => rej(e.target.error); });
-}
-
-function dbDelete(id) {
-  return new Promise((res, rej) => { const r = db.transaction(STORE,'readwrite').objectStore(STORE).delete(id); r.onsuccess = () => res(); r.onerror = e => rej(e.target.error); });
-}
-
-function dbClear() {
-  return new Promise((res, rej) => { const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).clear().onsuccess = res; tx.onerror = rej; });
-}
-
-/* ══════════════════════════════════════════════════
-   CUSTOM CATEGORY STORAGE
-   Saves user-defined category names + their keywords
-   so ML can recognise them in future descriptions.
-   Key: eq_custom_cats_username
-   Value: { "Rent": ["rent","landlord"], "Gym": ["gym","cult"] }
-══════════════════════════════════════════════════ */
-function getCustomCats() {
-  return JSON.parse(localStorage.getItem('eq_custom_cats_' + currentUser.username) || '{}');
-}
-
-function saveCustomCat(catName, keyword) {
-  if (!catName || !keyword || catName === 'Other') return;
-  const cats = getCustomCats();
-  if (!cats[catName]) cats[catName] = [];
-  const kw = keyword.toLowerCase().trim();
-  if (kw.length > 2 && !cats[catName].includes(kw)) cats[catName].push(kw);
-  localStorage.setItem('eq_custom_cats_' + currentUser.username, JSON.stringify(cats));
-}
-
-/* ══════════════════════════════════════════════════
-   ML AUTO-CATEGORIZATION
-
-   FIX: userSelectedCategory tracks when the user has
-   manually chosen a category. autoCategory() only runs
-   when the user is still typing and hasn't manually
-   picked a category yet. If they manually select
-   Food & Dining for "Chef's table", we remember that
-   binding and never auto-override it.
-══════════════════════════════════════════════════ */
-const ML_RULES = [
-  { cat:'Food & Dining',     keys:['swiggy','zomato','food','restaurant','cafe','pizza','burger','biryani','dine','eat','lunch','dinner','breakfast','kitchen','chef','table','cafe','dhaba','mess','canteen'] },
-  { cat:'Shopping',          keys:['amazon','flipkart','myntra','shop','purchase','order','buy','store','mall','market','meesho','ajio','nykaa'] },
-  { cat:'Transport',         keys:['uber','ola','rapido','auto','cab','taxi','bus','train','metro','fuel','petrol','diesel','parking','toll','irctc','flight'] },
-  { cat:'Entertainment',     keys:['netflix','hotstar','spotify','prime','youtube','movie','cinema','pvr','inox','game','play','concert','ticket'] },
-  { cat:'Health & Medical',  keys:['pharmacy','medicine','hospital','doctor','clinic','apollo','medplus','health','med','prescription','chemist'] },
-  { cat:'Utilities & Bills', keys:['electricity','water','gas','internet','wifi','broadband','airtel','jio','bsnl','vodafone','bill','recharge','topup','dth'] },
-  { cat:'Education',         keys:['school','college','university','tuition','course','udemy','coursera','book','stationery','fees'] },
-  { cat:'Travel',            keys:['hotel','resort','booking','makemytrip','goibibo','airbnb','trip','holiday','vacation','oyo'] },
-  { cat:'Groceries',         keys:['bigbasket','blinkit','zepto','dmart','grocery','vegetable','fruit','milk','eggs','supermarket'] },
-];
-
-// Tracks whether user has manually changed the category dropdown
-let userSelectedCategory = false;
-
-function mlCategorize(desc) {
-  const lower = desc.toLowerCase();
-  // Check built-in rules
-  for (const rule of ML_RULES) {
-    if (rule.keys.some(k => lower.includes(k))) return rule.cat;
-  }
-  // Check user-defined custom categories
-  for (const [name, keywords] of Object.entries(getCustomCats())) {
-    if (keywords.some(k => lower.includes(k))) return name;
-  }
-  return '';
-}
-
-// Called when user types in description field
-function onDescInput() {
-  // Do not auto-suggest if user has manually picked a category this session
-  if (userSelectedCategory) return;
-  // Do not auto-suggest if user is already typing a custom category name
-  if (document.getElementById('e-custom-cat').value.trim()) return;
-  const desc = document.getElementById('e-desc').value;
-  if (desc.length < 3) return;
-  const cat = mlCategorize(desc);
-  if (!cat) return;
-  const select = document.getElementById('e-cat');
-  const opts   = [...select.options].map(o => o.value);
-  if (opts.includes(cat)) {
-    // Built-in category matched
-    select.value = cat;
-    document.getElementById('custom-cat-wrap').classList.remove('show');
-  } else {
-    // Learned custom category matched — show Other and prefill the name
-    // But only if the user has not already selected Other and typed their own name
-    if (select.value !== 'Other') {
-      select.value = 'Other';
-      document.getElementById('custom-cat-wrap').classList.add('show');
-      document.getElementById('e-custom-cat').value = cat;
-    }
-  }
-}
-
-// Called when user manually changes the category dropdown
-function onCatChange() {
-  // Mark that user has made a deliberate choice — stop auto-overriding
-  userSelectedCategory = true;
-  const val = document.getElementById('e-cat').value;
-  document.getElementById('custom-cat-wrap').classList.toggle('show', val === 'Other');
-  if (val !== 'Other') document.getElementById('e-custom-cat').value = '';
-}
-
-function resolvedCategory() {
-  const cat = document.getElementById('e-cat').value;
-  if (cat === 'Other') {
-    const custom = document.getElementById('e-custom-cat').value.trim();
-    return custom || 'Other';
-  }
-  return cat || 'Other';
-}
-
-/* ══════════════════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════════════════ */
-const PAGES = ['overview','add','expenses','charts','upload','backup'];
-let chartsBuilt = false;
-
-function navigate(page) {
-  PAGES.forEach(p => {
-    document.getElementById('page-' + p).classList.toggle('active', p === page);
-    document.getElementById('nav-'  + p).classList.toggle('active', p === page);
-  });
-  if (page === 'overview') refreshOverview();
-  if (page === 'expenses') renderExpenses();
-  if (page === 'charts')   renderCharts();
-  if (page !== 'add' && editingId !== null) cancelEdit(false);
-}
-
-/* ══════════════════════════════════════════════════
-   EDIT STATE
-══════════════════════════════════════════════════ */
-let editingId = null;
-
-function startEdit(expense) {
-  editingId = expense.id;
-  userSelectedCategory = false; // reset so ML works again on desc changes
-  document.getElementById('e-date').value   = expense.date;
-  document.getElementById('e-amount').value = expense.amount;
-  document.getElementById('e-desc').value   = expense.description;
-  document.getElementById('e-method').value = expense.method || 'UPI';
-  document.getElementById('e-notes').value  = expense.notes || '';
-
-  const select = document.getElementById('e-cat');
-  const opts   = [...select.options].map(o => o.value);
-  if (opts.includes(expense.category)) {
-    select.value = expense.category;
-    document.getElementById('custom-cat-wrap').classList.remove('show');
-  } else {
-    select.value = 'Other';
-    document.getElementById('custom-cat-wrap').classList.add('show');
-    document.getElementById('e-custom-cat').value = expense.category;
-  }
-  userSelectedCategory = true; // pre-filled = treat as manually selected
-
-  document.getElementById('add-page-title').textContent  = 'Edit Expense';
-  document.getElementById('add-page-sub').textContent    = 'Update the details and save.';
-  document.getElementById('form-card-title').textContent = 'Edit Details';
-  document.getElementById('save-btn').textContent        = 'Update Expense';
-  document.getElementById('cancel-btn').style.display   = 'inline-block';
-  document.getElementById('clear-btn').style.display    = 'none';
-  document.getElementById('edit-banner').classList.add('show');
-  navigate('add');
-}
-
-function cancelEdit(doNav = true) {
-  editingId = null;
-  clearForm();
-  document.getElementById('add-page-title').textContent  = 'Add Expense';
-  document.getElementById('add-page-sub').textContent    = 'Fill in the details. Category is auto-suggested by ML — or choose manually.';
-  document.getElementById('form-card-title').textContent = 'Expense Details';
-  document.getElementById('save-btn').textContent        = 'Save Expense';
-  document.getElementById('cancel-btn').style.display   = 'none';
-  document.getElementById('clear-btn').style.display    = 'inline-block';
-  document.getElementById('edit-banner').classList.remove('show');
-  if (doNav) navigate('expenses');
-}
-
-/* ══════════════════════════════════════════════════
-   EXPENSE FORM
-══════════════════════════════════════════════════ */
-document.getElementById('e-date').value = new Date().toISOString().split('T')[0];
-
-function clearForm() {
-  ['e-amount','e-desc','e-notes','e-custom-cat'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('e-cat').value    = '';
-  document.getElementById('e-method').value = 'UPI';
-  document.getElementById('e-date').value   = new Date().toISOString().split('T')[0];
-  document.getElementById('custom-cat-wrap').classList.remove('show');
-  userSelectedCategory = false; // reset flag when form is cleared
-}
-
-async function saveExpense() {
-  const date   = document.getElementById('e-date').value;
-  const amount = parseFloat(document.getElementById('e-amount').value);
-  const desc   = document.getElementById('e-desc').value.trim();
-  const cat    = resolvedCategory();
-  const method = document.getElementById('e-method').value;
-  const notes  = document.getElementById('e-notes').value.trim();
-
-  if (!date || !amount || !desc) return showToast('Please fill in Date, Amount and Description.', 'red');
-  if (amount <= 0)               return showToast('Amount must be greater than zero.', 'red');
-
-  // If user chose a named custom category (Other + text), save keyword mappings
-  if (document.getElementById('e-cat').value === 'Other') {
-    const customName = document.getElementById('e-custom-cat').value.trim();
-    if (customName && customName !== 'Other') {
-      // Save each meaningful word from the description as a keyword for this custom category
-      desc.toLowerCase().split(/\s+/).forEach(word => saveCustomCat(customName, word));
-    }
-  } else if (cat && cat !== 'Other') {
-    // User manually selected a built-in category for this description
-    // Save the description words as keywords for that category in custom cats
-    // so ML matches it next time without auto-suggesting Other
-    // (only do this for non-obvious descriptions that wouldn't match built-in rules)
-    const autoResult = mlCategorize(desc);
-    if (!autoResult || autoResult !== cat) {
-      // Description wouldn't auto-match this category — save the mapping
-      desc.toLowerCase().split(/\s+/).forEach(word => {
-        if (word.length > 2) saveCustomCat(cat, word);
-      });
-    }
+  // Use the recovery code to unwrap the master key
+  try {
+    fpMasterKeyHex = await unwrapMasterKey(stored.recoveryCodes[idx].mkWrapped, code, stored.recoveryCodes[idx].codeSalt);
+  } catch(e) {
+    return showMsg('fp-msg2','Failed to verify code. Please try again.','error');
   }
 
-  const expense = { date, amount, description: desc, category: cat, method, notes, addedAt: Date.now() };
+  // Mark code as used
+  stored.recoveryCodes[idx].used=true;
+  localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
 
-  if (editingId !== null) {
-    expense.id = editingId;
-    await dbPut(expense);
-    showToast('Expense updated!', 'green');
-    cancelEdit(true);
-  } else {
-    await dbAdd(expense);
-    showToast('Expense saved!', 'green');
-    clearForm();
-  }
-  chartsBuilt = false;
+  const left=stored.recoveryCodes.filter(c=>!c.used).length;
+  if(left<=2) showMsg('fp-msg2',`Code accepted. Only ${left} code(s) remaining — save new ones after logging in.`,'success');
+  goFpStep(3);
 }
 
-/* ══════════════════════════════════════════════════
-   OVERVIEW
-══════════════════════════════════════════════════ */
-async function refreshOverview() {
-  const all = await dbGetAll();
-  const now = new Date();
-  const tm  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+async function fpStep3() {
+  const np =document.getElementById('fp-np').value;
+  const np2=document.getElementById('fp-np2').value;
+  if(!np||!np2)   return showMsg('fp-msg3','Please fill in both fields.','error');
+  if(np!==np2)    return showMsg('fp-msg3','Passwords do not match.','error');
+  if(np.length<6) return showMsg('fp-msg3','Password must be at least 6 characters.','error');
 
-  const total      = all.reduce((s,e) => s + e.amount, 0);
-  const monthTotal = all.filter(e => e.date.startsWith(tm)).reduce((s,e) => s + e.amount, 0);
-  const catT = {};
-  all.forEach(e => catT[e.category] = (catT[e.category] || 0) + e.amount);
-  const top = Object.entries(catT).sort((a,b) => b[1]-a[1])[0];
+  setLoading('fp-save-btn',true,'Save New Password →');
 
-  document.getElementById('stat-total').textContent      = fmt(total);
-  document.getElementById('stat-month').textContent      = fmt(monthTotal);
-  document.getElementById('stat-month-label').textContent = now.toLocaleString('default',{month:'long'}) + ' ' + now.getFullYear();
-  document.getElementById('stat-count').textContent      = all.length;
-  document.getElementById('stat-top-cat').textContent    = top ? top[0] : '—';
+  const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
 
-  const recent = [...all].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-  const tbody  = document.getElementById('recent-tbody');
-  tbody.innerHTML = '';
-  document.getElementById('recent-empty').style.display = recent.length === 0 ? 'block' : 'none';
-  document.getElementById('recent-table').style.display = recent.length === 0 ? 'none' : '';
-  recent.forEach(e => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${e.date}</td><td>${e.description}</td><td>${catPill(e.category)}</td><td class="amount-cell">${fmt(e.amount)}</td>`;
-    tbody.appendChild(tr);
-  });
+  // Re-wrap master key with new password — data is NEVER touched
+  const newPasswordHash          = await sha256(np);
+  const newMkWrappedByPassword   = await wrapMasterKey(fpMasterKeyHex, np, stored.salt);
+
+  stored.passwordHash                  = newPasswordHash;
+  stored.masterKeyWrappedByPassword    = newMkWrappedByPassword;
+  localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
+
+  fpMasterKeyHex=''; // clear from memory
+  setLoading('fp-save-btn',false,'Save New Password →');
+  showMsg('fp-msg3','Password updated! Your data is fully intact. Redirecting…','success');
+  setTimeout(()=>{ hideForgot(); switchTab('login'); }, 1800);
 }
 
-/* ══════════════════════════════════════════════════
-   ALL EXPENSES
-══════════════════════════════════════════════════ */
-async function renderExpenses() {
-  const all    = await dbGetAll();
-  const search = document.getElementById('search-input').value.toLowerCase();
-  const cat    = document.getElementById('filter-cat').value;
-  const month  = document.getElementById('filter-month').value;
-
-  // Rebuild month dropdown
-  const months = [...new Set(all.map(e => e.date.slice(0,7)))].sort().reverse();
-  const mSel   = document.getElementById('filter-month');
-  const mVal   = mSel.value;
-  mSel.innerHTML = '<option value="">All Months</option>';
-  months.forEach(m => {
-    const d = new Date(m + '-01');
-    mSel.innerHTML += `<option value="${m}" ${m===mVal?'selected':''}>${d.toLocaleString('default',{month:'long',year:'numeric'})}</option>`;
-  });
-
-  const filtered = all.filter(e => {
-    if (search && !e.description.toLowerCase().includes(search)) return false;
-    if (cat   && e.category !== cat)        return false;
-    if (month && !e.date.startsWith(month)) return false;
-    return true;
-  }).sort((a,b) => new Date(b.date) - new Date(a.date));
-
-  const tbody = document.getElementById('expenses-tbody');
-  tbody.innerHTML = '';
-  document.getElementById('expenses-empty').style.display = filtered.length === 0 ? 'block' : 'none';
-
-  filtered.forEach(e => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${e.date}</td>
-      <td>${e.description}${e.notes ? `<br><span style="font-size:11px;color:var(--muted)">${e.notes}</span>` : ''}</td>
-      <td>${catPill(e.category)}</td>
-      <td style="color:var(--muted);font-size:13px">${e.method}</td>
-      <td class="amount-cell">${fmt(e.amount)}</td>
-      <td><div class="action-cell">
-        <button class="action-btn edit-btn" onclick="editExpense(${e.id})" title="Edit">✎</button>
-        <button class="action-btn del-btn"  onclick="deleteExpense(${e.id})" title="Delete">✕</button>
-      </div></td>`;
-    tbody.appendChild(tr);
-  });
+function masterReset() {
+  const val=document.getElementById('fp-confirm-delete').value.trim();
+  if(val!=='DELETE') return showMsg('fp-msg4','Please type DELETE to confirm.','error');
+  localStorage.removeItem('eq_user_'+fpUser);
+  indexedDB.deleteDatabase('ExpenseIQ_'+fpUser);
+  showMsg('fp-msg4','Account deleted. You can now register a new account.','success');
+  setTimeout(()=>{ hideForgot(); switchTab('register'); },2000);
 }
 
-async function editExpense(id) {
-  const all = await dbGetAll();
-  const exp = all.find(e => e.id === id);
-  if (exp) startEdit(exp);
-}
-
-async function deleteExpense(id) {
-  if (!confirm('Delete this expense?')) return;
-  await dbDelete(id);
-  renderExpenses();
-  chartsBuilt = false;
-  showToast('Expense deleted.', 'gold');
-}
-
-/* ══════════════════════════════════════════════════
-   CHARTS
-══════════════════════════════════════════════════ */
-let chartInstances = {};
-
-async function renderCharts() {
-  const all = await dbGetAll();
-  const C = ['#C9A84C','#6fa8dc','#6ab187','#c878b8','#e08070','#78a8c8','#a88ad0','#50b8a0','#96c850','#8A9BB0'];
-
-  function mkChart(id, type, labels, data) {
-    if (chartInstances[id]) chartInstances[id].destroy();
-    chartInstances[id] = new Chart(document.getElementById(id).getContext('2d'), {
-      type,
-      data: { labels, datasets: [{ data, backgroundColor:type==='line'?'rgba(201,168,76,0.1)':C, borderColor:type==='line'?'#C9A84C':C, borderWidth:type==='line'?2:1, fill:type==='line', tension:0.4, pointBackgroundColor:'#C9A84C' }] },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: type !== 'bar', labels: { color:'#8A9BB0', font:{ family:'DM Sans', size:12 }, padding:12 } },
-          tooltip: { callbacks: { label: c => ' ₹' + c.parsed.toLocaleString('en-IN') } }
-        },
-        scales: ['bar','line'].includes(type) ? {
-          x: { ticks:{ color:'#8A9BB0', font:{size:11} }, grid:{ color:'rgba(201,168,76,0.06)' } },
-          y: { ticks:{ color:'#8A9BB0', font:{size:11}, callback: v => '₹'+v.toLocaleString('en-IN') }, grid:{ color:'rgba(201,168,76,0.06)' } }
-        } : {}
-      }
-    });
-  }
-
-  const catM = {}, monthM = {}, methodM = {}, dayM = {};
-  all.forEach(e => {
-    catM[e.category]            = (catM[e.category]||0)            + e.amount;
-    monthM[e.date.slice(0,7)]   = (monthM[e.date.slice(0,7)]||0)   + e.amount;
-    methodM[e.method]           = (methodM[e.method]||0)           + e.amount;
-    dayM[e.date]                = (dayM[e.date]||0)                + e.amount;
-  });
-
-  mkChart('chart-cat',     'doughnut', Object.keys(catM), Object.values(catM));
-  const sm = Object.keys(monthM).sort();
-  mkChart('chart-monthly', 'line', sm.map(m => { const d = new Date(m+'-01'); return d.toLocaleString('default',{month:'short',year:'2-digit'}); }), sm.map(m => monthM[m]));
-  mkChart('chart-method',  'pie',  Object.keys(methodM), Object.values(methodM));
-  const top5 = Object.entries(dayM).sort((a,b) => b[1]-a[1]).slice(0,5);
-  mkChart('chart-days',    'bar',  top5.map(d=>d[0]), top5.map(d=>d[1]));
-  chartsBuilt = true;
-}
-
-/* ══════════════════════════════════════════════════
-   CSV / BANK STATEMENT PARSER
-   Auto-detects bank from header row.
-   Supports 10 Indian + 8 international banks.
-   Falls back to manual column mapper if unknown.
-══════════════════════════════════════════════════ */
-
-const BANK_PROFILES = [
-  { name:'SBI',                 dateCol:'txn date',          descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['txn date','ref no'] },
-  { name:'HDFC Bank',           dateCol:'date',              descCol:'narration',            debitCol:'debit amount',     creditCol:'credit amount',  matchKeys:['narration','value dt','chq/ref'] },
-  { name:'ICICI Bank',          dateCol:'transaction date',  descCol:'transaction remarks',  debitCol:'amount (inr)',     creditCol:null,             matchKeys:['transaction remarks','dr/cr'], typeCol:'dr/cr', debitKeyword:'dr' },
-  { name:'Axis Bank',           dateCol:'tran date',         descCol:'particulars',          debitCol:'debit',            creditCol:'credit',         matchKeys:['tran date','particulars'] },
-  { name:'Kotak Mahindra Bank', dateCol:'transaction date',  descCol:'description',          debitCol:'withdrawal amt',   creditCol:'deposit amt',    matchKeys:['withdrawal amt','deposit amt'] },
-  { name:'Yes Bank',            dateCol:'date',              descCol:'transaction details',  debitCol:'debit',            creditCol:'credit',         matchKeys:['transaction details','instrument id'] },
-  { name:'IndusInd Bank',       dateCol:'date',              descCol:'narration',            debitCol:'debit',            creditCol:'credit',         matchKeys:['narration','chq. no.','running balance'] },
-  { name:'PNB',                 dateCol:'value date',        descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['transaction id','value date'] },
-  { name:'Canara Bank',         dateCol:'transaction date',  descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['sl no','transaction date'] },
-  { name:'Bank of Baroda',      dateCol:'txn date',          descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['txn date','description'] },
-  { name:'Chase',               dateCol:'transaction date',  descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['transaction date','post date','category','type'], negativeIsDebit:true },
-  { name:'Bank of America',     dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','description','amount','running bal'], negativeIsDebit:true },
-  { name:'Wells Fargo',         dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','amount','description'], negativeIsDebit:true },
-  { name:'Citibank',            dateCol:'date',              descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['date','description','debit','credit'] },
-  { name:'Barclays',            dateCol:'date',              descCol:'memo',                 debitCol:'amount',           creditCol:null,             matchKeys:['date','memo','amount'], negativeIsDebit:true },
-  { name:'HSBC',                dateCol:'date',              descCol:'description',          debitCol:'paid out',         creditCol:'paid in',        matchKeys:['paid out','paid in'] },
-  { name:'Standard Chartered',  dateCol:'date',              descCol:'description',          debitCol:'debit',            creditCol:'credit',         matchKeys:['date','description','debit','credit','running balance'] },
-  { name:'American Express',    dateCol:'date',              descCol:'description',          debitCol:'amount',           creditCol:null,             matchKeys:['date','description','amount'], negativeIsDebit:false },
-];
-
-function normaliseDate(raw) {
-  if (!raw) return '';
-  let s = raw.replace(/#/g,'').trim().split(' ')[0].split('T')[0];
-  let m;
-  if ((m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/)))
-    return `${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}-${m[3]}`;
-  if ((m = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})$/)))
-    return `${m[3]}-${m[2]}-${m[1]}`;
-  if ((m = s.match(/^(\d{1,2})[\/\-]([A-Za-z]{3})[\/\-](\d{4})$/))) {
-    const mo = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
-    return `${m[1].padStart(2,'0')}-${mo[m[2].toLowerCase()]||'01'}-${m[3]}`;
-  }
-  return s;
-}
-
-function displayToStorage(ddmmyyyy) {
-  const p = ddmmyyyy.split('-');
-  return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ddmmyyyy;
-}
-
-function cleanDesc(raw) {
-  if (!raw) return '';
-  return raw
-    .replace(/^(UPI|NEFT|IMPS|RTGS|ACH|ATM|POS|INB|MOB|INT|DP|CHQ|CLG|ECS|SI|TRF|VPS|VISA|NACH)[\/\-\s]*/i,'')
-    .replace(/\d{8,}/g,'').replace(/[*]+/g,'').replace(/\s{2,}/g,' ').trim();
-}
-
-function parseCSVText(text) {
-  return text.trim().split(/\r?\n/).map(line => {
-    const cols = []; let cur = '', inQ = false;
-    for (const c of line) {
-      if (c==='"') inQ=!inQ;
-      else if (c===',' && !inQ) { cols.push(cur.trim()); cur=''; }
-      else cur+=c;
-    }
-    cols.push(cur.trim());
-    return cols.map(c=>c.replace(/^"|"$/g,'').trim());
-  });
-}
-
-function detectBank(headerRow) {
-  const h = headerRow.map(c=>c.toLowerCase().trim());
-  let best=null, bestScore=0;
-  for (const p of BANK_PROFILES) {
-    const score = p.matchKeys.filter(k=>h.some(hh=>hh.includes(k)||k.includes(hh))).length / p.matchKeys.length;
-    if (score > bestScore && score >= 0.5) { bestScore=score; best=p; }
-  }
-  return best;
-}
-
-function getColVal(row, headers, colName) {
-  if (!colName) return '';
-  const h = headers.map(c=>c.toLowerCase().trim());
-  const idx = h.findIndex(hh=>hh.includes(colName.toLowerCase())||colName.toLowerCase().includes(hh));
-  return idx>=0 ? (row[idx]||'').replace(/,/g,'').trim() : '';
-}
-
-function extractAmount(row, headers, profile) {
-  if (profile.typeCol) {
-    const amt = parseFloat(getColVal(row,headers,profile.debitCol));
-    const h = headers.map(c=>c.toLowerCase().trim());
-    const ti = h.findIndex(hh=>hh.includes(profile.typeCol.toLowerCase()));
-    const type = ti>=0 ? (row[ti]||'').toLowerCase() : '';
-    if (isNaN(amt)) return null;
-    return { amount:Math.abs(amt), isDebit:type.includes(profile.debitKeyword.toLowerCase()) };
-  }
-  if (profile.negativeIsDebit !== undefined) {
-    const amt = parseFloat(getColVal(row,headers,profile.debitCol));
-    if (isNaN(amt)) return null;
-    const isDebit = profile.negativeIsDebit ? amt<0 : amt>0;
-    return { amount:Math.abs(amt), isDebit };
-  }
-  const d = parseFloat(getColVal(row,headers,profile.debitCol))||0;
-  const c = profile.creditCol ? parseFloat(getColVal(row,headers,profile.creditCol))||0 : 0;
-  if (d>0) return {amount:d,isDebit:true};
-  if (c>0) return {amount:c,isDebit:false};
-  return null;
-}
-
-let csvRows=[], rawFileLines=[], rawHeaders=[];
-
-function handleDrop(e) { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); }
-function handleFileSelect(e) { if(e.target.files[0]) processFile(e.target.files[0]); }
-
-function processFile(file) {
-  const r=new FileReader(); r.onload=ev=>parseAndDetect(ev.target.result); r.readAsText(file);
-}
-
-function parseAndDetect(text) {
-  const all = parseCSVText(text);
-  if (all.length<2) { showToast('File appears empty or invalid.','red'); return; }
-
-  // Smart header finder — scans up to 30 rows looking for the real header row.
-  // A real header row contains at least 2 cells that match known financial keywords.
-  // This skips account holder name, relationship manager, address etc. at the top.
-  const HEADER_KEYS = ['date','narration','description','particulars','transaction','debit','credit',
-    'amount','balance','remarks','details','withdrawal','deposit','ref','cheque','memo','paid'];
-
-  function isHeaderRow(row) {
-    const lower = row.map(c=>c.toLowerCase().trim());
-    const matches = lower.filter(c => HEADER_KEYS.some(k => c.includes(k)));
-    return matches.length >= 2;
-  }
-
-  function looksLikeDate(val) {
-    return /^\d{1,4}[\-\/]\d{1,2}[\-\/]\d{2,4}/.test(val.trim()) ||
-           /^\d{1,2}[\-\/][A-Za-z]{3}[\-\/]\d{4}/.test(val.trim()) ||
-           /^#\d/.test(val.trim());
-  }
-
-  function looksLikeAmount(val) {
-    return /^[\d,]+(\.\d+)?$/.test(val.replace(/,/g,'').trim()) && !isNaN(parseFloat(val.replace(/,/g,'')));
-  }
-
-  // First pass: find header row by keywords
-  let hi = -1;
-  for (let i=0; i<Math.min(30, all.length); i++) {
-    if (isHeaderRow(all[i])) { hi=i; break; }
-  }
-
-  // Second pass: if no keyword match, find first row where col 0 looks like a date
-  // (i.e. the first data row) and treat the row before it as header
-  if (hi === -1) {
-    for (let i=0; i<Math.min(30, all.length); i++) {
-      if (all[i].length >= 3 && looksLikeDate(all[i][0])) {
-        hi = Math.max(0, i-1);
-        break;
-      }
-    }
-  }
-
-  // Final fallback: just use row 0
-  if (hi === -1) hi = 0;
-
-  rawHeaders   = all[hi];
-  rawFileLines = all.slice(hi+1).filter(r => r.some(c=>c.trim()));
-
-  // Sanity check: if description column would contain only dates or amounts,
-  // the mapping is wrong — try to auto-fix by finding a better desc column
-  document.getElementById('bank-detected-card').style.display='none';
-  document.getElementById('manual-mapper').style.display='none';
-
-  const profile = detectBank(rawHeaders);
-  if (profile) {
-    // Verify the detected desc column doesn't actually contain dates
-    const h = rawHeaders.map(c=>c.toLowerCase().trim());
-    const descIdx = h.findIndex(hh=>hh.includes(profile.descCol.toLowerCase())||profile.descCol.toLowerCase().includes(hh));
-    const sampleDesc = rawFileLines.slice(0,3).map(r=>r[descIdx]||'');
-    const descLooksBad = sampleDesc.every(v=>looksLikeDate(v)||looksLikeAmount(v));
-    if (descLooksBad) {
-      // Description column is actually showing dates/amounts — show manual mapper
-      showToast('Bank detected but columns need manual mapping.','gold');
-      showManualMapper();
-      return;
-    }
-    document.getElementById('bank-detected-name').textContent=profile.name;
-    document.getElementById('bank-detected-card').style.display='block';
-    buildPreview(profile);
-  } else {
-    showManualMapper();
-  }
-}
-
-function showManualMapper() {
-  document.getElementById('manual-mapper').style.display='block';
-  const opts=rawHeaders.map((h,i)=>`<option value="${i}">${h||'Col '+(i+1)}</option>`).join('');
-  ['map-date','map-desc','map-amount'].forEach(id=>{
-    document.getElementById(id).innerHTML='<option value="">— Select —</option>'+opts;
-  });
-  const first=rawFileLines[0]||[];
-  document.getElementById('mapper-preview-row').textContent='First row: '+first.slice(0,6).join(' | ');
-}
-
-function applyManualMapping() {
-  const di=parseInt(document.getElementById('map-date').value);
-  const ni=parseInt(document.getElementById('map-desc').value);
-  const ai=parseInt(document.getElementById('map-amount').value);
-  if(isNaN(di)||isNaN(ni)||isNaN(ai)){showToast('Please select all three columns.','red');return;}
-  document.getElementById('manual-mapper').style.display='none';
-  buildPreview({ name:'Custom', dateCol:rawHeaders[di], descCol:rawHeaders[ni], debitCol:rawHeaders[ai], creditCol:null, negativeIsDebit:false });
-}
-
-function buildPreview(profile) {
-  csvRows=[]; let skipped=0;
-  rawFileLines.forEach(row=>{
-    const rawDate=getColVal(row,rawHeaders,profile.dateCol);
-    const rawDesc=getColVal(row,rawHeaders,profile.descCol);
-    const amtObj=extractAmount(row,rawHeaders,profile);
-    if(!rawDate||!amtObj){skipped++;return;}
-    const date=normaliseDate(rawDate);
-    const desc=cleanDesc(rawDesc)||rawDesc;
-    if(!date||isNaN(amtObj.amount)||amtObj.amount<=0){skipped++;return;}
-    const autocat=mlCategorize(desc);
-    csvRows.push({date,description:desc,amount:amtObj.amount,isDebit:amtObj.isDebit,category:autocat,userCat:!!autocat,wasManual:!autocat});
-  });
-  document.getElementById('csv-skip-info').textContent=skipped>0?` · ${skipped} rows skipped`:'';
-  document.getElementById('csv-preview').style.display='block';
-  renderPreviewTable();
-}
-
-const CAT_OPTS=['Food & Dining','Shopping','Transport','Entertainment','Health & Medical','Utilities & Bills','Education','Travel','Groceries','Other'].map(c=>`<option value="${c}">${c}</option>`).join('');
-
-function renderPreviewTable() {
-  const incCred=document.getElementById('include-credits').checked;
-  const tbody=document.getElementById('csv-preview-tbody');
-  tbody.innerHTML='';
-  const visible=csvRows.filter(r=>r.isDebit||incCred);
-  document.getElementById('csv-row-count').textContent=`(${visible.length} transactions${!incCred?', debits only':''})`; 
-  visible.forEach((r,idx)=>{
-    const tr=document.createElement('tr');
-    const needsCat=!r.userCat;
-    const catCell=needsCat
-      ?`<select onchange="setCsvCat(${csvRows.indexOf(r)},this.value)" style="background:rgba(186,117,23,0.15);border:1px solid rgba(201,168,76,0.4);color:var(--cream);font-size:12px;padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif"><option value="">— Select category —</option>${CAT_OPTS}</select>`
-      :catPill(r.category);
-    tr.innerHTML=`<td style="font-size:13px">${r.date}</td><td style="font-size:13px">${r.description}</td><td class="amount-cell" style="font-size:14px">${fmt(r.amount)}</td><td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${r.isDebit?'rgba(224,85,85,0.1)':'rgba(92,184,92,0.1)'};color:${r.isDebit?'#e08070':'#7ed49a'}">${r.isDebit?'Debit':'Credit'}</span></td><td>${catCell}</td>`;
-    tbody.appendChild(tr);
-  });
-  const pending=visible.filter(r=>!r.userCat).length;
-  const msg=document.getElementById('csv-pending-msg');
-  msg.textContent=pending>0?`⚠ ${pending} transaction${pending>1?'s':''} need${pending===1?'s':''} a category before importing.`:'✓ All categories assigned. Ready to import.';
-  msg.style.color=pending>0?'#E2C06A':'var(--success)';
-  const btn=document.getElementById('csv-import-btn');
-  if(btn){btn.disabled=pending>0;btn.style.opacity=pending>0?'0.5':'1';}
-}
-
-function setCsvCat(idx,val) {
-  if(!val) return;
-  csvRows[idx].category=val; csvRows[idx].userCat=true; csvRows[idx].wasManual=true;
-  csvRows[idx].description.toLowerCase().split(/\s+/).forEach(w=>saveCustomCat(val,w));
-  renderPreviewTable();
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  const cb=document.getElementById('include-credits');
-  if(cb) cb.addEventListener('change',()=>{if(csvRows.length)renderPreviewTable();});
-});
-
-async function importCSV() {
-  const incCred=document.getElementById('include-credits').checked;
-  const toImport=csvRows.filter(r=>(r.isDebit||incCred)&&r.userCat&&r.category);
-  if(!toImport.length) return;
-  for (const row of toImport) {
-    await dbAdd({date:displayToStorage(row.date),amount:row.amount,description:row.description,category:row.category,method:row.isDebit?'Bank Debit':'Bank Credit',notes:'Imported from bank statement',addedAt:Date.now()});
-  }
-  const autoC=toImport.filter(r=>!r.wasManual).length;
-  const manC=toImport.filter(r=>r.wasManual).length;
-  showToast(`${toImport.length} imported · ${autoC} auto-categorised · ${manC} manually categorised`,'green');
-  cancelCSV(); chartsBuilt=false;
-}
-
-function cancelCSV() {
-  csvRows=[]; rawFileLines=[]; rawHeaders=[];
-  document.getElementById('csv-preview').style.display='none';
-  document.getElementById('bank-detected-card').style.display='none';
-  document.getElementById('manual-mapper').style.display='none';
-  document.getElementById('csv-file-input').value='';
-}
-
-/* ══════════════════════════════════════════════════
-   JSON EXPORT
-══════════════════════════════════════════════════ */
-async function exportJSON() {
-  // Export raw encrypted blobs — safe to store anywhere
-  const blobs = await new Promise((res, rej) => {
-    const r = db.transaction(STORE,'readonly').objectStore(STORE).getAll();
-    r.onsuccess = () => res(r.result);
-    r.onerror   = e => rej(e.target.error);
-  });
-  const payload = {
-    version:    2,
-    exportedAt: new Date().toISOString(),
-    username:   currentUser.username,
-    note:       'Encrypted with AES-256-GCM. Password required to restore.',
-    records:    blobs
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `expenseiq_backup_${currentUser.username}_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Backup downloaded!', 'green');
-}
-
-/* ══════════════════════════════════════════════════
-   JSON IMPORT — with password modal
-   Handles 3 record formats:
-   1. New: { iv, ciphertext } — encrypted blobs
-   2. Old: plain objects { date, amount, description… }
-   3. Mixed backup (both in same file)
-══════════════════════════════════════════════════ */
-let pendingImportPayload = null;
-
-function startImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  document.getElementById('json-import-input').value = '';
-
-  const setMsg = (text, type) => {
-    const el = document.getElementById('import-msg');
-    el.textContent = text;
-    el.className   = `info-msg show ${type}`;
-  };
-
-  const reader = new FileReader();
-  reader.onload = async ev => {
-    try {
-      const payload = JSON.parse(ev.target.result);
-      if (!payload.records || !Array.isArray(payload.records)) throw new Error('Invalid backup file format.');
-      pendingImportPayload = payload;
-      const enc   = payload.records.filter(r => r.iv && r.ciphertext).length;
-      const plain = payload.records.length - enc;
-      setMsg(`File loaded — ${payload.records.length} records (${enc} encrypted, ${plain} plain). Enter your password to continue.`, 'info');
-      document.getElementById('modal-pw').value = '';
-      document.getElementById('modal-err').textContent = '';
-      document.getElementById('pw-modal').classList.add('show');
-    } catch(e) {
-      setMsg('Error reading file: ' + e.message, 'error');
-    }
-  };
-  reader.readAsText(file);
-}
-
-function closeModal() {
-  document.getElementById('pw-modal').classList.remove('show');
-  pendingImportPayload = null;
-}
-
-async function confirmImport() {
-  const pw    = document.getElementById('modal-pw').value;
-  const errEl = document.getElementById('modal-err');
-  errEl.textContent = '';
-
-  if (!pw) { errEl.textContent = 'Please enter your password.'; return; }
-
-  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
-  const hashed = await sha256(pw);
-  if (hashed !== stored.password) { errEl.textContent = 'Incorrect password.'; return; }
-
-  // Derive the AES key ONCE — reused for all records to avoid freezing
-  const importKey = await deriveKey(pw, stored.salt);
-
-  // Verify password can decrypt encrypted records (if any)
-  const encRecs = pendingImportPayload.records.filter(r => r.iv && r.ciphertext);
-  if (encRecs.length > 0) {
-    try {
-      await crypto.subtle.decrypt(
-        { name:'AES-GCM', iv: hexToBytes(encRecs[0].iv) },
-        importKey,
-        hexToBytes(encRecs[0].ciphertext)
-      );
-    } catch(e) {
-      errEl.textContent = 'Password does not match this backup. It may have been created with a different password.';
-      return;
-    }
-  }
-
-  closeModal();
-  const setMsg = (text, type) => {
-    const el = document.getElementById('import-msg');
-    el.textContent = text;
-    el.className   = `info-msg show ${type}`;
-  };
-  setMsg('Importing…', 'info');
-
-  let imported = 0, skipped = 0;
-  for (const rec of pendingImportPayload.records) {
-    try {
-      let blob;
-      if (rec.iv && rec.ciphertext) {
-        // Already encrypted blob — store directly, no re-encryption needed
-        blob = { iv: rec.iv, ciphertext: rec.ciphertext };
-      } else {
-        // Plain record from old backup — encrypt with the pre-derived key
-        const { id, ...plainData } = rec;
-        const iv  = crypto.getRandomValues(new Uint8Array(12));
-        const enc = await crypto.subtle.encrypt(
-          { name:'AES-GCM', iv },
-          importKey,
-          new TextEncoder().encode(JSON.stringify(plainData))
-        );
-        blob = { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
-      }
-      await new Promise(res => {
-        const r = db.transaction(STORE,'readwrite').objectStore(STORE).add(blob);
-        r.onsuccess = () => res();
-        r.onerror   = () => res();
-      });
-      imported++;
-    } catch(e) { skipped++; }
-  }
-
-  const note = skipped > 0 ? ` (${skipped} skipped)` : '';
-  setMsg(`${imported} record${imported !== 1 ? 's' : ''} imported successfully!${note}`, 'success');
-  chartsBuilt = false;
-  showToast(`${imported} expenses restored!`, 'green');
-  pendingImportPayload = null;
-}
-
-/* ══════════════════════════════════════════════════
-   DELETE ALL DATA
-   Requires password confirmation before wiping
-══════════════════════════════════════════════════ */
-async function deleteAllData() {
-  if (!confirm('This will permanently delete ALL your expense records from this device.\n\nYour account (username, password, recovery codes) will be kept.\n\nThis cannot be undone. Continue?')) return;
-
-  const pw = prompt('Enter your password to confirm deletion:');
-  if (!pw) return;
-
-  const stored = JSON.parse(localStorage.getItem('eq_user_' + currentUser.username));
-  const hashed = await sha256(pw);
-  if (hashed !== stored.password) {
-    showToast('Incorrect password — nothing was deleted.', 'red');
+/* ══ ENTER KEY ══ */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(document.getElementById('fp-panel').style.display==='block'){
+    if(document.getElementById('fp-step1').style.display!=='none') return fpStep1();
+    if(document.getElementById('fp-step2').style.display!=='none') return fpStep2();
+    if(document.getElementById('fp-step3').style.display!=='none') return fpStep3();
     return;
   }
-
-  await dbClear();
-  chartsBuilt = false;
-  showToast('All expense data deleted.', 'gold');
-  refreshOverview();
-}
-
-/* ══════════════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════════════ */
-const CAT_COLORS = {
-  'Food & Dining':    { bg:'rgba(201,168,76,0.15)',  text:'#C9A84C' },
-  'Shopping':         { bg:'rgba(90,150,220,0.15)',  text:'#6fa8dc' },
-  'Transport':        { bg:'rgba(100,180,120,0.15)', text:'#6ab187' },
-  'Entertainment':    { bg:'rgba(200,100,180,0.15)', text:'#c878b8' },
-  'Health & Medical': { bg:'rgba(220,120,100,0.15)', text:'#e08070' },
-  'Utilities & Bills':{ bg:'rgba(100,160,200,0.15)', text:'#78a8c8' },
-  'Education':        { bg:'rgba(160,130,200,0.15)', text:'#a88ad0' },
-  'Travel':           { bg:'rgba(80,180,160,0.15)',  text:'#50b8a0' },
-  'Groceries':        { bg:'rgba(150,200,80,0.15)',  text:'#96c850' },
-  'Other':            { bg:'rgba(138,155,176,0.15)', text:'#8A9BB0' },
-};
-
-function catPill(cat) {
-  const c = CAT_COLORS[cat] || { bg:'rgba(138,155,176,0.15)', text:'#8A9BB0' };
-  return `<span class="cat-pill" style="background:${c.bg};color:${c.text}">${cat}</span>`;
-}
-
-function fmt(n) {
-  return '₹' + n.toLocaleString('en-IN', { minimumFractionDigits:2, maximumFractionDigits:2 });
-}
-
-let toastTimer;
-function showToast(msg, type = 'gold') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = `toast ${type} show`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-/* ══════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════ */
-initDB().then(refreshOverview);
+  if(document.getElementById('login-form').style.display!=='none') return handleLogin();
+  if(document.getElementById('reg-step-a').style.display!=='none') handleRegister();
+});
 </script>
 </body>
 </html>
