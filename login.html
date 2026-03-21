@@ -6,12 +6,12 @@
   <title>ExpenseIQ — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
       --navy:#0D1B2A; --navy2:#162336; --gold:#C9A84C; --gold2:#E2C06A;
       --cream:#F5F0E8; --muted:#8A9BB0; --border:rgba(201,168,76,0.18); --radius:6px;
     }
-    html, body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); }
+    html,body { height:100%; font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--cream); }
     .shell { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
 
     .left {
@@ -26,13 +26,11 @@
     .brand-icon { width:36px; height:36px; background:var(--gold); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:18px; }
     .brand-name { font-family:'Playfair Display',serif; font-size:22px; letter-spacing:0.02em; color:var(--cream); }
     .brand-name span { color:var(--gold); }
-
     .hero { animation:fadeUp 0.7s 0.15s ease both; }
     .hero-tag { display:inline-block; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); border:1px solid var(--border); padding:4px 12px; border-radius:2px; margin-bottom:28px; }
     .hero h1 { font-family:'Playfair Display',serif; font-size:42px; font-weight:600; line-height:1.2; margin-bottom:20px; color:var(--cream); }
     .hero h1 em { font-style:italic; color:var(--gold2); }
     .hero p { font-size:15px; color:var(--muted); line-height:1.7; max-width:340px; }
-
     .stats { display:flex; gap:40px; animation:fadeUp 0.7s 0.3s ease both; }
     .stat-val { font-family:'Playfair Display',serif; font-size:28px; color:var(--gold2); }
     .stat-label { font-size:12px; color:var(--muted); margin-top:2px; letter-spacing:0.04em; }
@@ -67,25 +65,16 @@
     .section-divider { border:none; border-top:1px solid var(--border); margin:8px 0 18px; }
     .section-label { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
 
-    /* Recovery codes display box */
-    .codes-box {
-      background:#0a1520; border:1px solid var(--border); border-radius:var(--radius);
-      padding:16px; margin-bottom:16px;
-    }
+    .codes-box { background:#0a1520; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
     .codes-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
-    .code-chip {
-      font-family:monospace; font-size:14px; font-weight:600;
-      color:var(--gold2); background:rgba(201,168,76,0.08);
-      border:1px solid var(--border); border-radius:4px;
-      padding:8px 12px; text-align:center; letter-spacing:0.1em;
-    }
+    .code-chip { font-family:monospace; font-size:14px; font-weight:600; color:var(--gold2); background:rgba(201,168,76,0.08); border:1px solid var(--border); border-radius:4px; padding:8px 12px; text-align:center; letter-spacing:0.1em; }
     .codes-warning { font-size:12px; color:#e08070; line-height:1.5; }
     .btn-copy { width:100%; padding:10px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; margin-bottom:12px; transition:color 0.2s,border-color 0.2s; }
     .btn-copy:hover { color:var(--cream); border-color:rgba(201,168,76,0.4); }
 
     .msg { margin-top:14px; padding:12px 14px; border-radius:var(--radius); font-size:13px; display:none; }
     .msg.success { background:rgba(100,200,120,0.1); border:1px solid rgba(100,200,120,0.2); color:#7ed49a; display:block; }
-    .msg.error   { background:rgba(220,80,80,0.1);  border:1px solid rgba(220,80,80,0.2);  color:#f08080; display:block; }
+    .msg.error   { background:rgba(220,80,80,0.1); border:1px solid rgba(220,80,80,0.2); color:#f08080; display:block; }
 
     .fp-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer; margin-bottom:24px; background:none; border:none; padding:0; transition:color 0.2s; }
     .fp-back:hover { color:var(--cream); }
@@ -94,8 +83,7 @@
     .step-dot.active { background:var(--gold); }
     .step-dot.done   { background:rgba(201,168,76,0.4); }
 
-    /* Used code styling */
-    .code-chip.used { opacity:0.35; text-decoration:line-through; }
+    .warning-box { background:rgba(224,85,85,0.08); border:1px solid rgba(224,85,85,0.2); border-radius:var(--radius); padding:14px 16px; font-size:13px; color:#f08070; line-height:1.6; margin-bottom:20px; }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
     @media (max-width:720px) { .shell{grid-template-columns:1fr;} .left{display:none;} .right{padding:40px 24px;} }
@@ -143,7 +131,6 @@
 
       <!-- REGISTER -->
       <div id="register-form" style="display:none">
-        <!-- Step A: fill details -->
         <div id="reg-step-a">
           <div class="form-title">Create account</div>
           <div class="form-sub">Set up your private encrypted expense tracker</div>
@@ -154,14 +141,12 @@
           <button class="btn-primary" id="register-btn" onclick="handleRegister()">Generate Recovery Codes →</button>
           <div id="register-msg" class="msg"></div>
         </div>
-
-        <!-- Step B: show recovery codes -->
         <div id="reg-step-b" style="display:none">
           <div class="form-title">Save your recovery codes</div>
-          <div class="form-sub">These 8 codes are the <strong style="color:var(--cream)">only way</strong> to reset your password if you forget it. Each code works once. Save them now — they will never be shown again.</div>
+          <div class="form-sub">These 8 codes are the <strong style="color:var(--cream)">only way</strong> to reset your password while keeping your data. Each works once. Save them now — they will never be shown again.</div>
           <div class="codes-box">
             <div class="codes-grid" id="codes-grid"></div>
-            <div class="codes-warning">⚠ Screenshot or write these down before continuing. Once you click "I've saved my codes" they are gone from this screen forever.</div>
+            <div class="codes-warning">⚠ Screenshot or write these down before continuing.</div>
           </div>
           <button class="btn-copy" onclick="copyCodes()">Copy all codes to clipboard</button>
           <button class="btn-primary" onclick="confirmCodes()">I've saved my codes →</button>
@@ -189,29 +174,30 @@
         <!-- Step 2: recovery code -->
         <div id="fp-step2" style="display:none">
           <div class="form-title">Enter recovery code</div>
-          <div class="form-sub">Enter one of your 8 recovery codes. It will be used up after this.</div>
-          <div class="field"><label>Recovery Code</label><input type="text" id="fp-code" placeholder="e.g. X7K2-MNPQ" style="font-family:monospace;letter-spacing:0.08em"/></div>
-          <!-- Shows remaining codes count -->
+          <div class="form-sub">Enter one of your 8 recovery codes. It will be marked as used after this.</div>
+          <div class="field">
+            <label>Recovery Code</label>
+            <input type="text" id="fp-code" placeholder="e.g. X7K2-MNPQ" style="font-family:monospace;letter-spacing:0.08em" oninput="this.value=this.value.toUpperCase()"/>
+          </div>
           <div id="fp-codes-left" style="font-size:12px;color:var(--muted);margin-bottom:16px"></div>
           <button class="btn-primary" onclick="fpStep2()">Verify Code →</button>
           <div id="fp-msg2" class="msg"></div>
         </div>
 
-        <!-- Step 3: new password -->
+        <!-- Step 3: new password — NO old password needed -->
         <div id="fp-step3" style="display:none">
           <div class="form-title">New password</div>
-          <div class="form-sub">Choose a strong new password. Your data will be re-encrypted automatically.</div>
-          <div class="field"><label>Current Password</label><input type="password" id="fp-oldpass" placeholder="Needed to re-encrypt your data"/></div>
+          <div class="form-sub">Your recovery code was verified. Choose a new password — your existing expense data will be fully preserved.</div>
           <div class="field"><label>New Password</label><input type="password" id="fp-np" placeholder="At least 6 characters"/></div>
           <div class="field"><label>Confirm New Password</label><input type="password" id="fp-np2" placeholder="Repeat new password"/></div>
           <button class="btn-primary" id="fp-save-btn" onclick="fpStep3()">Save New Password →</button>
           <div id="fp-msg3" class="msg"></div>
         </div>
 
-        <!-- Step 4: all codes used — master reset -->
+        <!-- Step 4: all codes used -->
         <div id="fp-step4" style="display:none">
           <div class="form-title">All codes used</div>
-          <div class="form-sub" style="color:#e08070">You have used all 8 recovery codes. The only remaining option is a master reset — this will permanently delete your account and all expense data.</div>
+          <div class="warning-box">You have used all 8 recovery codes. The only remaining option is a master reset — this will permanently delete your account and all expense data.</div>
           <div class="field"><label>Type DELETE to confirm</label><input type="text" id="fp-confirm-delete" placeholder='Type "DELETE"'/></div>
           <button class="btn-primary" style="background:#e05555" onclick="masterReset()">Delete Account & Reset</button>
           <div id="fp-msg4" class="msg"></div>
@@ -223,61 +209,72 @@
 </div>
 
 <script>
-/* ══ CRYPTO HELPERS ══ */
+/* ══════════════════════════════════════════════════
+   CRYPTO HELPERS
+══════════════════════════════════════════════════ */
+function bytesToHex(b) { return Array.from(b).map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function hexToBytes(h) { return new Uint8Array(h.match(/.{1,2}/g).map(b=>parseInt(b,16))); }
 
-// SHA-256 → hex string (for password storage, irreversible)
 async function sha256(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  return bytesToHex(new Uint8Array(buf));
 }
 
-// Derive an AES-GCM key from password using PBKDF2
-async function deriveKey(password, saltHex) {
-  const salt    = hexToBytes(saltHex);
-  const keyMat  = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+// Derive an AES-GCM wrapping key from a password/code + salt using PBKDF2
+async function deriveWrappingKey(secret, saltHex) {
+  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
-    { name:'PBKDF2', salt, iterations:100000, hash:'SHA-256' },
-    keyMat,
-    { name:'AES-GCM', length:256 },
-    false,
-    ['encrypt','decrypt']
+    { name:'PBKDF2', salt:hexToBytes(saltHex), iterations:100000, hash:'SHA-256' },
+    mat, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
   );
 }
 
-// AES-GCM encrypt → returns { iv, ciphertext } as hex strings
-async function encryptData(password, saltHex, plaintext) {
-  const key = await deriveKey(password, saltHex);
+// Encrypt arbitrary bytes with a CryptoKey → { iv, ciphertext } hex strings
+async function aesEncrypt(key, plainBytes) {
   const iv  = crypto.getRandomValues(new Uint8Array(12));
-  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, new TextEncoder().encode(plaintext));
+  const enc = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, plainBytes);
   return { iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(enc)) };
 }
 
-// AES-GCM decrypt → returns plaintext string
-async function decryptData(password, saltHex, ivHex, ciphertextHex) {
-  const key = await deriveKey(password, saltHex);
-  const dec = await crypto.subtle.decrypt(
-    { name:'AES-GCM', iv: hexToBytes(ivHex) },
-    key,
-    hexToBytes(ciphertextHex)
-  );
-  return new TextDecoder().decode(dec);
+// Decrypt { iv, ciphertext } hex strings with a CryptoKey → Uint8Array
+async function aesDecrypt(key, ivHex, ciphertextHex) {
+  return new Uint8Array(await crypto.subtle.decrypt(
+    { name:'AES-GCM', iv: hexToBytes(ivHex) }, key, hexToBytes(ciphertextHex)
+  ));
 }
 
-function bytesToHex(bytes) { return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(''); }
-function hexToBytes(hex)   { return new Uint8Array(hex.match(/.{1,2}/g).map(b=>parseInt(b,16))); }
-function randomHex(n)      { return bytesToHex(crypto.getRandomValues(new Uint8Array(n))); }
+// Generate a random 32-byte master key as hex
+function genMasterKeyHex() { return bytesToHex(crypto.getRandomValues(new Uint8Array(32))); }
 
-// Generate a recovery code like "X7K2-MNPQ"
+// Import raw hex bytes as an AES-GCM CryptoKey
+async function importMasterKey(hexKey) {
+  return crypto.subtle.importKey('raw', hexToBytes(hexKey), { name:'AES-GCM' }, false, ['encrypt','decrypt']);
+}
+
+// Wrap (encrypt) master key hex with a secret+salt → { iv, ciphertext }
+async function wrapMasterKey(masterKeyHex, secret, saltHex) {
+  const wk = await deriveWrappingKey(secret, saltHex);
+  return aesEncrypt(wk, new TextEncoder().encode(masterKeyHex));
+}
+
+// Unwrap (decrypt) master key → hex string
+async function unwrapMasterKey(wrapped, secret, saltHex) {
+  const wk    = await deriveWrappingKey(secret, saltHex);
+  const plain = await aesDecrypt(wk, wrapped.iv, wrapped.ciphertext);
+  return new TextDecoder().decode(plain);
+}
+
+// Recovery code generator
 function genCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const part  = n => Array.from({length:n}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  const part  = n => Array.from({length:n}, ()=>chars[Math.floor(Math.random()*chars.length)]).join('');
   return `${part(4)}-${part(4)}`;
 }
 
 /* ══ UI HELPERS ══ */
-function show(id, visible, d) { document.getElementById(id).style.display = visible ? (d||'block') : 'none'; }
-function showMsg(id, text, type) { const el=document.getElementById(id); el.textContent=text; el.className='msg '+type; }
-function clearMsg(id) { const el=document.getElementById(id); el.textContent=''; el.className='msg'; }
+function show(id, v, d) { document.getElementById(id).style.display = v?(d||'block'):'none'; }
+function showMsg(id, text, type) { const e=document.getElementById(id); e.textContent=text; e.className='msg '+type; }
+function clearMsg(id) { const e=document.getElementById(id); e.textContent=''; e.className='msg'; }
 function setLoading(id, on, label) { const b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait…':label; }
 
 /* ══ TAB SWITCHING ══ */
@@ -286,207 +283,227 @@ function switchTab(tab) {
   show('login-form',    tab==='login');
   show('register-form', tab==='register');
   show('fp-panel',      false);
-  show('tab-row',       true, 'flex');
+  show('tab-row',       true,'flex');
   if (tab==='register') { show('reg-step-a',true); show('reg-step-b',false); }
 }
 
-/* ══ LOGIN ══ */
+/* ══════════════════════════════════════════════════
+   LOGIN
+   Derives master key using stored wrapped key + password
+══════════════════════════════════════════════════ */
 async function handleLogin() {
   const user = document.getElementById('l-user').value.trim();
   const pass = document.getElementById('l-pass').value;
-  if (!user || !pass) return showMsg('login-msg','Please fill in all fields.','error');
-  setLoading('login-btn', true, 'Sign In →');
+  if (!user||!pass) return showMsg('login-msg','Please fill in all fields.','error');
+  setLoading('login-btn',true,'Sign In →');
+
   const stored = JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
   if (!stored) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Account not found. Please register first.','error'); }
+
+  // Verify password hash
   const hashed = await sha256(pass);
-  if (hashed !== stored.password) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Incorrect password.','error'); }
-  // Store password temporarily in session for encryption/decryption
+  if (hashed !== stored.passwordHash) { setLoading('login-btn',false,'Sign In →'); return showMsg('login-msg','Incorrect password.','error'); }
+
+  // Unwrap master key using password
+  let masterKeyHex;
+  try {
+    masterKeyHex = await unwrapMasterKey(stored.masterKeyWrappedByPassword, pass, stored.salt);
+  } catch(e) {
+    setLoading('login-btn',false,'Sign In →');
+    return showMsg('login-msg','Failed to decrypt master key. Try again.','error');
+  }
+
+  // Store master key hex in sessionStorage (not password — master key is what encrypts data)
   sessionStorage.setItem('eq_current', JSON.stringify({ username:user, name:stored.name }));
-  sessionStorage.setItem('eq_key', pass); // raw password kept in session memory only — never stored to localStorage
+  sessionStorage.setItem('eq_mk', masterKeyHex);
+
   showMsg('login-msg','Login successful! Redirecting…','success');
   setTimeout(()=>{ window.location.href='dashboard.html'; }, 900);
 }
 
-/* ══ REGISTER ══ */
-let pendingUser = null; // holds reg data while showing recovery codes
+/* ══════════════════════════════════════════════════
+   REGISTER
+   1. Generate random master key
+   2. Wrap master key with password
+   3. Wrap master key with each recovery code
+   4. Store everything — master key itself is NEVER stored plain
+══════════════════════════════════════════════════ */
+let pendingReg = null;
 
 async function handleRegister() {
   const name  = document.getElementById('r-name').value.trim();
   const user  = document.getElementById('r-user').value.trim();
   const pass  = document.getElementById('r-pass').value;
   const pass2 = document.getElementById('r-pass2').value;
+
   if (!name||!user||!pass||!pass2)          return showMsg('register-msg','Please fill in all fields.','error');
-  if (pass !== pass2)                        return showMsg('register-msg','Passwords do not match.','error');
-  if (pass.length < 6)                       return showMsg('register-msg','Password must be at least 6 characters.','error');
+  if (pass!==pass2)                          return showMsg('register-msg','Passwords do not match.','error');
+  if (pass.length<6)                         return showMsg('register-msg','Password must be at least 6 characters.','error');
   if (localStorage.getItem('eq_user_'+user)) return showMsg('register-msg','Username already taken.','error');
-  setLoading('register-btn', true, 'Generate Recovery Codes →');
 
-  // Generate 8 recovery codes + SHA-256 hash each for storage
-  const codes       = Array.from({length:8}, genCode);
-  const hashedCodes = await Promise.all(codes.map(c=>sha256(c)));
-  const hashedPass  = await sha256(pass);
-  const salt        = randomHex(16); // random salt for AES-GCM key derivation
+  setLoading('register-btn',true,'Generate Recovery Codes →');
 
-  pendingUser = { name, user, hashedPass, salt, hashedCodes };
+  const salt         = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
+  const masterKeyHex = genMasterKeyHex();
+  const passwordHash = await sha256(pass);
 
-  // Show codes to user
+  // Wrap master key with password
+  const mkWrappedByPassword = await wrapMasterKey(masterKeyHex, pass, salt);
+
+  // Generate 8 recovery codes
+  const codes = Array.from({length:8}, genCode);
+
+  // Wrap master key with each recovery code (each code gets its own salt)
+  const codeEntries = await Promise.all(codes.map(async code => {
+    const codeSalt    = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
+    const codeHash    = await sha256(code);
+    const mkWrapped   = await wrapMasterKey(masterKeyHex, code, codeSalt);
+    return { codeHash, codeSalt, mkWrapped, used:false };
+  }));
+
+  pendingReg = { name, user, passwordHash, salt, mkWrappedByPassword, codeEntries, masterKeyHex, _codes:codes };
+
+  // Show recovery codes
   const grid = document.getElementById('codes-grid');
   grid.innerHTML = '';
   codes.forEach(c => { const d=document.createElement('div'); d.className='code-chip'; d.textContent=c; grid.appendChild(d); });
 
-  // Store codes temporarily so copyCodes() can access them
-  pendingUser._plainCodes = codes;
-
-  setLoading('register-btn', false, 'Generate Recovery Codes →');
-  show('reg-step-a', false);
-  show('reg-step-b', true);
+  setLoading('register-btn',false,'Generate Recovery Codes →');
+  show('reg-step-a',false);
+  show('reg-step-b',true);
 }
 
 function copyCodes() {
-  if (!pendingUser?._plainCodes) return;
-  navigator.clipboard.writeText(pendingUser._plainCodes.join('\n'))
+  if (!pendingReg?._codes) return;
+  navigator.clipboard.writeText(pendingReg._codes.join('\n'))
     .then(()=>{ document.querySelector('.btn-copy').textContent='✓ Copied!'; })
-    .catch(()=>{ alert(pendingUser._plainCodes.join('\n')); });
+    .catch(()=>{ alert(pendingReg._codes.join('\n')); });
 }
 
 function confirmCodes() {
-  if (!pendingUser) return;
-  // Save to localStorage — codes stored as hashes, never plain text
-  localStorage.setItem('eq_user_'+pendingUser.user, JSON.stringify({
-    name:         pendingUser.name,
-    password:     pendingUser.hashedPass,
-    salt:         pendingUser.salt,
-    recoveryCodes: pendingUser.hashedCodes.map(h=>({ hash:h, used:false }))
+  if (!pendingReg) return;
+  localStorage.setItem('eq_user_'+pendingReg.user, JSON.stringify({
+    name:                    pendingReg.name,
+    passwordHash:            pendingReg.passwordHash,
+    salt:                    pendingReg.salt,
+    masterKeyWrappedByPassword: pendingReg.mkWrappedByPassword,
+    recoveryCodes:           pendingReg.codeEntries,
   }));
-  pendingUser = null;
-  show('reg-step-b', false);
-  show('reg-step-a', true);
+  // Store master key in session so dashboard works immediately after register
+  sessionStorage.setItem('eq_current', JSON.stringify({ username:pendingReg.user, name:pendingReg.name }));
+  sessionStorage.setItem('eq_mk', pendingReg.masterKeyHex);
+  pendingReg = null;
+  show('reg-step-b',false);
+  show('reg-step-a',true);
   switchTab('login');
-  setTimeout(()=>showMsg('login-msg','Account created! You can now sign in.','success'), 100);
+  setTimeout(()=>showMsg('login-msg','Account created! You can now sign in.','success'),100);
 }
 
-/* ══ FORGOT PASSWORD ══ */
+/* ══════════════════════════════════════════════════
+   FORGOT PASSWORD
+   Step 1: username
+   Step 2: recovery code → unwraps master key
+   Step 3: new password → re-wraps master key with new password
+            Data is NEVER touched. Only the wrapped key changes.
+══════════════════════════════════════════════════ */
 function showForgot() {
   show('login-form',false); show('tab-row',false); show('fp-panel',true);
   goFpStep(1);
-  ['fp-user','fp-code','fp-oldpass','fp-np','fp-np2','fp-confirm-delete'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  ['fp-msg1','fp-msg2','fp-msg3','fp-msg4'].forEach(clearMsg);
+  ['fp-user','fp-code','fp-np','fp-np2','fp-confirm-delete'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
+  [1,2,3,4].forEach(i=>clearMsg('fp-msg'+i));
 }
 function hideForgot() { show('fp-panel',false); show('login-form',true); show('tab-row',true,'flex'); }
 
-let fpUser='';
+let fpUser='', fpMasterKeyHex=''; // master key recovered in step 2, used in step 3
 
 function goFpStep(n) {
   [1,2,3,4].forEach(i=>{
-    const el=document.getElementById('fp-step'+i); if(el) el.style.display=i===n?'block':'none';
-    const dot=document.getElementById('dot-'+i); if(dot) dot.className='step-dot'+(i===n?' active':i<n?' done':'');
+    const el=document.getElementById('fp-step'+i); if(el)el.style.display=i===n?'block':'none';
+    const dot=document.getElementById('dot-'+i); if(dot)dot.className='step-dot'+(i===n?' active':i<n?' done':'');
   });
 }
 
 function fpStep1() {
   const user=document.getElementById('fp-user').value.trim();
-  if (!user) return showMsg('fp-msg1','Please enter your username.','error');
+  if(!user) return showMsg('fp-msg1','Please enter your username.','error');
   const stored=JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
-  if (!stored) return showMsg('fp-msg1','No account found with that username.','error');
+  if(!stored) return showMsg('fp-msg1','No account found with that username.','error');
   fpUser=user;
-  // Check if any codes remain
-  const remaining = stored.recoveryCodes.filter(c=>!c.used).length;
-  if (remaining===0) { goFpStep(4); return; }
+  const remaining=stored.recoveryCodes.filter(c=>!c.used).length;
+  if(remaining===0){goFpStep(4);return;}
   document.getElementById('fp-codes-left').textContent=`${remaining} of 8 recovery codes remaining.`;
   goFpStep(2);
 }
 
 async function fpStep2() {
   const code=document.getElementById('fp-code').value.trim().toUpperCase();
-  if (!code) return showMsg('fp-msg2','Please enter a recovery code.','error');
+  if(!code) return showMsg('fp-msg2','Please enter a recovery code.','error');
   const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
-  const hashedInput=await sha256(code);
-  const idx=stored.recoveryCodes.findIndex(c=>!c.used && c.hash===hashedInput);
-  if (idx===-1) return showMsg('fp-msg2','Invalid or already used code. Try another.','error');
-  // Mark code as used immediately
+  const codeHash=await sha256(code);
+  const idx=stored.recoveryCodes.findIndex(c=>!c.used&&c.codeHash===codeHash);
+  if(idx===-1) return showMsg('fp-msg2','Invalid or already used code. Try another.','error');
+
+  // Use the recovery code to unwrap the master key
+  try {
+    fpMasterKeyHex = await unwrapMasterKey(stored.recoveryCodes[idx].mkWrapped, code, stored.recoveryCodes[idx].codeSalt);
+  } catch(e) {
+    return showMsg('fp-msg2','Failed to verify code. Please try again.','error');
+  }
+
+  // Mark code as used
   stored.recoveryCodes[idx].used=true;
   localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
+
   const left=stored.recoveryCodes.filter(c=>!c.used).length;
-  if (left<=2) showMsg('fp-msg2',`Code accepted. Only ${left} recovery code(s) left — generate new ones after logging in.`,'success');
+  if(left<=2) showMsg('fp-msg2',`Code accepted. Only ${left} code(s) remaining — save new ones after logging in.`,'success');
   goFpStep(3);
 }
 
 async function fpStep3() {
-  const oldPass=document.getElementById('fp-oldpass').value;
   const np =document.getElementById('fp-np').value;
   const np2=document.getElementById('fp-np2').value;
-  if (!oldPass||!np||!np2) return showMsg('fp-msg3','Please fill in all fields.','error');
-  if (np!==np2)             return showMsg('fp-msg3','Passwords do not match.','error');
-  if (np.length<6)          return showMsg('fp-msg3','Password must be at least 6 characters.','error');
+  if(!np||!np2)   return showMsg('fp-msg3','Please fill in both fields.','error');
+  if(np!==np2)    return showMsg('fp-msg3','Passwords do not match.','error');
+  if(np.length<6) return showMsg('fp-msg3','Password must be at least 6 characters.','error');
 
   setLoading('fp-save-btn',true,'Save New Password →');
 
   const stored=JSON.parse(localStorage.getItem('eq_user_'+fpUser));
-  // Verify old password
-  const oldHash=await sha256(oldPass);
-  if (oldHash!==stored.password) { setLoading('fp-save-btn',false,'Save New Password →'); return showMsg('fp-msg3','Current password is incorrect.','error'); }
 
-  // Re-encrypt all IndexedDB data with new password
-  // We do this by reading raw encrypted blobs and re-encrypting
-  await reEncryptUserData(fpUser, oldPass, np, stored.salt);
+  // Re-wrap master key with new password — data is NEVER touched
+  const newPasswordHash          = await sha256(np);
+  const newMkWrappedByPassword   = await wrapMasterKey(fpMasterKeyHex, np, stored.salt);
 
-  // Save new hashed password
-  stored.password=await sha256(np);
+  stored.passwordHash                  = newPasswordHash;
+  stored.masterKeyWrappedByPassword    = newMkWrappedByPassword;
   localStorage.setItem('eq_user_'+fpUser, JSON.stringify(stored));
 
+  fpMasterKeyHex=''; // clear from memory
   setLoading('fp-save-btn',false,'Save New Password →');
-  showMsg('fp-msg3','Password updated! Your data has been re-encrypted.','success');
+  showMsg('fp-msg3','Password updated! Your data is fully intact. Redirecting…','success');
   setTimeout(()=>{ hideForgot(); switchTab('login'); }, 1800);
 }
 
-// Re-encrypt all stored expense data when password changes
-async function reEncryptUserData(username, oldPass, newPass, salt) {
-  return new Promise((resolve,reject)=>{
-    const req=indexedDB.open('ExpenseIQ_'+username, 1);
-    req.onsuccess=async e=>{
-      const db=e.target.result;
-      if (!db.objectStoreNames.contains('expenses')) { resolve(); return; }
-      const tx=db.transaction('expenses','readwrite');
-      const store=tx.objectStore('expenses');
-      const all=await new Promise((r,j)=>{ const q=store.getAll(); q.onsuccess=()=>r(q.result); q.onerror=j; });
-      for (const record of all) {
-        try {
-          // Decrypt with old password
-          const plain=await decryptData(oldPass, salt, record.iv, record.ciphertext);
-          // Re-encrypt with new password
-          const {iv,ciphertext}=await encryptData(newPass, salt, plain);
-          store.put({...record, iv, ciphertext});
-        } catch(err) { console.warn('Could not re-encrypt record',record.id); }
-      }
-      tx.oncomplete=resolve;
-      tx.onerror=reject;
-    };
-    req.onerror=reject;
-  });
-}
-
 function masterReset() {
-  const confirm=document.getElementById('fp-confirm-delete').value.trim();
-  if (confirm!=='DELETE') return showMsg('fp-msg4','Please type DELETE to confirm.','error');
-  // Remove user record
+  const val=document.getElementById('fp-confirm-delete').value.trim();
+  if(val!=='DELETE') return showMsg('fp-msg4','Please type DELETE to confirm.','error');
   localStorage.removeItem('eq_user_'+fpUser);
-  // Delete IndexedDB
   indexedDB.deleteDatabase('ExpenseIQ_'+fpUser);
   showMsg('fp-msg4','Account deleted. You can now register a new account.','success');
-  setTimeout(()=>{ hideForgot(); switchTab('register'); }, 2000);
+  setTimeout(()=>{ hideForgot(); switchTab('register'); },2000);
 }
 
 /* ══ ENTER KEY ══ */
-document.addEventListener('keydown', e=>{
-  if (e.key!=='Enter') return;
-  if (document.getElementById('fp-panel').style.display==='block') {
-    if (document.getElementById('fp-step1').style.display!=='none') return fpStep1();
-    if (document.getElementById('fp-step2').style.display!=='none') return fpStep2();
-    if (document.getElementById('fp-step3').style.display!=='none') return fpStep3();
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(document.getElementById('fp-panel').style.display==='block'){
+    if(document.getElementById('fp-step1').style.display!=='none') return fpStep1();
+    if(document.getElementById('fp-step2').style.display!=='none') return fpStep2();
+    if(document.getElementById('fp-step3').style.display!=='none') return fpStep3();
     return;
   }
-  if (document.getElementById('login-form').style.display!=='none') return handleLogin();
-  if (document.getElementById('reg-step-a').style.display!=='none') handleRegister();
+  if(document.getElementById('login-form').style.display!=='none') return handleLogin();
+  if(document.getElementById('reg-step-a').style.display!=='none') handleRegister();
 });
 </script>
 </body>
