@@ -168,10 +168,128 @@
     .bank-badge { background:var(--navy2); border:1px solid var(--border2); border-radius:var(--radius); padding:14px 20px; margin-bottom:20px; display:none; align-items:center; justify-content:space-between; }
     .bank-badge.show { display:flex; }
 
-    @media (max-width:900px) {
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — TABLET (max 1024px)
+    ═══════════════════════════════════════════ */
+    @media (max-width:1024px) {
+      :root { --sidebar:64px; }
+      .sb-brand-name { display:none; }
+      .sb-brand { justify-content:center; padding:0 0 20px; }
+      .nav-item span:not(.nav-icon) { display:none; }
+      .nav-item { justify-content:center; padding:12px 0; }
+      .user-name,.user-sub { display:none; }
+      .user-chip { justify-content:center; padding:8px; }
+      .btn-logout { font-size:0; padding:8px; }
+      .btn-logout::after { content:'↩'; font-size:16px; }
       .stat-row { grid-template-columns:1fr 1fr; }
       .chart-grid,.export-grid { grid-template-columns:1fr; }
       .form-grid { grid-template-columns:1fr; }
+      .main { padding:24px 20px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — MOBILE (max 640px)
+       Sidebar becomes bottom nav bar
+    ═══════════════════════════════════════════ */
+    @media (max-width:640px) {
+      :root { --sidebar:0px; }
+      html,body { overflow:hidden; }
+
+      /* App layout — vertical stack */
+      .app { flex-direction:column; height:100vh; }
+
+      /* Sidebar hidden — replaced by bottom nav */
+      .sidebar { display:none; }
+
+      /* Bottom navigation bar */
+      .bottom-nav {
+        display:flex !important;
+        position:fixed; bottom:0; left:0; right:0; z-index:200;
+        background:var(--navy2); border-top:1px solid var(--border);
+        padding:8px 0 max(8px, env(safe-area-inset-bottom));
+        justify-content:space-around; align-items:center;
+      }
+      .bottom-nav-item {
+        display:flex; flex-direction:column; align-items:center; gap:3px;
+        font-size:10px; color:var(--muted); cursor:pointer;
+        padding:4px 10px; border-radius:8px; transition:color 0.2s;
+        user-select:none; min-width:48px;
+      }
+      .bottom-nav-item .bn-icon { font-size:20px; line-height:1; }
+      .bottom-nav-item.active { color:var(--gold2); }
+      .bottom-nav-item.active .bn-icon { color:var(--gold); }
+
+      /* Main content — full width, scrollable, padded above bottom nav */
+      .main {
+        flex:1; overflow-y:auto; padding:20px 16px 90px;
+        width:100%; -webkit-overflow-scrolling:touch;
+      }
+
+      /* Idle banner — full width */
+      .idle-banner { left:0; font-size:12px; padding:8px 16px; }
+
+      /* Toast — above bottom nav */
+      .toast { bottom:80px; left:16px; right:16px; text-align:center; }
+
+      /* Page title */
+      .page-title { font-size:22px; }
+      .page-sub   { font-size:13px; }
+
+      /* Stat cards — 2×2 grid */
+      .stat-row { grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+      .stat-card { padding:14px; }
+      .stat-val  { font-size:20px; }
+      .stat-label{ font-size:10px; }
+
+      /* Cards */
+      .card { padding:16px; margin-bottom:16px; }
+      .card-title { font-size:12px; margin-bottom:14px; }
+
+      /* Form */
+      .form-grid { grid-template-columns:1fr; gap:12px; }
+      .field input,.field select { font-size:16px; } /* prevent iOS zoom */
+      .form-actions { flex-direction:column; }
+      .btn-primary,.btn-ghost { width:100%; text-align:center; padding:13px; }
+
+      /* Table — horizontal scroll, compact */
+      table { font-size:12px; }
+      th { font-size:10px; padding:8px 8px; }
+      td { padding:10px 8px; }
+      .amount-cell { font-size:13px; }
+
+      /* Table controls — stack on mobile */
+      .table-controls { flex-direction:column; gap:8px; }
+      .search-box,.filter-select { width:100%; }
+
+      /* Charts — single column */
+      .chart-grid { grid-template-columns:1fr; gap:16px; }
+      .chart-box { padding:16px; }
+      .chart-title { font-size:11px; }
+      canvas { max-height:220px; }
+
+      /* Chart filter buttons — scrollable row */
+      .chart-filters-row { overflow-x:auto; padding-bottom:4px; }
+      .chart-filter-btn { white-space:nowrap; padding:5px 14px; font-size:12px; }
+
+      /* Export grid — stack */
+      .export-grid { grid-template-columns:1fr; }
+
+      /* Drop zone — compact */
+      .drop-zone { padding:28px 16px; }
+      .drop-icon { font-size:28px; }
+
+      /* Modal — full width */
+      .modal-box { margin:16px; max-width:calc(100% - 32px); padding:24px; }
+
+      /* Enc badge — smaller */
+      .enc-badge { font-size:10px; }
+
+      /* User chip in sidebar — hidden on mobile (bottom nav replaces) */
+      .sb-bottom { display:none; }
+
+      /* Preview table on CSV upload */
+      .preview-table table { min-width:500px; }
     }
   </style>
 </head>
@@ -460,6 +578,29 @@
 
   </main>
 </div>
+
+<!-- Bottom navigation — mobile only (hidden on desktop via CSS) -->
+<nav class="bottom-nav" style="display:none">
+  <div class="bottom-nav-item active" id="bn-overview" onclick="navigate('overview')">
+    <span class="bn-icon">◈</span><span>Home</span>
+  </div>
+  <div class="bottom-nav-item" id="bn-add" onclick="navigate('add')">
+    <span class="bn-icon">＋</span><span>Add</span>
+  </div>
+  <div class="bottom-nav-item" id="bn-expenses" onclick="navigate('expenses')">
+    <span class="bn-icon">≡</span><span>All</span>
+  </div>
+  <div class="bottom-nav-item" id="bn-charts" onclick="navigate('charts')">
+    <span class="bn-icon">◎</span><span>Charts</span>
+  </div>
+  <div class="bottom-nav-item" id="bn-upload" onclick="navigate('upload')">
+    <span class="bn-icon">↑</span><span>Import</span>
+  </div>
+  <div class="bottom-nav-item" id="bn-backup" onclick="navigate('backup')">
+    <span class="bn-icon">⬡</span><span>Backup</span>
+  </div>
+</nav>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -733,7 +874,12 @@ function setChartFilter(f){
 const PAGES=['overview','add','expenses','charts','upload','backup'];
 let chartsBuilt=false;
 function navigate(page) {
-  PAGES.forEach(p=>{document.getElementById('page-'+p).classList.toggle('active',p===page);document.getElementById('nav-'+p).classList.toggle('active',p===page);});
+  PAGES.forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('active',p===page);
+    document.getElementById('nav-'+p).classList.toggle('active',p===page);
+    const bn=document.getElementById('bn-'+p);
+    if(bn) bn.classList.toggle('active',p===page);
+  });
   if(page==='overview')refreshOverview();
   if(page==='expenses')renderExpenses();
   if(page==='charts')renderCharts();
