@@ -309,6 +309,12 @@ async function handleLogin() {
   const user = document.getElementById('l-user').value.trim();
   const pass = document.getElementById('l-pass').value;
   if (!user||!pass) return showMsg('login-msg','Please fill in all fields.','error');
+  // Remember me — save or clear username
+  if (document.getElementById('remember').checked) {
+    localStorage.setItem('eq_remembered_user', user);
+  } else {
+    localStorage.removeItem('eq_remembered_user');
+  }
   setLoading('login-btn',true,'Sign In →');
 
   const stored = JSON.parse(localStorage.getItem('eq_user_'+user)||'null');
@@ -505,6 +511,13 @@ function masterReset() {
   indexedDB.deleteDatabase('ExpenseIQ_'+fpUser);
   showMsg('fp-msg4','Account deleted. You can now register a new account.','success');
   setTimeout(()=>{ hideForgot(); switchTab('register'); },2000);
+}
+
+/* ══ REMEMBER ME — pre-fill on load ══ */
+const remembered = localStorage.getItem('eq_remembered_user');
+if (remembered) {
+  document.getElementById('l-user').value = remembered;
+  document.getElementById('remember').checked = true;
 }
 
 /* ══ ENTER KEY ══ */
