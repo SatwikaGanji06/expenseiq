@@ -821,13 +821,23 @@ async function loadONNXModel() {
   }
 }
 
+function extractMerchant(desc) {
+  // Extract meaningful merchant name before /  or @ (same logic as Python training)
+  const merchant = desc.split(/[\/@]/)[0].trim()
+    .replace(/^(UPI|NEFT|IMPS|RTGS|ACH|ATM|POS|INB|MOB|DP|CHQ|CLG|ECS|SI|TRF)[-\s]/i,'')
+    .replace(/\d{6,}/g,'').replace(/[*#+]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+  return (merchant.length>1?merchant:desc.toLowerCase());
+}
+
 async function mlCategorizeONNX(desc) {
   if (!onnxReady || !onnxSession) return '';
   try {
-    const tensor = new ort.Tensor('string', [desc], [1,1]);
-    const result = await onnxSession.run({ description: tensor });
-    // Get predicted label
-    const labelOut = result[Object.keys(result).find(k=>k.includes('label')||k.includes('output'))];
+    // Extract merchant + combine with full desc (same as training features)
+    const merchant  = extractMerchant(desc);
+    const features  = merchant + ' ' + desc;
+    const tensor    = new ort.Tensor('string', [features], [1,1]);
+    const result    = await onnxSession.run({ description: tensor });
+    const labelOut  = result[Object.keys(result).find(k=>k.includes('label')||k.includes('output'))];
     if (labelOut && labelOut.data && labelOut.data[0]) return String(labelOut.data[0]);
     return '';
   } catch(e) { return ''; }
