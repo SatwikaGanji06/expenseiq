@@ -6,6 +6,7 @@
   <title>ExpenseIQ — Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
@@ -154,6 +155,19 @@
     .toast.green { border-left:3px solid var(--success); }
     .toast.red   { border-left:3px solid var(--danger); }
 
+    /* Insight items */
+    .insight-item { display:flex; align-items:flex-start; gap:12px; padding:10px 14px; background:var(--navy3); border-radius:var(--radius); border-left:3px solid var(--gold); }
+    .insight-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .insight-text { font-size:13px; color:var(--cream); line-height:1.5; }
+    .insight-sub  { font-size:11px; color:var(--muted); margin-top:2px; }
+    .insight-up   { border-left-color:#e08070; }
+    .insight-down { border-left-color:#5cb85c; }
+    .insight-warn { border-left-color:#E2C06A; }
+    .insight-info { border-left-color:var(--gold); }
+    /* Category tag picker */
+    .cat-tag { display:inline-flex; align-items:center; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid transparent; transition:opacity 0.2s,transform 0.1s; user-select:none; }
+    .cat-tag.off { opacity:0.3; }
+    .cat-tag:hover { transform:scale(1.05); }
     /* Chart filter buttons */
     .chart-filter-btn { padding:6px 16px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px; border:1px solid var(--border); border-radius:20px; cursor:pointer; transition:all 0.2s; }
     .chart-filter-btn:hover { color:var(--cream); border-color:var(--border2); }
@@ -366,6 +380,12 @@
           <div class="stat-sub" id="stat-count">0 transactions</div>
         </div>
       </div>
+      <!-- INSIGHTS CARD -->
+      <div class="card" id="insights-card" style="display:none">
+        <div class="card-title">💡 Smart Insights</div>
+        <div id="insights-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
       <div class="card">
         <div class="card-title">Recent Transactions</div>
         <table id="recent-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead><tbody id="recent-tbody"></tbody></table>
@@ -464,12 +484,27 @@
     <!-- ANALYTICS -->
     <div class="page" id="page-charts">
       <div class="page-header"><div class="page-title">Analytics</div><div class="page-sub">Visual breakdown of your spending patterns</div></div>
-      <div style="display:flex;gap:8px;margin-bottom:24px;align-items:center">
-        <span style="font-size:13px;color:var(--muted);margin-right:4px">Show:</span>
+
+      <!-- Debit/Credit filter -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:13px;color:var(--muted);margin-right:4px">Type:</span>
         <button class="chart-filter-btn active" id="filter-all"    onclick="setChartFilter('all')">All</button>
         <button class="chart-filter-btn"        id="filter-debit"  onclick="setChartFilter('debit')">Debit only</button>
         <button class="chart-filter-btn"        id="filter-credit" onclick="setChartFilter('credit')">Credit only</button>
       </div>
+
+      <!-- Category multi-select filter -->
+      <div class="card" style="padding:16px 20px;margin-bottom:24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;color:var(--muted)">Filter by Category <span style="font-size:11px">(click to toggle)</span></div>
+          <div style="display:flex;gap:8px">
+            <button onclick="selectAllCats()" style="font-size:11px;padding:3px 10px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer">Select All</button>
+            <button onclick="clearAllCats()"  style="font-size:11px;padding:3px 10px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer">Clear All</button>
+          </div>
+        </div>
+        <div id="cat-tag-picker" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+
       <div class="chart-grid">
         <div class="chart-box"><div class="chart-title">By Category</div><canvas id="chart-cat"></canvas></div>
         <div class="chart-box"><div class="chart-title">Monthly Trend — Spending vs Income</div><canvas id="chart-monthly"></canvas></div>
@@ -765,11 +800,64 @@ const ML_RULES=[
   {cat:'Gifts & Donations',  keys:['gift','donation','charity','temple','church','mosque','ngo','contribution']},
   {cat:'Pets',               keys:['pet','veterinary','vet','dog food','cat food','pedigree','whiskas','pet shop']},
 ];
-function mlCategorize(desc) {
+/* ══ ONNX ML MODEL ══ */
+let onnxSession = null;
+let onnxLabels  = [];
+let onnxReady   = false;
+
+async function loadONNXModel() {
+  try {
+    const REPO = 'https://raw.githubusercontent.com/SatwikaGanji06/expenseiq/main/';
+    const [labelsRes] = await Promise.all([fetch(REPO + 'categories.json')]);
+    onnxLabels = await labelsRes.json();
+    onnxSession = await ort.InferenceSession.create(REPO + 'categoriser.onnx');
+    onnxReady = true;
+    // Update badge to show AI is active
+    document.querySelectorAll('.ml-badge').forEach(b=>{ b.textContent='AI'; b.style.background='rgba(92,184,92,0.12)'; b.style.color='#5cb85c'; b.style.borderColor='rgba(92,184,92,0.3)'; });
+    console.log('✓ ONNX model loaded');
+  } catch(e) {
+    console.warn('ONNX model not available, using keyword rules:', e.message);
+    onnxReady = false;
+  }
+}
+
+async function mlCategorizeONNX(desc) {
+  if (!onnxReady || !onnxSession) return '';
+  try {
+    const tensor = new ort.Tensor('string', [desc], [1,1]);
+    const result = await onnxSession.run({ description: tensor });
+    // Get predicted label
+    const labelOut = result[Object.keys(result).find(k=>k.includes('label')||k.includes('output'))];
+    if (labelOut && labelOut.data && labelOut.data[0]) return String(labelOut.data[0]);
+    return '';
+  } catch(e) { return ''; }
+}
+
+function mlCategorizeRules(desc) {
   const l=desc.toLowerCase();
   for(const r of ML_RULES){if(r.keys.some(k=>l.includes(k)))return r.cat;}
   for(const [name,kws] of Object.entries(getCustomCats())){if(kws.some(k=>l.includes(k)))return name;}
   return '';
+}
+
+// Main categorize — tries ONNX first, falls back to rules
+async function mlCategorizeAsync(desc) {
+  // Custom cats always take priority (user-defined overrides model)
+  const customCats = getCustomCats();
+  const l = desc.toLowerCase();
+  for(const [name,kws] of Object.entries(customCats)){
+    if(kws.some(k=>l.includes(k))) return name;
+  }
+  if (onnxReady) {
+    const onnxResult = await mlCategorizeONNX(desc);
+    if (onnxResult) return onnxResult;
+  }
+  return mlCategorizeRules(desc);
+}
+
+// Sync version for backward compatibility (uses rules only)
+function mlCategorize(desc) {
+  return mlCategorizeRules(desc);
 }
 
 /* ══ TWO-LEVEL CATEGORY SYSTEM ══ */
@@ -862,11 +950,59 @@ function resolvedCategory() {
 
 /* ══ CHART FILTER ══ */
 let chartFilter='all';
+let selectedCats=new Set(); // empty = all selected
+
 function setChartFilter(f){
   chartFilter=f;
   ['all','debit','credit'].forEach(x=>{
     document.getElementById('filter-'+x).classList.toggle('active',x===f);
   });
+  renderCharts();
+}
+
+function buildCatTagPicker(availableCats) {
+  const picker = document.getElementById('cat-tag-picker');
+  if (!picker) return;
+  picker.innerHTML = '';
+  availableCats.forEach(cat => {
+    const isOn = selectedCats.size === 0 || selectedCats.has(cat);
+    const c = CAT_COLORS[cat] || {bg:'rgba(138,155,176,0.15)',text:'#8A9BB0'};
+    const tag = document.createElement('span');
+    tag.className = 'cat-tag' + (isOn ? '' : ' off');
+    tag.textContent = cat;
+    tag.style.cssText = `background:${c.bg};color:${c.text};border-color:${c.text}40`;
+    tag.onclick = () => toggleCat(cat, tag, availableCats);
+    picker.appendChild(tag);
+  });
+}
+
+function toggleCat(cat, el, allCats) {
+  if (selectedCats.size === 0) {
+    // All were selected — now deselect all except this one
+    allCats.forEach(c => selectedCats.add(c));
+    selectedCats.delete(cat);
+  } else if (selectedCats.has(cat)) {
+    selectedCats.delete(cat);
+    if (selectedCats.size === 0) selectedCats = new Set(); // back to "all"
+  } else {
+    selectedCats.add(cat);
+    if (selectedCats.size === allCats.length) selectedCats = new Set(); // all selected = reset
+  }
+  el.classList.toggle('off', selectedCats.size > 0 && !selectedCats.has(cat));
+  // Re-render all tags
+  document.querySelectorAll('.cat-tag').forEach(t => {
+    t.classList.toggle('off', selectedCats.size > 0 && !selectedCats.has(t.textContent));
+  });
+  renderCharts();
+}
+
+function selectAllCats() { selectedCats = new Set(); document.querySelectorAll('.cat-tag').forEach(t=>t.classList.remove('off')); renderCharts(); }
+function clearAllCats()  {
+  const allCats=[...document.querySelectorAll('.cat-tag')].map(t=>t.textContent);
+  allCats.forEach(c=>selectedCats.add(c));
+  // Keep only first one selected
+  selectedCats=new Set([allCats[0]||'']);
+  document.querySelectorAll('.cat-tag').forEach((t,i)=>t.classList.toggle('off',i!==0));
   renderCharts();
 }
 
@@ -995,6 +1131,122 @@ async function refreshOverview() {
   document.getElementById('recent-empty').style.display=recent.length===0?'block':'none';
   document.getElementById('recent-table').style.display=recent.length===0?'none':'';
   recent.forEach(e=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${e.date}</td><td>${e.description}</td><td>${catPill(e.category)}</td><td class="amount-cell">${fmt(e.amount)}</td>`;tbody.appendChild(tr);});
+
+  // Generate insights
+  generateInsights(all);
+}
+
+function generateInsights(all) {
+  const card = document.getElementById('insights-card');
+  const list = document.getElementById('insights-list');
+  if (!card || !list) return;
+
+  const isCredit = e => e.txtype==='Income'||e.txtype==='Refund'||e.method==='Bank Credit';
+  const debits   = all.filter(e => !isCredit(e));
+  if (debits.length < 3) { card.style.display='none'; return; }
+
+  const now      = new Date();
+  const thisMonth= `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const lastDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  const lastMonth= `${lastDate.getFullYear()}-${String(lastDate.getMonth()+1).padStart(2,'0')}`;
+
+  const thisDebits = debits.filter(e=>e.date.startsWith(thisMonth));
+  const lastDebits = debits.filter(e=>e.date.startsWith(lastMonth));
+
+  const insights = [];
+
+  // ── Insight 1: Month-on-month category changes ──────────────────────────
+  if (thisDebits.length>0 && lastDebits.length>0) {
+    const thisCat={}, lastCat={};
+    thisDebits.forEach(e=>thisCat[e.category]=(thisCat[e.category]||0)+e.amount);
+    lastDebits.forEach(e=>lastCat[e.category]=(lastCat[e.category]||0)+e.amount);
+
+    let biggestChange=null, biggestPct=0;
+    Object.keys(thisCat).forEach(cat=>{
+      if (!lastCat[cat]) return;
+      const pct=((thisCat[cat]-lastCat[cat])/lastCat[cat])*100;
+      if (Math.abs(pct) > biggestPct) { biggestPct=Math.abs(pct); biggestChange={cat,pct,this:thisCat[cat],last:lastCat[cat]}; }
+    });
+
+    if (biggestChange && Math.abs(biggestChange.pct)>10) {
+      const up = biggestChange.pct > 0;
+      insights.push({
+        icon: up?'📈':'📉',
+        type: up?'up':'down',
+        text: `${biggestChange.cat} spending ${up?'up':'down'} ${Math.abs(biggestChange.pct).toFixed(0)}% vs last month`,
+        sub:  `${fmt(biggestChange.last)} last month → ${fmt(biggestChange.this)} this month`
+      });
+    }
+  }
+
+  // ── Insight 2: Day of week you spend most ───────────────────────────────
+  const dayTotals={};
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  debits.forEach(e=>{
+    const d=new Date(e.date).getDay();
+    dayTotals[d]=(dayTotals[d]||0)+e.amount;
+  });
+  const topDay=Object.entries(dayTotals).sort((a,b)=>b[1]-a[1])[0];
+  if (topDay) {
+    insights.push({
+      icon:'📅',
+      type:'info',
+      text:`You spend most on ${dayNames[topDay[0]]}s`,
+      sub: `${fmt(topDay[1])} total spent on ${dayNames[topDay[0]]}s across all time`
+    });
+  }
+
+  // ── Insight 3: Biggest single transaction this month ────────────────────
+  if (thisDebits.length>0) {
+    const biggest=thisDebits.reduce((a,b)=>a.amount>b.amount?a:b);
+    insights.push({
+      icon:'💸',
+      type:'warn',
+      text:`Biggest expense this month: ${fmt(biggest.amount)}`,
+      sub: `${biggest.description} · ${biggest.category} · ${biggest.date}`
+    });
+  }
+
+  // ── Insight 4: Unusual spike detection ─────────────────────────────────
+  if (debits.length>=10) {
+    const dayAmts={}; debits.forEach(e=>dayAmts[e.date]=(dayAmts[e.date]||0)+e.amount);
+    const vals=Object.values(dayAmts);
+    const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const std=Math.sqrt(vals.map(v=>Math.pow(v-mean,2)).reduce((a,b)=>a+b,0)/vals.length);
+    const spikes=Object.entries(dayAmts).filter(([d,v])=>v>mean+2*std).sort((a,b)=>b[1]-a[1]);
+    if (spikes.length>0) {
+      insights.push({
+        icon:'⚠️',
+        type:'warn',
+        text:`Unusual spending spike on ${spikes[0][0]}`,
+        sub: `${fmt(spikes[0][1])} spent — ${((spikes[0][1]/mean-1)*100).toFixed(0)}% above your average daily spend`
+      });
+    }
+  }
+
+  // ── Insight 5: Top category this month ─────────────────────────────────
+  if (thisDebits.length>0) {
+    const catT={}; thisDebits.forEach(e=>catT[e.category]=(catT[e.category]||0)+e.amount);
+    const topCat=Object.entries(catT).sort((a,b)=>b[1]-a[1])[0];
+    const totalThis=thisDebits.reduce((s,e)=>s+e.amount,0);
+    const pct=((topCat[1]/totalThis)*100).toFixed(0);
+    insights.push({
+      icon:'🏆',
+      type:'info',
+      text:`${topCat[0]} is your biggest spend this month`,
+      sub: `${fmt(topCat[1])} — ${pct}% of total monthly spending`
+    });
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────
+  list.innerHTML='';
+  insights.forEach(ins=>{
+    const div=document.createElement('div');
+    div.className=`insight-item insight-${ins.type}`;
+    div.innerHTML=`<div class="insight-icon">${ins.icon}</div><div><div class="insight-text">${ins.text}</div><div class="insight-sub">${ins.sub}</div></div>`;
+    list.appendChild(div);
+  });
+  card.style.display = insights.length>0 ? 'block' : 'none';
 }
 
 /* ══ ALL EXPENSES ══ */
@@ -1034,8 +1286,13 @@ async function renderCharts(){
     chartInstances[id]=new Chart(document.getElementById(id).getContext('2d'),{type,data:{labels,datasets:[{data,backgroundColor:type==='line'?'rgba(201,168,76,0.1)':C,borderColor:type==='line'?'#C9A84C':C,borderWidth:type==='line'?2:1,fill:type==='line',tension:0.4,pointBackgroundColor:'#C9A84C'}]},options:{responsive:true,plugins:{legend:{display:type!=='bar',labels:{color:'#8A9BB0',font:{family:'DM Sans',size:12},padding:12}},tooltip:{callbacks:{label:c=>{const v=typeof c.parsed==='object'?c.parsed.y??c.parsed:c.parsed;return ' ₹'+(+v).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}}}},scales:['bar','line'].includes(type)?{x:{ticks:{color:'#8A9BB0',font:{size:11}},grid:{color:'rgba(201,168,76,0.06)'}},y:{ticks:{color:'#8A9BB0',font:{size:11},callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'rgba(201,168,76,0.06)'}}}:{}}});
   }
   const isCredit=e=>e.txtype==='Income'||e.txtype==='Refund'||e.method==='Bank Credit';
-  // Apply chart filter
-  const filtered=chartFilter==='all'?all:chartFilter==='debit'?all.filter(e=>!isCredit(e)):all.filter(e=>isCredit(e));
+  // Apply debit/credit filter
+  let filtered=chartFilter==='all'?all:chartFilter==='debit'?all.filter(e=>!isCredit(e)):all.filter(e=>isCredit(e));
+  // Apply category filter
+  if(selectedCats.size>0) filtered=filtered.filter(e=>selectedCats.has(e.category));
+  // Get available cats for tag picker
+  const availCats=[...new Set(all.filter(e=>!isCredit(e)).map(e=>e.category))].sort();
+  buildCatTagPicker(availCats);
   const catM={},debitMonthM={},creditMonthM={},methodM={},dayM={};
   filtered.forEach(e=>{
     const credit=isCredit(e);
@@ -1705,7 +1962,7 @@ async function deleteAllData(){
 }
 
 /* ══ INIT ══ */
-initDB().then(()=>{ cleanCustomCats(); refreshOverview(); });
+initDB().then(()=>{ cleanCustomCats(); refreshOverview(); loadONNXModel(); });
 </script>
 </body>
 </html>
